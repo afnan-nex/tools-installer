@@ -39,12 +39,12 @@ echo     ^|------------------------------^|    ^|------------------------------^
 echo     ^|10. Install n8n               ^|    ^|11. Install Gemini CLI        ^|
 echo     ^|                              ^|    ^|12. Install Qwen CLI          ^|
 echo     ^|______________________________^|    ^|______________________________^|
-echo      ______________________________
-echo     ^|            Actions           ^|
-echo     ^|------------------------------^|
-echo     ^|13. Run All (in sequence)     ^|
-echo     ^|14. Exit                      ^|
-echo     ^|______________________________^|
+echo      ______________________________      ______________________________
+echo     ^|            Others            ^|     ^|            Actions           ^|
+echo     ^|------------------------------^|     ^|------------------------------^|
+echo     ^|13. Install Winget(200 mb)    ^|     ^|14. Run All (in sequence)     ^|
+echo     ^|                              ^|     ^|15. Exit                      ^|
+echo     ^|______________________________^|     ^|______________________________^|
 echo     ================================
 set /p choice=Enter your choice (1-14): 
 
@@ -60,7 +60,8 @@ if "%choice%"=="9" goto Git
 if "%choice%"=="10" goto N8N
 if "%choice%"=="11" goto GEMINI
 if "%choice%"=="12" goto QWEN
-if "%choice%"=="13" goto RUNALL
+if "%choice%"=="13" goto Winget
+if "%choice%"=="14" goto RUNALL
 if "%choice%"=="14" exit
 goto MENU
 
@@ -112,6 +113,10 @@ goto MENU
 start cmd /c "echo Installing Qwen CLI... & echo write qwen in cmd ^& press enter to run & npm install -g @qwen-code/qwen-code@latest & echo. & echo Press any key to close... & pause >nul"
 goto MENU
 
+:Winget
+start cmd /c "echo Installing Winget... & powershell -NoProfile -Command \"Invoke-WebRequest -Uri https://aka.ms/getwinget -OutFile winget.msixbundle; Add-AppxPackage winget.msixbundle; Remove-Item winget.msixbundle\" & echo. & echo Press any key to close... & pause >nul"
+goto MENU
+
 :RUNALL
 call :SEEPOLICY
 call :UNRESTRICT
@@ -125,4 +130,5 @@ call :Git
 call :N8N
 call :GEMINI
 call :QWEN
+call :Winget
 goto MENU
