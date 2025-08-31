@@ -40,11 +40,11 @@ echo     ^|10. Install n8n               ^|    ^|11. Install Gemini CLI        ^
 echo     ^|                              ^|    ^|12. Install Qwen CLI          ^|
 echo     ^|______________________________^|    ^|______________________________^|
 echo      ______________________________      ______________________________
-echo     ^|            Others            ^|     ^|            Actions           ^|
-echo     ^|------------------------------^|     ^|------------------------------^|
-echo     ^|13. Install Winget(200 mb)    ^|     ^|14. Run All (in sequence)     ^|
-echo     ^|                              ^|     ^|15. Exit                      ^|
-echo     ^|______________________________^|     ^|______________________________^|
+echo     ^|            Others            ^|    ^|            Actions           ^|
+echo     ^|------------------------------^|    ^|------------------------------^|
+echo     ^|13. Install Winget(200 mb)    ^|    ^|14. Run All (in sequence)     ^|
+echo     ^|                              ^|    ^|15. Exit                      ^|
+echo     ^|______________________________^|    ^|______________________________^|
 echo     ================================
 set /p choice=Enter your choice (1-14): 
 
@@ -132,3 +132,4 @@ call :GEMINI
 call :QWEN
 call :Winget
 goto MENU
+
