@@ -72,14 +72,9 @@ goto MENU
 
 :CHOCO
 echo Installing Chocolatey...
-powershell -NoProfile -ExecutionPolicy Bypass -Command ^
- "Set-ExecutionPolicy Bypass -Scope Process -Force; ^
-  [System.Net.ServicePointManager]::SecurityProtocol = ^
-  [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; ^
-  iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+powershell Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 pause
 goto MENU
-
 :NODELTS
 echo Installing Node.js LTS...
 choco install nodejs-lts -y
