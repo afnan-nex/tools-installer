@@ -30,8 +30,7 @@ irm "https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-inst
 11.  **Install Gemini CLI**: Installs Google's Gemini CLI (run `gemini` in cmd to start).
 12.  **Install Qwen CLI**: Installs Qwen CLI (run `qwen` in cmd to start).
 13.  **Run All**: Executes all options in sequence.
-14.  **Run Selected**: Allows running specific options by entering their numbers (e.g., `1,3,5`).
-15.  **Exit**: Closes the script.
+14.  **Exit**: Closes the script.
 
 ## **Prerequisites**
 
