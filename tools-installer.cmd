@@ -2,6 +2,14 @@
 title Tool Installer Menu by Afnan
 color 0a
 
+:: Check for Administrator Privileges
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Requesting administrator privileges...
+    powershell -Command "Start-Process '%~f0' -Verb RunAs"
+    exit /b
+)
+
 :MENU
 cls
 echo                   _    _____ _   _    _    _   _ 
@@ -75,6 +83,7 @@ echo Installing Chocolatey...
 powershell Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 pause
 goto MENU
+
 :NODELTS
 echo Installing Node.js LTS...
 choco install nodejs-lts -y
