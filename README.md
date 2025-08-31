@@ -2,7 +2,7 @@
 
 A Windows batch script with an interactive menu to quickly install developer tools and run automation scripts. This script simplifies the setup of essential development tools and automation utilities on Windows systems.
 
-## **Run in PowerShell**
+## **Run in PowerShell 🖥️**
 ```
 irm "https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd" -OutFile tools-installer.cmd; Start-Process tools-installer.cmd
 ```
