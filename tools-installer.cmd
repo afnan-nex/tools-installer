@@ -42,12 +42,11 @@ echo     ^|______________________________^|    ^|______________________________^
 echo      ______________________________
 echo     ^|            Actions           ^|
 echo     ^|------------------------------^|
-echo     ^|13. Run All ( in sequence)    ^|
-echo     ^|14. RUNSELECTED               ^|
-echo     ^|15. Exit                      ^|
+echo     ^|13. Run All (in sequence)     ^|
+echo     ^|14. Exit                      ^|
 echo     ^|______________________________^|
 echo     ================================
-set /p choice=Enter your choice (1-15): 
+set /p choice=Enter your choice (1-14): 
 
 if "%choice%"=="1" goto SEEPOLICY
 if "%choice%"=="2" goto UNRESTRICT
@@ -62,83 +61,55 @@ if "%choice%"=="10" goto N8N
 if "%choice%"=="11" goto GEMINI
 if "%choice%"=="12" goto QWEN
 if "%choice%"=="13" goto RUNALL
-if "%choice%"=="14" goto RUNSELECTED
-if "%choice%"=="15" exit
+if "%choice%"=="14" exit
 goto MENU
 
 :SEEPOLICY
-echo Current Execution Policy:
-powershell -NoProfile -Command "Get-ExecutionPolicy"
-pause
+start cmd /c "echo Current Execution Policy: & powershell -NoProfile -Command "Get-ExecutionPolicy" & echo. & echo Press any key to close... & pause >nul"
 goto MENU
 
 :UNRESTRICT
-echo Setting Execution Policy to Unrestricted...
-powershell -NoProfile -Command "Set-ExecutionPolicy Unrestricted -Force"
-pause
+start cmd /c "echo Setting Execution Policy to Unrestricted... & powershell -NoProfile -Command "Set-ExecutionPolicy Unrestricted -Force" & echo. & echo Press any key to close... & pause >nul"
 goto MENU
 
 :CHOCO
-echo Installing Chocolatey...
-powershell Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-pause
+start cmd /c "echo Installing Chocolatey... & powershell Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) & echo. & echo Press any key to close... & pause >nul"
 goto MENU
 
 :NODELTS
-echo Installing Node.js LTS...
-choco install nodejs-lts -y
-pause
+start cmd /c "echo Installing Node.js LTS... & choco install nodejs-lts -y & echo. & echo Press any key to close... & pause >nul"
 goto MENU
 
 :TITUS
-echo Running Chris Titus Tool...
-powershell -NoProfile -Command "irm 'https://christitus.com/win' | iex"
-pause
+start cmd /c "echo Running Chris Titus Tool... & powershell -NoProfile -Command "irm 'https://christitus.com/win' | iex" & echo. & echo Press any key to close... & pause >nul"
 goto MENU
 
 :MASSGRAVE
-echo Running Mass Grave...
-powershell -NoProfile -Command "irm https://get.activated.win | iex"
-pause
+start cmd /c "echo Running Mass Grave... & powershell -NoProfile -Command "irm https://get.activated.win | iex" & echo. & echo Press any key to close... & pause >nul"
 goto MENU
 
 :COPORTON
-echo Running Coporton...
-powershell -NoProfile -Command "irm https://coporton.com/ias | iex"
-pause
+start cmd /c "echo Running Coporton... & powershell -NoProfile -Command "irm https://coporton.com/ias | iex" & echo. & echo Press any key to close... & pause >nul"
 goto MENU
 
 :PYTHON
-echo Installing Python...
-choco install python -y
-pause
+start cmd /c "echo Installing Python... & choco install python -y & echo. & echo Press any key to close... & pause >nul"
 goto MENU
 
 :Git
-echo Installing Git...
-choco install git -y
-pause
+start cmd /c "echo Installing Git... & choco install git -y & echo. & echo Press any key to close... & pause >nul"
 goto MENU
 
 :N8N
-echo Installing n8n...
-echo write n8n in cmd ^& press enter to run
-npm install -g n8n@latest --verbose
-pause
+start cmd /c "echo Installing n8n... & echo write n8n in cmd ^& press enter to run & npm install -g n8n@latest --verbose & echo. & echo Press any key to close... & pause >nul"
 goto MENU
 
 :GEMINI
-echo Installing Gemini CLI...
-echo write gemini in cmd ^& press enter to run
-npm install -g @google/gemini-cli@latest
-pause
+start cmd /c "echo Installing Gemini CLI... & echo write gemini in cmd ^& press enter to run & npm install -g @google/gemini-cli@latest & echo. & echo Press any key to close... & pause >nul"
 goto MENU
 
 :QWEN
-echo Installing Qwen CLI...
-echo write qwen in cmd ^& press enter to run
-npm install -g @qwen-code/qwen-code@latest
-pause
+start cmd /c "echo Installing Qwen CLI... & echo write qwen in cmd ^& press enter to run & npm install -g @qwen-code/qwen-code@latest & echo. & echo Press any key to close... & pause >nul"
 goto MENU
 
 :RUNALL
@@ -154,22 +125,4 @@ call :Git
 call :N8N
 call :GEMINI
 call :QWEN
-goto MENU
-
-:RUNSELECTED
-set /p selections=Enter numbers separated by commas (e.g. 1,3,5): 
-for %%i in (%selections%) do (
-    if "%%i"=="1" call :SEEPOLICY
-    if "%%i"=="2" call :UNRESTRICT
-    if "%%i"=="3" call :CHOCO
-    if "%%i"=="4" call :NODELTS
-    if "%%i"=="5" call :TITUS
-    if "%%i"=="6" call :MASSGRAVE
-    if "%%i"=="7" call :COPORTON
-    if "%%i"=="8" call :PYTHON
-    if "%%i"=="9" call :Git
-    if "%%i"=="10" call :N8N
-    if "%%i"=="11" call :GEMINI
-    if "%%i"=="12" call :QWEN
-)
 goto MENU
