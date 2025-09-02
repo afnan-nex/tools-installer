@@ -41,14 +41,14 @@ echo   ^|_______________^|  ^|_______________________^|
 echo    __________________________________________    ____________________
 echo   ^|            Others                        ^|  ^|       Actions      ^|
 echo   ^|------------------------------------------^|  ^|--------------------^|
-echo   ^|17. Winget (200 mb)                       ^|  ^|22. Run All         ^|
-echo   ^|18. Office365 offline                     ^|  ^|23. Run Selected    ^|
-echo   ^|19. Everything (Search Tool)              ^|  ^|24. Exit            ^|
-echo   ^|20. Chrome      21. Zen                   ^|  ^|                    ^|
+echo   ^|17. Winget (200 mb)                       ^|  ^|22. ^CMD Clr to 0a   ^|
+echo   ^|18. Office365 offline                     ^|  ^|23. Run All         ^|
+echo   ^|19. Everything (Search Tool)              ^|  ^|24. Run Selected    ^|
+echo   ^|20. Chrome      21. Zen                   ^|  ^|25. Exit            ^|
 echo   ^|__________________________________________^|  ^|____________________^|
 echo.
 echo     ================================
-set /p choice=Enter your choice (1-24, multiple like 2,4,9): 
+set /p choice=Enter your choice (1-25, multiple like 2,4,9): 
 
 :: If multiple numbers entered → Run Selected
 echo %choice% | findstr "," >nul
@@ -78,9 +78,10 @@ if "%choice%"=="18" call :OFFICE365
 if "%choice%"=="19" call :EVERYTHING
 if "%choice%"=="20" call :CHROME
 if "%choice%"=="21" call :ZEN
-if "%choice%"=="22" goto RUNALL
-if "%choice%"=="23" goto RUNSELECTED
-if "%choice%"=="24" exit
+if "%choice%"=="22" call :CMD0A
+if "%choice%"=="23" goto RUNALL
+if "%choice%"=="24" goto RUNSELECTED
+if "%choice%"=="25" exit
 goto MENU
 
 :: ==============================
@@ -127,6 +128,7 @@ if "%~1"=="18" call :OFFICE365
 if "%~1"=="19" call :EVERYTHING
 if "%~1"=="20" call :CHROME
 if "%~1"=="21" call :ZEN
+if "%~1"=="22" call :ZEN
 exit /b
 
 :RUNALL
@@ -510,3 +512,12 @@ echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
+
+:CMD0A
+echo ==========================================
+echo Changing cmd color to 0a
+echo ==========================================
+powershell -NoProfile -ExecutionPolicy Bypass -Command "irm "https://raw.githubusercontent.com/afnan-nex/my-fav-scripts/main/cmd-clr-to-0a.cmd" -OutFile cmd-clr-to-0a.cmd; Start-Process cmd-clr-to-0a.cmd"
+echo.
+pause
+goto MENU
