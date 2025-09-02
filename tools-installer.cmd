@@ -128,7 +128,7 @@ if "%~1"=="18" call :OFFICE365
 if "%~1"=="19" call :EVERYTHING
 if "%~1"=="20" call :CHROME
 if "%~1"=="21" call :ZEN
-if "%~1"=="22" call :ZEN
+if "%~1"=="22" call :CMD0A
 exit /b
 
 :RUNALL
@@ -139,12 +139,12 @@ echo.
 call :CHOCO
 call :NODELTS
 call :GIT
-call :DOTNET
 call :PYTHON
 call :FFMPEG
 call :SEVENZIP
 call :EVERYTHING
 call :CHROME
+call :CMD0A
 echo.
 echo All tools installation completed!
 pause
