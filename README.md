@@ -6,6 +6,9 @@ A Windows batch script with an interactive menu to quickly install developer too
 ```
 irm "https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd" -OutFile tools-installer.cmd; Start-Process tools-installer.cmd
 ```
+```
+$rand = Get-Random irm "https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd?$rand" -OutFile tools-installer.cmd; Start-Process tools-installer.cmd
+```
 
 ## **Features**
 
