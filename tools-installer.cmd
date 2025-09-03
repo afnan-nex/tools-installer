@@ -389,18 +389,8 @@ if %errorlevel% neq 0 (
     echo Refreshing PATH environment variable...
     set "PATH=%PATH%;%ProgramFiles%\nodejs"
 )
-n8n --version >nul 2>&1
-if %errorlevel%==0 (
-    echo n8n is already installed.
-    n8n --version
-) else (
-    echo Installing n8n...
-    npm install -g n8n@latest
-    if %errorlevel% neq 0 (
-        echo Installation failed. This may be due to PATH not being refreshed.
-        echo Please restart this script and try again.
-    )
-)
+echo Opening new CMD window to install n8n...
+start cmd /k "echo Installing n8n Workflow Automation... && npm install -g n8n@latest --verbose && echo Installation completed. Press any key to close this window. && pause"
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
@@ -417,12 +407,8 @@ if %errorlevel% neq 0 (
     echo Refreshing PATH environment variable...
     set "PATH=%PATH%;%ProgramFiles%\nodejs"
 )
-echo Installing Google AI CLI...
-npm install -g @google-ai/cli
-if %errorlevel% neq 0 (
-    echo Installation failed. This may be due to PATH not being refreshed.
-    echo Please restart this script and try again.
-)
+echo Opening new CMD window to install Google AI CLI...
+start cmd /k "echo Installing Google AI CLI... && npm install -g @google/gemini-cli@latest && echo Installation completed. Press any key to close this window. && pause"
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
@@ -439,12 +425,8 @@ if %errorlevel% neq 0 (
     echo Refreshing PATH environment variable...
     set "PATH=%PATH%;%ProgramFiles%\nodejs"
 )
-echo Installing Qwen AI CLI...
-npm install -g qwen-cli
-if %errorlevel% neq 0 (
-    echo Qwen CLI may not be available. Trying alternative installation...
-    echo You can install Qwen manually from: https://github.com/QwenLM/Qwen
-)
+echo Opening new CMD window to install Qwen AI CLI...
+start cmd /k "echo Installing Qwen AI CLI... && npm install -g @qwen-code/qwen-code@latest && echo Installation completed. If failed, visit: https://github.com/QwenLM/Qwen && echo Press any key to close this window. && pause"
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
