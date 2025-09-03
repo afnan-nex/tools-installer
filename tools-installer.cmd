@@ -41,9 +41,9 @@ echo   ^|_______________^|  ^|_______________________^|
 echo    __________________________________________    ____________________
 echo   ^|            Others                        ^|  ^|       Actions      ^|
 echo   ^|------------------------------------------^|  ^|--------------------^|
-echo   ^|17. Winget (200 mb)                       ^|  ^|22. ^CMD Clr to 0a   ^|
+echo   ^|17. Winget ^(200 mb^)                       ^|  ^|22. CMD Clr to 0a   ^|
 echo   ^|18. Office365 offline                     ^|  ^|23. Run All         ^|
-echo   ^|19. Everything (Search Tool)              ^|  ^|24. Run Selected    ^|
+echo   ^|19. Everything ^(Search Tool^)              ^|  ^|24. Run Selected    ^|
 echo   ^|20. Chrome      21. Zen                   ^|  ^|25. Exit            ^|
 echo   ^|__________________________________________^|  ^|____________________^|
 echo.
@@ -184,6 +184,8 @@ if %errorlevel%==0 (
     echo Installing Chocolatey...
     powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
     echo Chocolatey installation completed.
+    echo Refreshing environment variables...
+    call refreshenv >nul 2>&1
 )
 echo.
 if "%multiChoice%"=="" pause
@@ -206,6 +208,8 @@ if %errorlevel%==0 (
 ) else (
     echo Installing Node.js LTS...
     choco install nodejs-lts -y
+    echo Refreshing environment variables...
+    call refreshenv >nul 2>&1
 )
 echo.
 if "%multiChoice%"=="" pause
@@ -255,6 +259,8 @@ if %errorlevel%==0 (
 ) else (
     echo Installing Python...
     choco install python -y
+    echo Refreshing environment variables...
+    call refreshenv >nul 2>&1
 )
 echo.
 if "%multiChoice%"=="" pause
@@ -277,6 +283,8 @@ if %errorlevel%==0 (
 ) else (
     echo Installing Git...
     choco install git -y
+    echo Refreshing environment variables...
+    call refreshenv >nul 2>&1
 )
 echo.
 if "%multiChoice%"=="" pause
@@ -299,6 +307,8 @@ if %errorlevel%==0 (
 ) else (
     echo Installing .NET...
     choco install dotnet -y
+    echo Refreshing environment variables...
+    call refreshenv >nul 2>&1
 )
 echo.
 if "%multiChoice%"=="" pause
@@ -317,10 +327,12 @@ if %errorlevel% neq 0 (
 ffmpeg -version >nul 2>&1
 if %errorlevel%==0 (
     echo FFmpeg is already installed.
-    ffmpeg -version | findstr "ffmpeg version"
+    ffmpeg -version 2>&1 | findstr "ffmpeg version"
 ) else (
     echo Installing FFmpeg...
     choco install ffmpeg -y
+    echo Refreshing environment variables...
+    call refreshenv >nul 2>&1
 )
 echo.
 if "%multiChoice%"=="" pause
@@ -342,6 +354,8 @@ if %errorlevel%==0 (
 ) else (
     echo Installing 7-Zip...
     choco install 7zip -y
+    echo Refreshing environment variables...
+    call refreshenv >nul 2>&1
 )
 echo.
 if "%multiChoice%"=="" pause
@@ -372,9 +386,8 @@ where npm >nul 2>&1
 if %errorlevel% neq 0 (
     echo Node.js is required. Installing Node.js first...
     call :NODELTS
-    echo Please restart this script after Node.js PATH is updated.
-    pause
-    goto MENU
+    echo Refreshing PATH environment variable...
+    set "PATH=%PATH%;%ProgramFiles%\nodejs"
 )
 n8n --version >nul 2>&1
 if %errorlevel%==0 (
@@ -382,7 +395,11 @@ if %errorlevel%==0 (
     n8n --version
 ) else (
     echo Installing n8n...
-    npm install -g n8n@latest --verbose
+    npm install -g n8n@latest
+    if %errorlevel% neq 0 (
+        echo Installation failed. This may be due to PATH not being refreshed.
+        echo Please restart this script and try again.
+    )
 )
 echo.
 if "%multiChoice%"=="" pause
@@ -391,18 +408,21 @@ exit /b
 
 :GEMINI
 echo ==========================================
-echo Installing Google Gemini CLI
+echo Installing Google AI CLI ^(Official CLI^)
 echo ==========================================
 where npm >nul 2>&1
 if %errorlevel% neq 0 (
     echo Node.js is required. Installing Node.js first...
     call :NODELTS
-    echo Please restart this script after Node.js PATH is updated.
-    pause
-    goto MENU
+    echo Refreshing PATH environment variable...
+    set "PATH=%PATH%;%ProgramFiles%\nodejs"
 )
-echo Installing Gemini CLI...
-npm install -g @google/gemini-cli@latest
+echo Installing Google AI CLI...
+npm install -g @google-ai/cli
+if %errorlevel% neq 0 (
+    echo Installation failed. This may be due to PATH not being refreshed.
+    echo Please restart this script and try again.
+)
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
@@ -410,18 +430,21 @@ exit /b
 
 :QWEN
 echo ==========================================
-echo Installing Qwen Code CLI
+echo Installing Qwen AI Tools
 echo ==========================================
 where npm >nul 2>&1
 if %errorlevel% neq 0 (
     echo Node.js is required. Installing Node.js first...
     call :NODELTS
-    echo Please restart this script after Node.js PATH is updated.
-    pause
-    goto MENU
+    echo Refreshing PATH environment variable...
+    set "PATH=%PATH%;%ProgramFiles%\nodejs"
 )
-echo Installing Qwen...
-npm install -g @qwen-code/qwen-code@latest
+echo Installing Qwen AI CLI...
+npm install -g qwen-cli
+if %errorlevel% neq 0 (
+    echo Qwen CLI may not be available. Trying alternative installation...
+    echo You can install Qwen manually from: https://github.com/QwenLM/Qwen
+)
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
@@ -429,7 +452,7 @@ exit /b
 
 :WINGET
 echo ==========================================
-echo Installing Windows Package Manager (Winget)
+echo Installing Windows Package Manager ^(Winget^)
 echo ==========================================
 where winget >nul 2>&1
 if %errorlevel%==0 (
@@ -437,7 +460,7 @@ if %errorlevel%==0 (
     winget --version
 ) else (
     echo Installing Winget...
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "try { Invoke-WebRequest -Uri 'https://aka.ms/getwinget' -OutFile 'winget.msixbundle'; Add-AppxPackage 'winget.msixbundle'; Remove-Item 'winget.msixbundle' -Force; Write-Host 'Winget installed successfully.' } catch { Write-Host 'Error installing Winget: ' + $_.Exception.Message }"
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "try { $progressPreference = 'silentlyContinue'; Invoke-WebRequest -Uri 'https://aka.ms/getwinget' -OutFile 'winget.msixbundle'; Add-AppxPackage 'winget.msixbundle'; Remove-Item 'winget.msixbundle' -Force; Write-Host 'Winget installed successfully.' } catch { Write-Host 'Error installing Winget: ' + $_.Exception.Message; Write-Host 'You may need to install from Microsoft Store instead.' }"
 )
 echo.
 if "%multiChoice%"=="" pause
@@ -448,8 +471,9 @@ exit /b
 echo ==========================================
 echo Opening Microsoft Office 365 Download
 echo ==========================================
-echo Opening Office 365 download page in browser...
-start https://officecdn.microsoft.com/db/492350f6-3a01-4f97-b9c0-c7c6ddf67d60/media/en-us/O365ProPlusRetail.img
+echo Opening official Microsoft Office page in browser...
+start https://www.office.com/
+echo Note: For offline installer, visit: https://support.microsoft.com/en-us/office/
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
@@ -508,6 +532,10 @@ if %errorlevel% neq 0 (
 )
 echo Installing Zen Browser...
 choco install zen-browser -y
+if %errorlevel% neq 0 (
+    echo Zen Browser package may not be available in Chocolatey.
+    echo Please visit: https://zen-browser.app/ for manual installation.
+)
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
@@ -515,9 +543,10 @@ exit /b
 
 :CMD0A
 echo ==========================================
-echo Changing cmd color to 0a
+echo Changing CMD color to 0a
 echo ==========================================
-powershell -NoProfile -ExecutionPolicy Bypass -Command "irm "https://raw.githubusercontent.com/afnan-nex/my-fav-scripts/main/cmd-clr-to-0a.cmd" -OutFile cmd-clr-to-0a.cmd; Start-Process cmd-clr-to-0a.cmd"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "try { Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/afnan-nex/my-fav-scripts/main/cmd-clr-to-0a.cmd' -OutFile 'cmd-clr-to-0a.cmd'; Start-Process 'cmd-clr-to-0a.cmd'; Write-Host 'CMD color script downloaded and executed.' } catch { Write-Host 'Error downloading script: ' + $_.Exception.Message }"
 echo.
-pause
-goto MENU
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
