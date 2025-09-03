@@ -4,8 +4,7 @@ A Windows batch script with an interactive menu to quickly install developer too
 
 ## **Run in PowerShell 🖥️**
 ```
-Invoke-WebRequest "https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd" -Headers @{ "Cache-Control" = "no-cache" } -OutFile tools-installer.cmd Start-Process tools-installer.cmd
-
+irm "https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd" -OutFile tools-installer.cmd; Start-Process tools-installer.cmd
 ```
 
 ## **Features**
