@@ -4,7 +4,7 @@ A Windows batch script with an interactive menu to quickly install developer too
 
 ## **Run in PowerShell or CMD 🖥️**
 ```
-powershell -NoProfile -ExecutionPolicy Bypass -Command "irm 'https://cdn.jsdelivr.net/gh/afnan-nex/tools-installer@main/tools-installer.cmd' -OutFile tools-installer.cmd; Start-Process tools-installer.cmd"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "irm 'https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd?$(Get-Date -Format yyyyMMddHHmmss)' -OutFile tools-installer.cmd; Start-Process tools-installer.cmd"
 ```
 
 ## **Features**
