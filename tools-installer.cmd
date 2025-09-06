@@ -408,7 +408,7 @@ if %errorlevel% neq 0 (
     set "PATH=%PATH%;%ProgramFiles%\nodejs"
 )
 echo Opening new CMD window to install Google AI CLI...
-start cmd /k "echo Installing Google AI CLI... && npm install -g @google/gemini-cli@latest && echo Installation completed. Press any key to close this window. && pause"
+start cmd /k "echo Installing Google AI CLI... && npm install -g @google/gemini-cli@latest --verbose && echo Installation completed. Press any key to close this window. && pause"
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
@@ -426,7 +426,7 @@ if %errorlevel% neq 0 (
     set "PATH=%PATH%;%ProgramFiles%\nodejs"
 )
 echo Opening new CMD window to install Qwen AI CLI...
-start cmd /k "echo Installing Qwen AI CLI... && npm install -g @qwen-code/qwen-code@latest && echo Installation completed. If failed, visit: https://github.com/QwenLM/Qwen && echo Press any key to close this window. && pause"
+start cmd /k "echo Installing Qwen AI CLI... && npm install -g @qwen-code/qwen-code@latest --verbose && echo Installation completed. If failed, visit: https://github.com/QwenLM/Qwen && echo Press any key to close this window. && pause"
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
@@ -532,3 +532,4 @@ echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
+
