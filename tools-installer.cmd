@@ -238,10 +238,9 @@ goto MENU
 echo ==========================================
 echo Running Coporton Tool
 echo ==========================================
-powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://coporton.com/ias | iex"
-echo.
-pause
+start "" cmd /k powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://coporton.com/ias | iex"
 goto MENU
+
 
 :PYTHON
 echo ==========================================
