@@ -42,7 +42,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "irm 'https://raw.githubu
 
 1.  Download the `tools-installer.bat` script from the [GitHub repository](https://github.com/afnan-nex/tools-installer).
 2.  Right-click the script and select **Run as Administrator**.
-3.  Use the interactive menu to select options by entering numbers (1-15).
+3.  Use the interactive menu to select options by entering numbers (1-27).
 4.  Follow on-screen prompts to install tools or run scripts.
 5.  For CLI tools (n8n, Gemini CLI, Qwen CLI), run their respective commands in the command prompt after installation.
 
