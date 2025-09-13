@@ -18,37 +18,37 @@ echo                       / _ \ ^| ^|_  ^|  \^| ^| / _ \ ^|  \^| ^|
 echo                      / ___ \^|  _^| ^| ^|\  ^|/ ___ \^| ^|\  ^|
 echo                     /_/   \_\_^|   ^|_^| \_/_/   \_\_^| \_^|
 echo   ^|==================================================================^|
-echo   ^|             Follow me on insta and github @afnan-nex             ^|
+echo   ^|                   Press 1 to know about AFNAN                    ^|
 echo   ^|==================================================================^|
 echo    _______________________________    _______________________________
 echo   ^|        PowerShell Tweaks      ^|  ^|    ^>^>^>^>^>^> Essential ^<^<^<^<^<^<    ^|
 echo   ^|-------------------------------^|  ^|-------------------------------^|
-echo   ^|1. See Policy                  ^|  ^|3. Chocolatey                  ^|
-echo   ^|2. Unrestrict Policy           ^|  ^|4. Node.js LTS                 ^|
+echo   ^|2. See Policy                  ^|  ^|4. Chocolatey                  ^|
+echo   ^|3. Unrestrict Policy           ^|  ^|5. Node.js LTS                 ^|
 echo   ^|_______________________________^|  ^|_______________________________^|
 echo    ___________________________    _______________________________
 echo   ^|        Run Scripts        ^|  ^|       Recommended Tools       ^|
 echo   ^|---------------------------^|  ^|-------------------------------^|
-echo   ^|5. Chris Titus Tool        ^|  ^|8. Git         10. Python      ^|
-echo   ^|6. Mass Grave              ^|  ^|9. Dotnet      11. ffmpeg      ^|
-echo   ^|7. Coporton                ^|  ^|12. 7z         13. WinDirStat  ^|
+echo   ^|6. Chris Titus Tool        ^|  ^|9. Git         10. Python      ^|
+echo   ^|7. Mass Grave              ^|  ^|11. Dotnet      12. ffmpeg      ^|
+echo   ^|8. Coporton                ^|  ^|13. 7z         14. WinDirStat  ^|
 echo   ^|___________________________^|  ^|_______________________________^|
 echo    _______________    _______________________    ____________________
 echo   ^|   Automation  ^|  ^|        AI in PC       ^|  ^|    Context Menu    ^|
 echo   ^|---------------^|  ^|-----------------------^|  ^|--------------------^|
-echo   ^|14. n8n        ^|  ^|15. Gemini    16. Qwen ^|  ^|17. New    18. Old  ^|
+echo   ^|15. n8n        ^|  ^|16. Gemini    17. Qwen ^|  ^|18. New    19. Old  ^|
 echo   ^|_______________^|  ^|_______________________^|  ^|____________________^|
 echo    __________________________________________    ____________________
 echo   ^|            Others                        ^|  ^|       Actions      ^|
 echo   ^|------------------------------------------^|  ^|--------------------^|
-echo   ^|19. Winget ^(200 mb^)                       ^|  ^|24. CMD Clr to 0a   ^|
-echo   ^|20. Office365 offline                     ^|  ^|25. Run All         ^|
-echo   ^|21. Everything ^(Search Tool^)              ^|  ^|26. Run Selected    ^|
-echo   ^|22. Chrome      23. Zen                   ^|  ^|27. Exit            ^|
+echo   ^|20. Winget ^(200 mb^)                       ^|  ^|25. CMD Clr to 0a   ^|
+echo   ^|21. Office365 offline                     ^|  ^|26. Run All         ^|
+echo   ^|22. Everything ^(Search Tool^)              ^|  ^|27. Run Selected    ^|
+echo   ^|23. Chrome      24. Zen                   ^|  ^|28. Exit            ^|
 echo   ^|__________________________________________^|  ^|____________________^|
 echo.
 echo     ================================
-set /p choice=Enter your choice (1-27, multiple like 2,4,9): 
+set /p choice=Enter your choice (1-28, multiple like 2,4,9): 
 
 :: If multiple numbers entered → Run Selected
 echo %choice% | findstr "," >nul
@@ -57,33 +57,34 @@ if %errorlevel%==0 (
     goto RUNSELECTED
 )
 
-if "%choice%"=="1" call :SEEPOLICY
-if "%choice%"=="2" call :UNRESTRICT
-if "%choice%"=="3" call :CHOCO
-if "%choice%"=="4" call :NODELTS
-if "%choice%"=="5" call :TITUS
-if "%choice%"=="6" call :MASSGRAVE
-if "%choice%"=="7" call :COPORTON
-if "%choice%"=="8" call :GIT
-if "%choice%"=="9" call :DOTNET
+if "%choice%"=="1" call :OPENPORTFOLIO
+if "%choice%"=="2" call :SEEPOLICY
+if "%choice%"=="3" call :UNRESTRICT
+if "%choice%"=="4" call :CHOCO
+if "%choice%"=="5" call :NODELTS
+if "%choice%"=="6" call :TITUS
+if "%choice%"=="7" call :MASSGRAVE
+if "%choice%"=="8" call :COPORTON
+if "%choice%"=="9" call :GIT
 if "%choice%"=="10" call :PYTHON
-if "%choice%"=="11" call :FFMPEG
-if "%choice%"=="12" call :SEVENZIP
-if "%choice%"=="13" call :WINDIRSTAT
-if "%choice%"=="14" call :N8N
-if "%choice%"=="15" call :GEMINI
-if "%choice%"=="16" call :QWEN
-if "%choice%"=="17" call :WIN11MENU
-if "%choice%"=="18" call :WIN10MENU
-if "%choice%"=="19" call :WINGET
-if "%choice%"=="20" call :OFFICE365
-if "%choice%"=="21" call :EVERYTHING
-if "%choice%"=="22" call :CHROME
-if "%choice%"=="23" call :ZEN
-if "%choice%"=="24" call :CMD0A
-if "%choice%"=="25" goto RUNALL
-if "%choice%"=="26" goto RUNSELECTED
-if "%choice%"=="27" exit
+if "%choice%"=="11" call :DOTNET
+if "%choice%"=="12" call :FFMPEG
+if "%choice%"=="13" call :SEVENZIP
+if "%choice%"=="14" call :WINDIRSTAT
+if "%choice%"=="15" call :N8N
+if "%choice%"=="16" call :GEMINI
+if "%choice%"=="17" call :QWEN
+if "%choice%"=="18" call :WIN11MENU
+if "%choice%"=="19" call :WIN10MENU
+if "%choice%"=="20" call :WINGET
+if "%choice%"=="21" call :OFFICE365
+if "%choice%"=="22" call :EVERYTHING
+if "%choice%"=="23" call :CHROME
+if "%choice%"=="24" call :ZEN
+if "%choice%"=="25" call :CMD0A
+if "%choice%"=="26" goto RUNALL
+if "%choice%"=="27" goto RUNSELECTED
+if "%choice%"=="28" exit
 goto MENU
 
 :: ==============================
@@ -109,30 +110,31 @@ pause
 goto MENU
 
 :RUNCHOICE
-if "%~1"=="1" call :SEEPOLICY
-if "%~1"=="2" call :UNRESTRICT
-if "%~1"=="3" call :CHOCO
-if "%~1"=="4" call :NODELTS
-if "%~1"=="5" call :TITUS
-if "%~1"=="6" call :MASSGRAVE
-if "%~1"=="7" call :COPORTON
-if "%~1"=="8" call :GIT
-if "%~1"=="9" call :DOTNET
+if "%~1"=="1" call :OPENPORTFOLIO
+if "%~1"=="2" call :SEEPOLICY
+if "%~1"=="3" call :UNRESTRICT
+if "%~1"=="4" call :CHOCO
+if "%~1"=="5" call :NODELTS
+if "%~1"=="6" call :TITUS
+if "%~1"=="7" call :MASSGRAVE
+if "%~1"=="8" call :COPORTON
+if "%~1"=="9" call :GIT
 if "%~1"=="10" call :PYTHON
-if "%~1"=="11" call :FFMPEG
-if "%~1"=="12" call :SEVENZIP
-if "%~1"=="13" call :WINDIRSTAT
-if "%~1"=="14" call :N8N
-if "%~1"=="15" call :GEMINI
-if "%~1"=="16" call :QWEN
-if "%~1"=="17" call :WIN11MENU
-if "%~1"=="18" call :WIN10MENU
-if "%~1"=="19" call :WINGET
-if "%~1"=="20" call :OFFICE365
-if "%~1"=="21" call :EVERYTHING
-if "%~1"=="22" call :CHROME
-if "%~1"=="23" call :ZEN
-if "%~1"=="24" call :CMD0A
+if "%~1"=="11" call :DOTNET
+if "%~1"=="12" call :FFMPEG
+if "%~1"=="13" call :SEVENZIP
+if "%~1"=="14" call :WINDIRSTAT
+if "%~1"=="15" call :N8N
+if "%~1"=="16" call :GEMINI
+if "%~1"=="17" call :QWEN
+if "%~1"=="18" call :WIN11MENU
+if "%~1"=="19" call :WIN10MENU
+if "%~1"=="20" call :WINGET
+if "%~1"=="21" call :OFFICE365
+if "%~1"=="22" call :EVERYTHING
+if "%~1"=="23" call :CHROME
+if "%~1"=="24" call :ZEN
+if "%~1"=="25" call :CMD0A
 exit /b
 
 :RUNALL
@@ -155,8 +157,16 @@ pause
 goto MENU
 
 :: ==============================
-:: Your installer functions below
+:: Start of all Commands
 :: ==============================
+
+:OPENPORTFOLIO
+echo ==========================================
+echo Opening Your Browser with Portfolio
+echo ==========================================
+start cmd /k "start https://afnanportfolio1.netlify.app/"
+goto MENU
+
 :SEEPOLICY
 echo ==========================================
 echo Checking PowerShell Execution Policy
