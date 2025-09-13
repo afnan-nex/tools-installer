@@ -33,22 +33,22 @@ echo   ^|5. Chris Titus Tool        ^|  ^|8. Git         10. Python      ^|
 echo   ^|6. Mass Grave              ^|  ^|9. Dotnet      11. ffmpeg      ^|
 echo   ^|7. Coporton                ^|  ^|12. 7z         13. WinDirStat  ^|
 echo   ^|___________________________^|  ^|_______________________________^|
-echo    _______________    _______________________
-echo   ^|   Automation  ^|  ^|        AI in PC       ^|
-echo   ^|---------------^|  ^|-----------------------^|
-echo   ^|14. n8n        ^|  ^|15. Gemini    16. Qwen ^|
-echo   ^|_______________^|  ^|_______________________^|
+echo    _______________    _______________________    ____________________
+echo   ^|   Automation  ^|  ^|        AI in PC       ^|  ^|    Context Menu    ^|
+echo   ^|---------------^|  ^|-----------------------^|  ^|--------------------^|
+echo   ^|14. n8n        ^|  ^|15. Gemini    16. Qwen ^|  ^|17. New    18. Old  ^|
+echo   ^|_______________^|  ^|_______________________^|  ^|____________________^|
 echo    __________________________________________    ____________________
 echo   ^|            Others                        ^|  ^|       Actions      ^|
 echo   ^|------------------------------------------^|  ^|--------------------^|
-echo   ^|17. Winget ^(200 mb^)                       ^|  ^|22. CMD Clr to 0a   ^|
-echo   ^|18. Office365 offline                     ^|  ^|23. Run All         ^|
-echo   ^|19. Everything ^(Search Tool^)              ^|  ^|24. Run Selected    ^|
-echo   ^|20. Chrome      21. Zen                   ^|  ^|25. Exit            ^|
+echo   ^|19. Winget ^(200 mb^)                       ^|  ^|24. CMD Clr to 0a   ^|
+echo   ^|20. Office365 offline                     ^|  ^|25. Run All         ^|
+echo   ^|21. Everything ^(Search Tool^)              ^|  ^|26. Run Selected    ^|
+echo   ^|22. Chrome      23. Zen                   ^|  ^|27. Exit            ^|
 echo   ^|__________________________________________^|  ^|____________________^|
 echo.
 echo     ================================
-set /p choice=Enter your choice (1-25, multiple like 2,4,9): 
+set /p choice=Enter your choice (1-27, multiple like 2,4,9): 
 
 :: If multiple numbers entered → Run Selected
 echo %choice% | findstr "," >nul
@@ -73,15 +73,17 @@ if "%choice%"=="13" call :WINDIRSTAT
 if "%choice%"=="14" call :N8N
 if "%choice%"=="15" call :GEMINI
 if "%choice%"=="16" call :QWEN
-if "%choice%"=="17" call :WINGET
-if "%choice%"=="18" call :OFFICE365
-if "%choice%"=="19" call :EVERYTHING
-if "%choice%"=="20" call :CHROME
-if "%choice%"=="21" call :ZEN
-if "%choice%"=="22" call :CMD0A
-if "%choice%"=="23" goto RUNALL
-if "%choice%"=="24" goto RUNSELECTED
-if "%choice%"=="25" exit
+if "%choice%"=="17" call :WIN11MENU
+if "%choice%"=="18" call :WIN10MENU
+if "%choice%"=="19" call :WINGET
+if "%choice%"=="20" call :OFFICE365
+if "%choice%"=="21" call :EVERYTHING
+if "%choice%"=="22" call :CHROME
+if "%choice%"=="23" call :ZEN
+if "%choice%"=="24" call :CMD0A
+if "%choice%"=="25" goto RUNALL
+if "%choice%"=="26" goto RUNSELECTED
+if "%choice%"=="27" exit
 goto MENU
 
 :: ==============================
@@ -123,12 +125,14 @@ if "%~1"=="13" call :WINDIRSTAT
 if "%~1"=="14" call :N8N
 if "%~1"=="15" call :GEMINI
 if "%~1"=="16" call :QWEN
-if "%~1"=="17" call :WINGET
-if "%~1"=="18" call :OFFICE365
-if "%~1"=="19" call :EVERYTHING
-if "%~1"=="20" call :CHROME
-if "%~1"=="21" call :ZEN
-if "%~1"=="22" call :CMD0A
+if "%~1"=="17" call :WIN11MENU
+if "%~1"=="18" call :WIN10MENU
+if "%~1"=="19" call :WINGET
+if "%~1"=="20" call :OFFICE365
+if "%~1"=="21" call :EVERYTHING
+if "%~1"=="22" call :CHROME
+if "%~1"=="23" call :ZEN
+if "%~1"=="24" call :CMD0A
 exit /b
 
 :RUNALL
@@ -430,6 +434,22 @@ echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
+
+:WIN11MENU
+echo ==========================================
+echo Switching to Windows 11 New Context Menu
+echo ==========================================
+start cmd /k ^"reg delete HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2} /f ^&^& taskkill /f /im explorer.exe ^& start explorer.exe^"
+goto MENU
+
+
+:WIN10MENU
+echo ==========================================
+echo Switching to Windows 10 Classic Context Menu
+echo ==========================================
+start cmd /k ^"reg add HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32 /f /ve ^&^& taskkill /f /im explorer.exe ^& start explorer.exe^"
+goto MENU
+
 
 :WINGET
 echo ==========================================
