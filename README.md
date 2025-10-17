@@ -63,3 +63,7 @@ Created by Afnan Siddiqui. Follow me on Instagram: [@afnan-nex](https://instagra
 ## **Disclaimer**
 
 This script downloads and executes third-party tools and scripts. Use at your own risk. Ensure you understand the purpose of each tool/script before running. The author is not responsible for any damages or issues caused by the use of this script.
+
+Once you get addicted to winning, no chance you would lose
+Work 24/7 and when you start see yourself going up, you would see that the before was boring
+The first time win is difficult once you won you would see that it is not that difficult i have done it before 
