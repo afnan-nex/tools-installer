@@ -32,19 +32,20 @@ echo   ^|---------------------------^|  ^|-------------------------------^|
 echo   ^|6. Chris Titus Tool        ^|  ^|9. Git         10. Python      ^|
 echo   ^|7. Mass Grave              ^|  ^|11. Dotnet     12. ffmpeg      ^|
 echo   ^|8. Coporton                ^|  ^|13. 7z         14. WinDirStat  ^|
+echo   ^|                           ^|  ^|15. yt-dlp                     ^|
 echo   ^|___________________________^|  ^|_______________________________^|
 echo    _______________    _______________________    ____________________
 echo   ^|   Automation  ^|  ^|        AI in PC       ^|  ^|    Context Menu    ^|
 echo   ^|---------------^|  ^|-----------------------^|  ^|--------------------^|
-echo   ^|15. n8n        ^|  ^|16. Gemini    17. Qwen ^|  ^|18. New    19. Old  ^|
+echo   ^|16. n8n        ^|  ^|17. Gemini    18. Qwen ^|  ^|19. New    20. Old  ^|
 echo   ^|_______________^|  ^|_______________________^|  ^|____________________^|
 echo    __________________________________________    ____________________
 echo   ^|            Others                        ^|  ^|       Actions      ^|
 echo   ^|------------------------------------------^|  ^|--------------------^|
-echo   ^|20. Winget ^(200 mb^)                       ^|  ^|25. CMD Clr to 0a   ^|
-echo   ^|21. Office365 offline                     ^|  ^|26. Run All         ^|
-echo   ^|22. Everything ^(Search Tool^)              ^|  ^|27. Run Selected    ^|
-echo   ^|23. Chrome      24. Zen                   ^|  ^|28. Exit            ^|
+echo   ^|21. Winget ^(200 mb^)                       ^|  ^|26. CMD Clr to 0a   ^|
+echo   ^|22. Office365 offline                     ^|  ^|27. Run All         ^|
+echo   ^|23. Everything ^(Search Tool^)              ^|  ^|28. Run Selected    ^|
+echo   ^|24. Chrome      25. Zen                   ^|  ^|29. Exit            ^|
 echo   ^|__________________________________________^|  ^|____________________^|
 echo.
 echo     ================================
@@ -71,20 +72,21 @@ if "%choice%"=="11" call :DOTNET
 if "%choice%"=="12" call :FFMPEG
 if "%choice%"=="13" call :SEVENZIP
 if "%choice%"=="14" call :WINDIRSTAT
-if "%choice%"=="15" call :N8N
-if "%choice%"=="16" call :GEMINI
-if "%choice%"=="17" call :QWEN
-if "%choice%"=="18" call :WIN11MENU
-if "%choice%"=="19" call :WIN10MENU
-if "%choice%"=="20" call :WINGET
-if "%choice%"=="21" call :OFFICE365
-if "%choice%"=="22" call :EVERYTHING
-if "%choice%"=="23" call :CHROME
-if "%choice%"=="24" call :ZEN
-if "%choice%"=="25" call :CMD0A
-if "%choice%"=="26" goto RUNALL
-if "%choice%"=="27" goto RUNSELECTED
-if "%choice%"=="28" exit
+if "%choice%"=="15" call :YTDLP
+if "%choice%"=="16" call :N8N
+if "%choice%"=="17" call :GEMINI
+if "%choice%"=="18" call :QWEN
+if "%choice%"=="19" call :WIN11MENU
+if "%choice%"=="20" call :WIN10MENU
+if "%choice%"=="21" call :WINGET
+if "%choice%"=="22" call :OFFICE365
+if "%choice%"=="23" call :EVERYTHING
+if "%choice%"=="24" call :CHROME
+if "%choice%"=="25" call :ZEN
+if "%choice%"=="26" call :CMD0A
+if "%choice%"=="27" goto RUNALL
+if "%choice%"=="28" goto RUNSELECTED
+if "%choice%"=="29" exit
 goto MENU
 
 :: ==============================
@@ -124,17 +126,18 @@ if "%~1"=="11" call :DOTNET
 if "%~1"=="12" call :FFMPEG
 if "%~1"=="13" call :SEVENZIP
 if "%~1"=="14" call :WINDIRSTAT
-if "%~1"=="15" call :N8N
-if "%~1"=="16" call :GEMINI
-if "%~1"=="17" call :QWEN
-if "%~1"=="18" call :WIN11MENU
-if "%~1"=="19" call :WIN10MENU
-if "%~1"=="20" call :WINGET
-if "%~1"=="21" call :OFFICE365
-if "%~1"=="22" call :EVERYTHING
-if "%~1"=="23" call :CHROME
-if "%~1"=="24" call :ZEN
-if "%~1"=="25" call :CMD0A
+if "%~1"=="15" call :YTDLP
+if "%~1"=="16" call :N8N
+if "%~1"=="17" call :GEMINI
+if "%~1"=="18" call :QWEN
+if "%~1"=="19" call :WIN11MENU
+if "%~1"=="20" call :WIN10MENU
+if "%~1"=="21" call :WINGET
+if "%~1"=="22" call :OFFICE365
+if "%~1"=="23" call :EVERYTHING
+if "%~1"=="24" call :CHROME
+if "%~1"=="25" call :ZEN
+if "%~1"=="26" call :CMD0A
 exit /b
 
 :RUNALL
@@ -147,6 +150,7 @@ call :NODELTS
 call :GIT
 call :PYTHON
 call :FFMPEG
+call :YTDLP
 call :SEVENZIP
 call :EVERYTHING
 call :CHROME
@@ -391,6 +395,22 @@ if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
 
+:YTDLP
+echo ==========================================
+echo Installing yt-dlp
+echo ==========================================
+where choco >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Chocolatey is required. Installing Chocolatey first...
+    call :CHOCO
+)
+echo Installing yt-dlp...
+choco install yt-dlp -y
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
+
 :N8N
 echo ==========================================
 echo Installing n8n Workflow Automation
@@ -483,8 +503,7 @@ echo ==========================================
 echo Opening Microsoft Office 365 Download
 echo ==========================================
 echo Opening official Microsoft Office page in browser...
-start https://www.office.com/
-echo Note: For offline installer, visit: https://support.microsoft.com/en-us/office/
+start https://officecdn.microsoft.com/db/492350f6-3a01-4f97-b9c0-c7c6ddf67d60/media/en-us/O365ProPlusRetail.img
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
