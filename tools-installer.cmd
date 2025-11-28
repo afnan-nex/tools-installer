@@ -32,24 +32,24 @@ echo   ^|---------------------------^|  ^|-------------------------------^|
 echo   ^|6. Chris Titus Tool        ^|  ^|9. Git         10. Python      ^|
 echo   ^|7. Mass Grave              ^|  ^|11. Dotnet     12. ffmpeg      ^|
 echo   ^|8. Coporton                ^|  ^|13. 7z         14. WinDirStat  ^|
-echo   ^|                           ^|  ^|15. yt-dlp                     ^|
+echo   ^|                           ^|  ^|15. yt-dlp     16.ngrok        ^|
 echo   ^|___________________________^|  ^|_______________________________^|
 echo    _______________    _______________________    ____________________
 echo   ^|   Automation  ^|  ^|        AI in PC       ^|  ^|    Context Menu    ^|
 echo   ^|---------------^|  ^|-----------------------^|  ^|--------------------^|
-echo   ^|16. n8n        ^|  ^|17. Gemini    18. Qwen ^|  ^|19. New    20. Old  ^|
+echo   ^|17. n8n        ^|  ^|18. Gemini    19. Qwen ^|  ^|20. New    21. Old  ^|
 echo   ^|_______________^|  ^|_______________________^|  ^|____________________^|
 echo    __________________________________________    ____________________
 echo   ^|            Others                        ^|  ^|       Actions      ^|
 echo   ^|------------------------------------------^|  ^|--------------------^|
-echo   ^|21. Winget ^(200 mb^)                       ^|  ^|26. CMD Clr to 0a   ^|
-echo   ^|22. Office365 offline                     ^|  ^|27. Run All         ^|
-echo   ^|23. Everything ^(Search Tool^)              ^|  ^|28. Run Selected    ^|
-echo   ^|24. Chrome      25. Zen                   ^|  ^|29. Exit            ^|
+echo   ^|22. Winget ^(200 mb^)                       ^|  ^|27. CMD Clr to 0a   ^|
+echo   ^|23. Office365 offline                     ^|  ^|28. Run All         ^|
+echo   ^|24. Everything ^(Search Tool^)              ^|  ^|29. Run Selected    ^|
+echo   ^|25. Chrome      26. Zen                   ^|  ^|30. Exit            ^|
 echo   ^|__________________________________________^|  ^|____________________^|
 echo.
 echo     ================================
-set /p choice=Enter your choice (1-28, multiple like 2,4,9): 
+set /p choice=Enter your choice (1-30, multiple like 2,4,9): 
 
 :: If multiple numbers entered → Run Selected
 echo %choice% | findstr "," >nul
@@ -73,20 +73,21 @@ if "%choice%"=="12" call :FFMPEG
 if "%choice%"=="13" call :SEVENZIP
 if "%choice%"=="14" call :WINDIRSTAT
 if "%choice%"=="15" call :YTDLP
-if "%choice%"=="16" call :N8N
-if "%choice%"=="17" call :GEMINI
-if "%choice%"=="18" call :QWEN
-if "%choice%"=="19" call :WIN11MENU
-if "%choice%"=="20" call :WIN10MENU
-if "%choice%"=="21" call :WINGET
-if "%choice%"=="22" call :OFFICE365
-if "%choice%"=="23" call :EVERYTHING
-if "%choice%"=="24" call :CHROME
-if "%choice%"=="25" call :ZEN
-if "%choice%"=="26" call :CMD0A
-if "%choice%"=="27" goto RUNALL
-if "%choice%"=="28" goto RUNSELECTED
-if "%choice%"=="29" exit
+if "%choice%"=="16" call :NGROK
+if "%choice%"=="17" call :N8N
+if "%choice%"=="18" call :GEMINI
+if "%choice%"=="19" call :QWEN
+if "%choice%"=="20" call :WIN11MENU
+if "%choice%"=="21" call :WIN10MENU
+if "%choice%"=="22" call :WINGET
+if "%choice%"=="23" call :OFFICE365
+if "%choice%"=="24" call :EVERYTHING
+if "%choice%"=="25" call :CHROME
+if "%choice%"=="26" call :ZEN
+if "%choice%"=="27" call :CMD0A
+if "%choice%"=="28" goto RUNALL
+if "%choice%"=="29" goto RUNSELECTED
+if "%choice%"=="30" exit
 goto MENU
 
 :: ==============================
@@ -127,17 +128,18 @@ if "%~1"=="12" call :FFMPEG
 if "%~1"=="13" call :SEVENZIP
 if "%~1"=="14" call :WINDIRSTAT
 if "%~1"=="15" call :YTDLP
-if "%~1"=="16" call :N8N
-if "%~1"=="17" call :GEMINI
-if "%~1"=="18" call :QWEN
-if "%~1"=="19" call :WIN11MENU
-if "%~1"=="20" call :WIN10MENU
-if "%~1"=="21" call :WINGET
-if "%~1"=="22" call :OFFICE365
-if "%~1"=="23" call :EVERYTHING
-if "%~1"=="24" call :CHROME
-if "%~1"=="25" call :ZEN
-if "%~1"=="26" call :CMD0A
+if "%~1"=="16" call :NGROK
+if "%~1"=="17" call :N8N
+if "%~1"=="18" call :GEMINI
+if "%~1"=="19" call :QWEN
+if "%~1"=="20" call :WIN11MENU
+if "%~1"=="21" call :WIN10MENU
+if "%~1"=="22" call :WINGET
+if "%~1"=="23" call :OFFICE365
+if "%~1"=="24" call :EVERYTHING
+if "%~1"=="25" call :CHROME
+if "%~1"=="26" call :ZEN
+if "%~1"=="27" call :CMD0A
 exit /b
 
 :RUNALL
@@ -406,6 +408,22 @@ if %errorlevel% neq 0 (
 )
 echo Installing yt-dlp...
 choco install yt-dlp -y
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
+
+:NGROK
+echo ==========================================
+echo Installing ngrok
+echo ==========================================
+where choco >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Chocolatey is required. Installing Chocolatey first...
+    call :CHOCO
+)
+echo Installing ngrok...
+choco install ngrok -y
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
