@@ -203,14 +203,16 @@ where choco >nul 2>&1
 if %errorlevel%==0 (
     echo Chocolatey is already installed.
     choco --version
+    echo.
+    pause
+    goto MENU
 ) else (
     echo Opening new CMD window to install Chocolatey...
     start cmd /k "echo Installing Chocolatey... && powershell -NoProfile -ExecutionPolicy Bypass -Command \"Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))\" && echo Chocolatey installation completed. && echo Please close this window and refresh environment variables if needed. && pause"
+    echo.
+    pause
+    goto MENU
 )
-echo.
-if "%multiChoice%"=="" pause
-if "%multiChoice%"=="" goto MENU
-exit /b
 
 :NODELTS
 echo ==========================================
