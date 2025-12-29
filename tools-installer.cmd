@@ -42,14 +42,14 @@ echo   ^|_______________^|  ^|_______________________^|  ^|____________________^
 echo    __________________________________________    ____________________
 echo   ^|            Others                        ^|  ^|       Actions      ^|
 echo   ^|------------------------------------------^|  ^|--------------------^|
-echo   ^|22. Winget ^(200 mb^)                       ^|  ^|27. CMD Clr to 0a   ^|
-echo   ^|23. Office365 offline                     ^|  ^|28. Run All         ^|
-echo   ^|24. Everything ^(Search Tool^)              ^|  ^|29. Run Selected    ^|
-echo   ^|25. Chrome      26. Zen                   ^|  ^|30. Exit            ^|
-echo   ^|__________________________________________^|  ^|____________________^|
+echo   ^|22. Winget ^(200 mb^)                       ^|  ^|27. cur             ^|
+echo   ^|23. Office365 offline                     ^|  ^|28. CMD Clr to 0a   ^|
+echo   ^|24. Everything ^(Search Tool^)              ^|  ^|29. Run All         ^|
+echo   ^|25. Chrome      26. Zen                   ^|  ^|30. Run Selected    ^|
+echo   ^|__________________________________________^|  ^|31. Exit            ^|
 echo.
 echo     ================================
-set /p choice=Enter your choice (1-30, multiple like 2,4,9): 
+set /p choice=Enter your choice (1-31, multiple like 2,4,9): 
 
 :: If multiple numbers entered → Run Selected
 echo %choice% | findstr "," >nul
@@ -84,10 +84,11 @@ if "%choice%"=="23" call :OFFICE365
 if "%choice%"=="24" call :EVERYTHING
 if "%choice%"=="25" call :CHROME
 if "%choice%"=="26" call :ZEN
-if "%choice%"=="27" call :CMD0A
-if "%choice%"=="28" goto RUNALL
-if "%choice%"=="29" goto RUNSELECTED
-if "%choice%"=="30" exit
+if "%choice%"=="27" call :CUR
+if "%choice%"=="28" call :CMD0A
+if "%choice%"=="29" goto RUNALL
+if "%choice%"=="30" goto RUNSELECTED
+if "%choice%"=="31" exit
 goto MENU
 
 :: ==============================
@@ -139,7 +140,8 @@ if "%~1"=="23" call :OFFICE365
 if "%~1"=="24" call :EVERYTHING
 if "%~1"=="25" call :CHROME
 if "%~1"=="26" call :ZEN
-if "%~1"=="27" call :CMD0A
+if "%~1"=="27" call :CUR
+if "%~1"=="28" call :CMD0A
 exit /b
 
 :RUNALL
@@ -583,6 +585,27 @@ choco install zen-browser -y
 if %errorlevel% neq 0 (
     echo Zen Browser package may not be available in Chocolatey.
     echo Please visit: https://zen-browser.app/ for manual installation.
+)
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
+
+:CUR
+echo ==========================================
+echo Cloning Elegant Repository from GitHub
+echo ==========================================
+where git >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Git is required. Installing Git first...
+    call :GIT
+)
+echo Cloning repository...
+git clone https://github.com/afnan-nex/Elegant
+if %errorlevel%==0 (
+    echo Repository cloned successfully to Elegant folder.
+) else (
+    echo Failed to clone repository. Please check your internet connection or Git installation.
 )
 echo.
 if "%multiChoice%"=="" pause
