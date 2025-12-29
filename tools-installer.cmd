@@ -42,11 +42,12 @@ echo   ^|_______________^|  ^|_______________________^|  ^|____________________^
 echo    __________________________________________    ____________________
 echo   ^|            Others                        ^|  ^|       Actions      ^|
 echo   ^|------------------------------------------^|  ^|--------------------^|
-echo   ^|22. Winget ^(200 mb^)                       ^|  ^|27. cur             ^|
-echo   ^|23. Office365 offline                     ^|  ^|28. CMD Clr to 0a   ^|
-echo   ^|24. Everything ^(Search Tool^)              ^|  ^|29. Run All         ^|
-echo   ^|25. Chrome      26. Zen                   ^|  ^|30. Run Selected    ^|
-echo   ^|__________________________________________^|  ^|31. Exit            ^|
+echo   ^|22. Winget ^(200 mb^)                     ^|  ^|29. Run All         ^|
+echo   ^|23. Office365 offline                     ^|  ^|30. Run Selected    ^|
+echo   ^|24. Everything ^(Search Tool^)            ^|  ^|31. Exit            ^|
+echo   ^|25. Chrome      26. Zen                   ^|  ^|                    ^|
+echo   ^|27. cur   28. CMD Clr to 0a               ^|  ^|                    ^|
+echo   ^|__________________________________________^|  ^|___________________ ^|
 echo.
 echo     ================================
 set /p choice=Enter your choice (1-31, multiple like 2,4,9): 
@@ -621,4 +622,5 @@ echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
+
 
