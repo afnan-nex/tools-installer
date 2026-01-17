@@ -6,6 +6,12 @@ A Windows batch script with an interactive menu to quickly install developer too
 ```
 powershell -NoProfile -ExecutionPolicy Bypass -Command "irm 'https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd?$(Get-Date -Format yyyyMMddHHmmss)' -OutFile tools-installer.cmd; Start-Process tools-installer.cmd"
 ```
+## **To Run Strictly in Powershell**
+```
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
+Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd?$(Get-Date -Format yyyyMMddHHmmss)" -OutFile "$env:TEMP\tools-installer.cmd";
+Start-Process "$env:TEMP\tools-installer.cmd" -Verb RunAs
+```
 
 ## **Features**
 
