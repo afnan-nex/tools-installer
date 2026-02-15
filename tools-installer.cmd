@@ -574,19 +574,30 @@ exit /b
 
 :ZEN
 echo ==========================================
-echo Installing Zen Browser
+echo Installing Zen Browser (Manual Method)
 echo ==========================================
-where choco >nul 2>&1
+
+:: Check for curl (Available in Win10+)
+where curl >nul 2>&1
 if %errorlevel% neq 0 (
-    echo Chocolatey is required. Installing Chocolatey first...
-    call :CHOCO
+    echo Curl is required but not found.
+    goto :ZEN_END
 )
-echo Installing Zen Browser...
-choco install zen-browser -y
-if %errorlevel% neq 0 (
-    echo Zen Browser package may not be available in Chocolatey.
-    echo Please visit: https://zen-browser.app/ for manual installation.
+
+echo Downloading Zen Browser installer...
+:: Note: This URL changes with versions. You may need to update this link.
+curl -L -o "%TEMP%\zen-installer.exe" "https://github.com/zen-browser/desktop/releases/latest/download/zen.installer.exe"
+
+if exist "%TEMP%\zen-installer.exe" (
+    echo Running installer...
+    start /wait "" "%TEMP%\zen-installer.exe"
+    del "%TEMP%\zen-installer.exe"
+) else (
+    echo Download failed. Please install manually.
+    start https://zen-browser.app/download
 )
+
+:ZEN_END
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
@@ -622,3 +633,4 @@ echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
+
