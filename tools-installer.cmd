@@ -530,6 +530,33 @@ if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
 
+:OFFICE
+echo ==========================================
+echo Installing Office 365 ProPlus
+echo ==========================================
+where curl >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Curl is required but not found. Please update Windows.
+    goto :OFFICE_END
+)
+
+echo Downloading Office 365 Setup...
+curl -L -o "%TEMP%\OfficeSetup.exe" "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA"
+
+if exist "%TEMP%\OfficeSetup.exe" (
+    echo Launching Office Installer...
+    echo NOTE: The installation will continue in the background.
+    start "" "%TEMP%\OfficeSetup.exe"
+) else (
+    echo Failed to download Office Setup.
+)
+
+:OFFICE_END
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
+
 :EVERYTHING
 echo ==========================================
 echo Installing Everything Search Engine
@@ -629,6 +656,90 @@ if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
 
+:RUSTDESK
+echo ==========================================
+echo Installing RustDesk
+echo ==========================================
+where curl >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Curl is required but not found.
+    goto :RUSTDESK_END
+)
+
+echo Downloading RustDesk (v1.4.5)...
+curl -L -o "%TEMP%\RustDesk_Setup.exe" "https://github.com/rustdesk/rustdesk/releases/download/1.4.5/rustdesk-1.4.5-x86_64.exe"
+
+if exist "%TEMP%\RustDesk_Setup.exe" (
+    echo Running installer...
+    start /wait "" "%TEMP%\RustDesk_Setup.exe"
+    echo Cleaning up...
+    del "%TEMP%\RustDesk_Setup.exe"
+) else (
+    echo Failed to download RustDesk.
+)
+
+:RUSTDESK_END
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
+
+:HIBIT
+echo ==========================================
+echo Installing HiBit Uninstaller
+echo ==========================================
+where curl >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Curl is required but not found.
+    goto :HIBIT_END
+)
+
+echo Downloading HiBit Uninstaller...
+curl -L -o "%TEMP%\HiBitSetup.exe" "https://www.hibitsoft.ir/HiBitUninstaller/HiBitUninstaller-setup-4.0.10.exe"
+
+if exist "%TEMP%\HiBitSetup.exe" (
+    echo Running installer...
+    start /wait "" "%TEMP%\HiBitSetup.exe"
+    echo Cleaning up...
+    del "%TEMP%\HiBitSetup.exe"
+) else (
+    echo Failed to download HiBit Uninstaller.
+)
+
+:HIBIT_END
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
+
+:SCRCPY
+echo ==========================================
+echo Installing Scrcpy GUI
+echo ==========================================
+where curl >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Curl is required but not found.
+    goto :SCRCPY_END
+)
+
+echo Downloading Scrcpy GUI (v1.4.18)...
+curl -L -o "%TEMP%\ScrcpyGUI_Setup.exe" "https://github.com/pizi-0/flutter-scrcpygui/releases/download/1.4.18/scrcpygui-1.4.18-win.exe"
+
+if exist "%TEMP%\ScrcpyGUI_Setup.exe" (
+    echo Running installer...
+    start /wait "" "%TEMP%\ScrcpyGUI_Setup.exe"
+    echo Cleaning up...
+    del "%TEMP%\ScrcpyGUI_Setup.exe"
+) else (
+    echo Failed to download Scrcpy GUI.
+)
+
+:SCRCPY_END
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
+
 :CUR
 echo ==========================================
 echo Cloning Elegant Repository from GitHub
@@ -659,5 +770,6 @@ echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
+
 
 
