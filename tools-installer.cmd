@@ -40,7 +40,7 @@ echo   ^|---------------^|  ^|-----------------------^|  ^|--------------------^
 echo   ^|17. n8n        ^|  ^|18. Gemini    19. Qwen ^|  ^|20. New    21. Old  ^|
 echo   ^|_______________^|  ^|_______________________^|  ^|____________________^|
 echo    __________________________________________    ____________________
-echo   ^|            Others                        ^|  ^|       Actions      ^|
+echo   ^|                  Others                  ^|  ^|       Actions      ^|
 echo   ^|------------------------------------------^|  ^|--------------------^|
 echo   ^|22. Winget        23. Office365           ^|  ^|36. Run All         ^|
 echo   ^|24. Everything    25. Chrome              ^|  ^|37. Run Selected    ^|
@@ -708,20 +708,23 @@ exit /b
 echo ==========================================
 echo Installing HiBit Uninstaller
 echo ==========================================
-where choco >nul 2>&1
+where curl >nul 2>&1
 if %errorlevel% neq 0 (
-echo Chocolatey is required. Installing Chocolatey first...
-call :CHOCO
+    echo Curl is required but not found.
+    goto :HIBIT_END
 )
-echo Installing HiBit Uninstaller...
-choco install hibit-uninstaller -y
-if %errorlevel% neq 0 (
-echo HiBit Uninstaller installation failed.
+
+echo Downloading HiBit Uninstaller...
+curl -L -o "%TEMP%\HiBitSetup.exe" "https://www.hibitsoft.ir/HiBitUninstaller/HiBitUninstaller-setup-4.0.10.exe"
+
+if exist "%TEMP%\HiBitSetup.exe" (
+    echo Running installer...
+    start /wait "" "%TEMP%\HiBitSetup.exe"
+    echo Cleaning up...
+    del "%TEMP%\HiBitSetup.exe"
+) else (
+    echo Failed to download HiBit Uninstaller.
 )
-echo.
-if "%multiChoice%"=="" pause
-if "%multiChoice%"=="" goto MENU
-exit /b
 
 :HIBIT_END
 echo.
