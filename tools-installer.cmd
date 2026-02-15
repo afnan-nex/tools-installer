@@ -548,15 +548,30 @@ exit /b
 
 :OFFICE365
 echo ==========================================
-echo Opening Microsoft Office 365 Download
+echo Installing Office 365 ProPlus
 echo ==========================================
-echo Opening official Microsoft Office page in browser...
-start https://officecdn.microsoft.com/db/492350f6-3a01-4f97-b9c0-c7c6ddf67d60/media/en-us/O365ProPlusRetail.img
+where curl >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Curl is required but not found. Please update Windows.
+    goto :OFFICE_END
+)
+
+echo Downloading Office 365 Setup...
+curl -L -o "%TEMP%\OfficeSetup.exe" "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA"
+
+if exist "%TEMP%\OfficeSetup.exe" (
+    echo Launching Office Installer...
+    echo NOTE: The installation will continue in the background.
+    start "" "%TEMP%\OfficeSetup.exe"
+) else (
+    echo Failed to download Office Setup.
+)
+
+:OFFICE_END
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
-
 :EVERYTHING
 echo ==========================================
 echo Installing Everything Search Engine
@@ -816,3 +831,4 @@ echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
+
