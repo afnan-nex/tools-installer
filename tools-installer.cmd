@@ -572,6 +572,32 @@ if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
 
+:OBS
+echo ==========================================
+echo Installing OBS Studio
+echo ==========================================
+:: Check if Chocolatey is installed
+where choco >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Chocolatey is required. Installing Chocolatey first...
+    call :CHOCO
+)
+
+:: Check if OBS Studio is already installed
+:: (Checking for 'obs64' as it is the standard executable name)
+where obs64 >nul 2>&1
+if %errorlevel%==0 (
+    echo OBS Studio is already installed.
+) else (
+    echo Installing OBS Studio...
+    choco install obs-studio -y
+)
+
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
+
 :ZEN
 echo ==========================================
 echo Installing Zen Browser (Manual Method)
@@ -633,4 +659,5 @@ echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
+
 
