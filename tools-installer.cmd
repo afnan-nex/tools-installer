@@ -42,17 +42,19 @@ echo   ^|_______________^|  ^|_______________________^|  ^|____________________^
 echo    __________________________________________    ____________________
 echo   ^|            Others                        ^|  ^|       Actions      ^|
 echo   ^|------------------------------------------^|  ^|--------------------^|
-echo   ^|22. Winget ^(200 mb^)                       ^|  ^|29. Run All         ^|
-echo   ^|23. Office365 offline                     ^|  ^|30. Run Selected    ^|
-echo   ^|24. Everything ^(Search Tool^)              ^|  ^|31. Exit            ^|
-echo   ^|25. Chrome      26. Zen                   ^|  ^|                    ^|
-echo   ^|27. cur   28. CMD Clr to 0a               ^|  ^|                    ^|
+echo   ^|22. Winget        23. Office365           ^|  ^|36. Run All         ^|
+echo   ^|24. Everything    25. Chrome              ^|  ^|37. Run Selected    ^|
+echo   ^|26. Zen           27. cursor              ^|  ^|38. Exit            ^|
+echo   ^|28. CMD Clr 0a    29. OBS Studio          ^|  ^|                    ^|
+echo   ^|30. RustDesk      31. HiBit Uninstaller   ^|  ^|                    ^|
+echo   ^|32. Scrcpy GUI    33. LocalSend           ^|  ^|                    ^|
+echo   ^|34. Notepad++     35. ShareX              ^|  ^|                    ^|
 echo   ^|__________________________________________^|  ^|____________________^|
 echo.
 echo     ================================
-set /p choice=Enter your choice (1-31, multiple like 2,4,9): 
+set /p choice=Enter your choice (1-38, multiple like 2,4,9): 
 
-:: If multiple numbers entered → Run Selected
+:: If multiple numbers entered -> Run Selected
 echo %choice% | findstr "," >nul
 if %errorlevel%==0 (
     set "multiChoice=%choice%"
@@ -87,9 +89,16 @@ if "%choice%"=="25" call :CHROME
 if "%choice%"=="26" call :ZEN
 if "%choice%"=="27" call :CUR
 if "%choice%"=="28" call :CMD0A
-if "%choice%"=="29" goto RUNALL
-if "%choice%"=="30" goto RUNSELECTED
-if "%choice%"=="31" exit
+if "%choice%"=="29" call :OBS
+if "%choice%"=="30" call :RUSTDESK
+if "%choice%"=="31" call :HIBIT
+if "%choice%"=="32" call :SCRCPY
+if "%choice%"=="33" call :LOCALSEND
+if "%choice%"=="34" call :NOTEPADPP
+if "%choice%"=="35" call :SHAREX
+if "%choice%"=="36" goto RUNALL
+if "%choice%"=="37" goto RUNSELECTED
+if "%choice%"=="38" exit
 goto MENU
 
 :: ==============================
@@ -143,6 +152,13 @@ if "%~1"=="25" call :CHROME
 if "%~1"=="26" call :ZEN
 if "%~1"=="27" call :CUR
 if "%~1"=="28" call :CMD0A
+if "%~1"=="29" call :OBS
+if "%~1"=="30" call :RUSTDESK
+if "%~1"=="31" call :HIBIT
+if "%~1"=="32" call :SCRCPY
+if "%~1"=="33" call :LOCALSEND
+if "%~1"=="34" call :NOTEPADPP
+if "%~1"=="35" call :SHAREX
 exit /b
 
 :RUNALL
@@ -159,6 +175,8 @@ call :YTDLP
 call :SEVENZIP
 call :EVERYTHING
 call :CHROME
+call :OBS
+call :NOTEPADPP
 call :CMD0A
 echo.
 echo All tools installation completed!
@@ -173,8 +191,10 @@ goto MENU
 echo ==========================================
 echo Opening Your Browser with Portfolio
 echo ==========================================
-start cmd /k "start https://afnanportfolio1.netlify.app/"
-goto MENU
+start https://afnanportfolio1.netlify.app/
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
 
 :SEEPOLICY
 echo ==========================================
@@ -182,8 +202,9 @@ echo Checking PowerShell Execution Policy
 echo ==========================================
 powershell -NoProfile -ExecutionPolicy Bypass -Command "Write-Host 'Current Execution Policy:'; Get-ExecutionPolicy -List"
 echo.
-pause
-goto MENU
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
 
 :UNRESTRICT
 echo ==========================================
@@ -192,8 +213,9 @@ echo ==========================================
 powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Unrestricted -Force"
 echo Policy updated successfully.
 echo.
-pause
-goto MENU
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
 
 :CHOCO
 echo ==========================================
@@ -245,8 +267,9 @@ echo Running Chris Titus Tech Windows Utility
 echo ==========================================
 powershell -NoProfile -ExecutionPolicy Bypass -Command "irm 'https://christitus.com/win' | iex"
 echo.
-pause
-goto MENU
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
 
 :MASSGRAVE
 echo ==========================================
@@ -254,16 +277,18 @@ echo Running Microsoft Activation Scripts
 echo ==========================================
 powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://get.activated.win | iex"
 echo.
-pause
-goto MENU
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
 
 :COPORTON
 echo ==========================================
 echo Running Coporton Tool
 echo ==========================================
 start "" cmd /k powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://coporton.com/ias | iex"
-goto MENU
-
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
 
 :PYTHON
 echo ==========================================
@@ -452,7 +477,7 @@ exit /b
 
 :GEMINI
 echo ==========================================
-echo Installing Google AI CLI ^(Official CLI^)
+echo Installing Google AI CLI (Official CLI)
 echo ==========================================
 where npm >nul 2>&1
 if %errorlevel% neq 0 (
@@ -470,7 +495,7 @@ exit /b
 
 :QWEN
 echo ==========================================
-echo Installing Qwen AI Tools
+echo Installing Qwen AI
 echo ==========================================
 where npm >nul 2>&1
 if %errorlevel% neq 0 (
@@ -490,21 +515,23 @@ exit /b
 echo ==========================================
 echo Switching to Windows 11 New Context Menu
 echo ==========================================
-start cmd /k ^"reg delete HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2} /f ^&^& taskkill /f /im explorer.exe ^& start explorer.exe^"
-goto MENU
-
+start cmd /k "reg delete HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2} /f && taskkill /f /im explorer.exe && start explorer.exe"
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
 
 :WIN10MENU
 echo ==========================================
 echo Switching to Windows 10 Classic Context Menu
 echo ==========================================
-start cmd /k ^"reg add HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32 /f /ve ^&^& taskkill /f /im explorer.exe ^& start explorer.exe^"
-goto MENU
-
+start cmd /k "reg add HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32 /f /ve && taskkill /f /im explorer.exe && start explorer.exe"
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
 
 :WINGET
 echo ==========================================
-echo Installing Windows Package Manager ^(Winget^)
+echo Installing Windows Package Manager (Winget)
 echo ==========================================
 where winget >nul 2>&1
 if %errorlevel%==0 (
@@ -525,33 +552,6 @@ echo Opening Microsoft Office 365 Download
 echo ==========================================
 echo Opening official Microsoft Office page in browser...
 start https://officecdn.microsoft.com/db/492350f6-3a01-4f97-b9c0-c7c6ddf67d60/media/en-us/O365ProPlusRetail.img
-echo.
-if "%multiChoice%"=="" pause
-if "%multiChoice%"=="" goto MENU
-exit /b
-
-:OFFICE
-echo ==========================================
-echo Installing Office 365 ProPlus
-echo ==========================================
-where curl >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Curl is required but not found. Please update Windows.
-    goto :OFFICE_END
-)
-
-echo Downloading Office 365 Setup...
-curl -L -o "%TEMP%\OfficeSetup.exe" "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA"
-
-if exist "%TEMP%\OfficeSetup.exe" (
-    echo Launching Office Installer...
-    echo NOTE: The installation will continue in the background.
-    start "" "%TEMP%\OfficeSetup.exe"
-) else (
-    echo Failed to download Office Setup.
-)
-
-:OFFICE_END
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
@@ -599,38 +599,10 @@ if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
 
-:OBS
-echo ==========================================
-echo Installing OBS Studio
-echo ==========================================
-:: Check if Chocolatey is installed
-where choco >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Chocolatey is required. Installing Chocolatey first...
-    call :CHOCO
-)
-
-:: Check if OBS Studio is already installed
-:: (Checking for 'obs64' as it is the standard executable name)
-where obs64 >nul 2>&1
-if %errorlevel%==0 (
-    echo OBS Studio is already installed.
-) else (
-    echo Installing OBS Studio...
-    choco install obs-studio -y
-)
-
-echo.
-if "%multiChoice%"=="" pause
-if "%multiChoice%"=="" goto MENU
-exit /b
-
 :ZEN
 echo ==========================================
 echo Installing Zen Browser (Manual Method)
 echo ==========================================
-
-:: Check for curl (Available in Win10+)
 where curl >nul 2>&1
 if %errorlevel% neq 0 (
     echo Curl is required but not found.
@@ -638,7 +610,6 @@ if %errorlevel% neq 0 (
 )
 
 echo Downloading Zen Browser installer...
-:: Note: This URL changes with versions. You may need to update this link.
 curl -L -o "%TEMP%\zen-installer.exe" "https://github.com/zen-browser/desktop/releases/latest/download/zen.installer.exe"
 
 if exist "%TEMP%\zen-installer.exe" (
@@ -651,90 +622,6 @@ if exist "%TEMP%\zen-installer.exe" (
 )
 
 :ZEN_END
-echo.
-if "%multiChoice%"=="" pause
-if "%multiChoice%"=="" goto MENU
-exit /b
-
-:RUSTDESK
-echo ==========================================
-echo Installing RustDesk
-echo ==========================================
-where curl >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Curl is required but not found.
-    goto :RUSTDESK_END
-)
-
-echo Downloading RustDesk (v1.4.5)...
-curl -L -o "%TEMP%\RustDesk_Setup.exe" "https://github.com/rustdesk/rustdesk/releases/download/1.4.5/rustdesk-1.4.5-x86_64.exe"
-
-if exist "%TEMP%\RustDesk_Setup.exe" (
-    echo Running installer...
-    start /wait "" "%TEMP%\RustDesk_Setup.exe"
-    echo Cleaning up...
-    del "%TEMP%\RustDesk_Setup.exe"
-) else (
-    echo Failed to download RustDesk.
-)
-
-:RUSTDESK_END
-echo.
-if "%multiChoice%"=="" pause
-if "%multiChoice%"=="" goto MENU
-exit /b
-
-:HIBIT
-echo ==========================================
-echo Installing HiBit Uninstaller
-echo ==========================================
-where curl >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Curl is required but not found.
-    goto :HIBIT_END
-)
-
-echo Downloading HiBit Uninstaller...
-curl -L -o "%TEMP%\HiBitSetup.exe" "https://www.hibitsoft.ir/HiBitUninstaller/HiBitUninstaller-setup-4.0.10.exe"
-
-if exist "%TEMP%\HiBitSetup.exe" (
-    echo Running installer...
-    start /wait "" "%TEMP%\HiBitSetup.exe"
-    echo Cleaning up...
-    del "%TEMP%\HiBitSetup.exe"
-) else (
-    echo Failed to download HiBit Uninstaller.
-)
-
-:HIBIT_END
-echo.
-if "%multiChoice%"=="" pause
-if "%multiChoice%"=="" goto MENU
-exit /b
-
-:SCRCPY
-echo ==========================================
-echo Installing Scrcpy GUI
-echo ==========================================
-where curl >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Curl is required but not found.
-    goto :SCRCPY_END
-)
-
-echo Downloading Scrcpy GUI (v1.4.18)...
-curl -L -o "%TEMP%\ScrcpyGUI_Setup.exe" "https://github.com/pizi-0/flutter-scrcpygui/releases/download/1.4.18/scrcpygui-1.4.18-win.exe"
-
-if exist "%TEMP%\ScrcpyGUI_Setup.exe" (
-    echo Running installer...
-    start /wait "" "%TEMP%\ScrcpyGUI_Setup.exe"
-    echo Cleaning up...
-    del "%TEMP%\ScrcpyGUI_Setup.exe"
-) else (
-    echo Failed to download Scrcpy GUI.
-)
-
-:SCRCPY_END
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
@@ -771,5 +658,158 @@ if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
 
+:OBS
+echo ==========================================
+echo Installing OBS Studio
+echo ==========================================
+where choco >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Chocolatey is required. Installing Chocolatey first...
+    call :CHOCO
+)
+where obs64 >nul 2>&1
+if %errorlevel%==0 (
+    echo OBS Studio is already installed.
+) else (
+    echo Installing OBS Studio...
+    choco install obs-studio -y
+)
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
 
+:RUSTDESK
+echo ==========================================
+echo Installing RustDesk
+echo ==========================================
+where choco >nul 2>&1
+if %errorlevel% neq 0 (
+echo Chocolatey is required. Installing Chocolatey first...
+call :CHOCO
+)
+echo Installing RustDesk...
+choco install rustdesk -y
+if %errorlevel% neq 0 (
+echo RustDesk installation failed.
+)
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
 
+:RUSTDESK_END
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
+
+:HIBIT
+echo ==========================================
+echo Installing HiBit Uninstaller
+echo ==========================================
+where choco >nul 2>&1
+if %errorlevel% neq 0 (
+echo Chocolatey is required. Installing Chocolatey first...
+call :CHOCO
+)
+echo Installing HiBit Uninstaller...
+choco install hibit-uninstaller -y
+if %errorlevel% neq 0 (
+echo HiBit Uninstaller installation failed.
+)
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
+
+:HIBIT_END
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
+
+:SCRCPY
+echo ==========================================
+echo Installing Scrcpy GUI
+echo ==========================================
+where curl >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Curl is required but not found.
+    goto :SCRCPY_END
+)
+
+echo Downloading Scrcpy GUI...
+curl -L -o "%TEMP%\ScrcpyGUI_Setup.exe" "https://github.com/pizi-0/flutter-scrcpygui/releases/download/1.4.18/scrcpygui-1.4.18-win.exe"
+
+if exist "%TEMP%\ScrcpyGUI_Setup.exe" (
+    echo Running installer...
+    start /wait "" "%TEMP%\ScrcpyGUI_Setup.exe"
+    echo Cleaning up...
+    del "%TEMP%\ScrcpyGUI_Setup.exe"
+) else (
+    echo Failed to download Scrcpy GUI.
+)
+
+:SCRCPY_END
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
+
+:LOCALSEND
+echo ==========================================
+echo Installing LocalSend
+echo ==========================================
+where choco >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Chocolatey is required. Installing Chocolatey first...
+    call :CHOCO
+)
+echo Installing LocalSend...
+choco install localsend -y
+if %errorlevel% neq 0 (
+    echo LocalSend installation failed.
+)
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
+
+:NOTEPADPP
+echo ==========================================
+echo Installing Notepad++
+echo ==========================================
+where choco >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Chocolatey is required. Installing Chocolatey first...
+    call :CHOCO
+)
+echo Installing Notepad++...
+choco install notepadplusplus -y
+if %errorlevel% neq 0 (
+    echo Notepad++ installation failed.
+)
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
+
+:SHAREX
+echo ==========================================
+echo Installing ShareX
+echo ==========================================
+where choco >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Chocolatey is required. Installing Chocolatey first...
+    call :CHOCO
+)
+echo Installing ShareX...
+choco install sharex -y
+if %errorlevel% neq 0 (
+    echo ShareX installation failed.
+)
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
