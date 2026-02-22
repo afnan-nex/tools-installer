@@ -2,7 +2,7 @@
 
 A Windows batch script with an interactive menu to quickly install developer tools and run automation scripts. This script simplifies the setup of essential development tools and automation utilities on Windows systems.
 
-##Curl Command
+## **Curl Command**
 ```
 curl -o tools-installer.cmd https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd && tools-installer.cmd
 ```
