@@ -893,14 +893,13 @@ if %errorlevel% neq 0 (
 )
 
 :: 2. Setup Directories
-:: We use a specific folder so you know where to find it later
 set "TEMP_DIR=%TEMP%\DirectX_Install"
 if not exist "%TEMP_DIR%" mkdir "%TEMP_DIR%" 2>nul
 
 set "DX_URL=https://github.com/planetshine0000/direct-x/releases/download/v1.0.0/DirectX-Redist-Jun-2010.zip"
 set "DX_ZIP=%TEMP_DIR%\DirectX.zip"
 
-:: 3. Download (Only if it doesn't already exist)
+:: 3. Download
 if not exist "%DX_ZIP%" (
     echo Downloading DirectX...
     curl -L -o "%DX_ZIP%" "%DX_URL%"
@@ -924,24 +923,35 @@ for /r "%TEMP_DIR%" %%f in (DXSETUP.exe) do (
 
 if not exist "%DXSETUP_PATH%" (
     echo [ERROR] DXSETUP.exe not found in extracted files.
-    echo Files are located at: %TEMP_DIR%
     goto :DX_END
 )
 
 :: 6. Run as Admin
 echo Found DXSETUP at: %DXSETUP_PATH%
 echo Launching installer...
-echo.
-echo NOTE: Files will NOT be deleted. You can find them at:
-echo %TEMP_DIR%
-echo.
-
-:: Launching without -Wait so the script finishes while the installer stays open
 powershell -c "Start-Process '%DXSETUP_PATH%' -Verb RunAs"
+
+:: 7. Timer and Cleanup
+echo.
+echo ==========================================
+echo The installer has been launched.
+echo Waiting 20 seconds before deleting temporary files...
+echo ==========================================
+timeout /t 20 /nobreak
+
+echo.
+echo Cleaning up temporary files...
+del /q "%DX_ZIP%" 2>nul
+rmdir /s /q "%TEMP_DIR%" >nul 2>&1
+
+if exist "%TEMP_DIR%" (
+    echo [NOTE] Some files are still in use by the installer and couldn't be deleted.
+) else (
+    echo Cleanup successful.
+)
 
 :DX_END
 echo.
-echo Process complete. Files remain in %TEMP_DIR%
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
