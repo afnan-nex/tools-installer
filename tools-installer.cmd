@@ -42,18 +42,18 @@ echo   ^|_______________^|  ^|_______________________^|  ^|____________________^
 echo    __________________________________________    ____________________
 echo   ^|                  Others                  ^|  ^|       Actions      ^|
 echo   ^|------------------------------------------^|  ^|--------------------^|
-echo   ^|22. Winget        23. Office365           ^|  ^|37. Run All         ^|
-echo   ^|24. Everything    25. Chrome              ^|  ^|38. Run Selected    ^|
-echo   ^|26. Zen           27. cursor              ^|  ^|39. Exit            ^|
-echo   ^|28. CMD Clr 0a    29. OBS Studio          ^|  ^|                    ^|
-echo   ^|30. RustDesk      31. HiBit Uninstaller   ^|  ^|                    ^|
-echo   ^|32. Scrcpy GUI    33. LocalSend           ^|  ^|                    ^|
+echo   ^|22. Winget        23. Office365           ^|  ^|                    ^|
+echo   ^|24. Everything    25. Chrome              ^|  ^|                    ^|
+echo   ^|26. Zen           27. cursor              ^|  ^|                    ^|
+echo   ^|28. CMD Clr 0a    29. OBS Studio          ^|  ^|38. Run All         ^|
+echo   ^|30. RustDesk      31. HiBit Uninstaller   ^|  ^|39. Run Selected    ^|
+echo   ^|32. Scrcpy GUI    33. LocalSend           ^|  ^|40. Exit            ^|
 echo   ^|34. Notepad++     35. ShareX              ^|  ^|                    ^|
-echo   ^|36. VC++ Runtimes                          ^|  ^|                    ^|
+echo   ^|36. VC++ Runtimes 37. DirectX             ^|  ^|                    ^|
 echo   ^|__________________________________________^|  ^|____________________^|
 echo.
 echo     ================================
-set /p choice=Enter your choice (1-39, multiple like 2,4,9): 
+set /p choice=Enter your choice (1-40, multiple like 2,4,9): 
 
 :: If multiple numbers entered -> Run Selected
 echo %choice% | findstr "," >nul
@@ -98,9 +98,10 @@ if "%choice%"=="33" call :LOCALSEND
 if "%choice%"=="34" call :NOTEPADPP
 if "%choice%"=="35" call :SHAREX
 if "%choice%"=="36" call :VCREDIST
-if "%choice%"=="37" goto RUNALL
-if "%choice%"=="38" goto RUNSELECTED
-if "%choice%"=="39" exit
+if "%choice%"=="37" call :DIRECTX
+if "%choice%"=="38" goto RUNALL
+if "%choice%"=="39" goto RUNSELECTED
+if "%choice%"=="40" exit
 goto MENU
 
 :: ==============================
@@ -162,6 +163,7 @@ if "%~1"=="33" call :LOCALSEND
 if "%~1"=="34" call :NOTEPADPP
 if "%~1"=="35" call :SHAREX
 if "%~1"=="36" call :VCREDIST
+if "%~1"=="37" call :DIRECTX
 exit /b
 
 :RUNALL
@@ -873,6 +875,61 @@ if exist "%ZIP_FILE%" (
 )
 
 :VCREDIST_END
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
+
+:DIRECTX
+echo ==========================================
+echo Installing DirectX Runtime
+echo ==========================================
+where curl >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Curl is required but not found.
+    goto :DX_END
+)
+
+set "TEMP_DIR=%TEMP%\DirectX_Install"
+mkdir "%TEMP_DIR%" 2>nul
+
+set "DX_URL=https://github.com/planetshine0000/direct-x/releases/download/v1.0.0/DirectX-Redist-Jun-2010.zip"
+set "DX_ZIP=%TEMP_DIR%\DirectX.zip"
+echo Downloading DirectX...
+curl -L -o "%DX_ZIP%" "%DX_URL%"
+
+if not exist "%DX_ZIP%" (
+    echo Failed to download DirectX.
+    goto :DX_END
+)
+
+echo Extracting DirectX...
+tar -xf "%DX_ZIP%" -C "%TEMP_DIR%"
+
+echo Locating DXSETUP.exe...
+set "DXSETUP_FOUND="
+for /r "%TEMP_DIR%" %%d in (DirectX) do (
+    if exist "%%d\DXSETUP.exe" (
+        set "DXSETUP_PATH=%%d\DXSETUP.exe"
+        set "DXSETUP_FOUND=1"
+    )
+)
+
+if defined DXSETUP_FOUND (
+    echo Running DXSETUP.exe as Administrator...
+    powershell -c "Start-Process '%DXSETUP_PATH%' -Verb RunAs"
+    echo Installation initiated. Follow UAC prompts to complete installation.
+) else (
+    echo ERROR: DXSETUP.exe not found in extracted files.
+    echo Checked in: %TEMP_DIR%
+)
+
+:DX_CLEANUP
+echo Cleaning up temporary files...
+del /q "%DX_ZIP%" 2>nul
+rmdir /s /q "%TEMP_DIR%" >nul 2>&1
+
+:DX_END
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
