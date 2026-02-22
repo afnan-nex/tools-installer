@@ -884,60 +884,65 @@ exit /b
 echo ==========================================
 echo Installing DirectX Runtime
 echo ==========================================
+
+:: 1. Check for Curl
 where curl >nul 2>&1
 if %errorlevel% neq 0 (
-    echo Curl is required but not found.
+    echo [ERROR] Curl is required but not found.
     goto :DX_END
 )
 
+:: 2. Setup Directories
 set "TEMP_DIR=%TEMP%\DirectX_Install"
+if exist "%TEMP_DIR%" rmdir /s /q "%TEMP_DIR%"
 mkdir "%TEMP_DIR%" 2>nul
 
 set "DX_URL=https://github.com/planetshine0000/direct-x/releases/download/v1.0.0/DirectX-Redist-Jun-2010.zip"
 set "DX_ZIP=%TEMP_DIR%\DirectX.zip"
+
+:: 3. Download
 echo Downloading DirectX...
 curl -L -o "%DX_ZIP%" "%DX_URL%"
-
 if not exist "%DX_ZIP%" (
-    echo Failed to download DirectX.
+    echo [ERROR] Failed to download DirectX.
     goto :DX_END
 )
 
+:: 4. Extract
 echo Extracting DirectX...
 tar -xf "%DX_ZIP%" -C "%TEMP_DIR%"
 
-:: NEW: Direct path check for extracted structure
-set "DXSETUP_PATH=%TEMP_DIR%\DirectX-Offline\DirectX\DXSETUP.exe"
-if exist "%DXSETUP_PATH%" (
-    echo Found DXSETUP at: %DXSETUP_PATH%
-    echo Running DXSETUP.exe as Administrator...
-    powershell -c "Start-Process '%DXSETUP_PATH%' -Verb RunAs"
-    echo Installation initiated. Follow UAC prompts to complete installation.
-) else (
-    echo ERROR: DXSETUP.exe not found in expected path
-    echo Checked: %DXSETUP_PATH%
-    echo Falling back to directory search...
-    
-    :: Original search method as backup
-    set "DXSETUP_FOUND="
-    for /r "%TEMP_DIR%" %%d in (DirectX) do (
-        if exist "%%d\DXSETUP.exe" (
-            set "DXSETUP_PATH=%%d\DXSETUP.exe"
-            set "DXSETUP_FOUND=1"
-        )
-    )
-    
-    if defined DXSETUP_FOUND (
-        powershell -c "Start-Process '%DXSETUP_PATH%' -Verb RunAs"
-    ) else (
-        echo Critical error: DXSETUP.exe not found in any location
-        echo Checked: %TEMP_DIR%
+:: 5. Locate DXSETUP.exe (Flexible Search)
+echo Locating DXSETUP.exe...
+set "DXSETUP_PATH="
+for /r "%TEMP_DIR%" %%f in (DXSETUP.exe) do (
+    if exist "%%f" (
+        set "DXSETUP_PATH=%%f"
+        goto :FOUND_DX
     )
 )
 
+:FOUND_DX
+if not defined DXSETUP_PATH (
+    echo [ERROR] Critical error: DXSETUP.exe not found in extracted files.
+    dir /s "%TEMP_DIR%"
+    goto :DX_CLEANUP
+)
+
+:: 6. Run as Admin and WAIT
+echo Found DXSETUP at: %DXSETUP_PATH%
+echo Running DXSETUP.exe...
+echo NOTE: Please complete the installer window before this script continues.
+
+:: Use -Wait so the script doesn't delete files while the installer is running
+powershell -c "Start-Process '%DXSETUP_PATH%' -ArgumentList '/silent' -Verb RunAs -Wait"
+
+echo Installation process finished.
+
 :DX_CLEANUP
 echo Cleaning up temporary files...
-del /q "%DX_ZIP%" 2>nul
+:: Small delay to ensure handles are released
+timeout /t 2 >nul
 rmdir /s /q "%TEMP_DIR%" >nul 2>&1
 
 :DX_END
@@ -945,4 +950,3 @@ echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
-
