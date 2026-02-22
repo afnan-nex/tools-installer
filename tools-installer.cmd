@@ -906,22 +906,33 @@ if not exist "%DX_ZIP%" (
 echo Extracting DirectX...
 tar -xf "%DX_ZIP%" -C "%TEMP_DIR%"
 
-echo Locating DXSETUP.exe...
-set "DXSETUP_FOUND="
-for /r "%TEMP_DIR%" %%d in (DirectX) do (
-    if exist "%%d\DXSETUP.exe" (
-        set "DXSETUP_PATH=%%d\DXSETUP.exe"
-        set "DXSETUP_FOUND=1"
-    )
-)
-
-if defined DXSETUP_FOUND (
+:: NEW: Direct path check for extracted structure
+set "DXSETUP_PATH=%TEMP_DIR%\DirectX-Offline\DirectX\DXSETUP.exe"
+if exist "%DXSETUP_PATH%" (
+    echo Found DXSETUP at: %DXSETUP_PATH%
     echo Running DXSETUP.exe as Administrator...
     powershell -c "Start-Process '%DXSETUP_PATH%' -Verb RunAs"
     echo Installation initiated. Follow UAC prompts to complete installation.
 ) else (
-    echo ERROR: DXSETUP.exe not found in extracted files.
-    echo Checked in: %TEMP_DIR%
+    echo ERROR: DXSETUP.exe not found in expected path
+    echo Checked: %DXSETUP_PATH%
+    echo Falling back to directory search...
+    
+    :: Original search method as backup
+    set "DXSETUP_FOUND="
+    for /r "%TEMP_DIR%" %%d in (DirectX) do (
+        if exist "%%d\DXSETUP.exe" (
+            set "DXSETUP_PATH=%%d\DXSETUP.exe"
+            set "DXSETUP_FOUND=1"
+        )
+    )
+    
+    if defined DXSETUP_FOUND (
+        powershell -c "Start-Process '%DXSETUP_PATH%' -Verb RunAs"
+    ) else (
+        echo Critical error: DXSETUP.exe not found in any location
+        echo Checked: %TEMP_DIR%
+    )
 )
 
 :DX_CLEANUP
@@ -934,3 +945,4 @@ echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
+
