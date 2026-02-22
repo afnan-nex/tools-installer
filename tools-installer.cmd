@@ -42,17 +42,18 @@ echo   ^|_______________^|  ^|_______________________^|  ^|____________________^
 echo    __________________________________________    ____________________
 echo   ^|                  Others                  ^|  ^|       Actions      ^|
 echo   ^|------------------------------------------^|  ^|--------------------^|
-echo   ^|22. Winget        23. Office365           ^|  ^|36. Run All         ^|
-echo   ^|24. Everything    25. Chrome              ^|  ^|37. Run Selected    ^|
-echo   ^|26. Zen           27. cursor              ^|  ^|38. Exit            ^|
+echo   ^|22. Winget        23. Office365           ^|  ^|37. Run All         ^|
+echo   ^|24. Everything    25. Chrome              ^|  ^|38. Run Selected    ^|
+echo   ^|26. Zen           27. cursor              ^|  ^|39. Exit            ^|
 echo   ^|28. CMD Clr 0a    29. OBS Studio          ^|  ^|                    ^|
 echo   ^|30. RustDesk      31. HiBit Uninstaller   ^|  ^|                    ^|
 echo   ^|32. Scrcpy GUI    33. LocalSend           ^|  ^|                    ^|
 echo   ^|34. Notepad++     35. ShareX              ^|  ^|                    ^|
+echo   ^|36. VC++ Runtimes                          ^|  ^|                    ^|
 echo   ^|__________________________________________^|  ^|____________________^|
 echo.
 echo     ================================
-set /p choice=Enter your choice (1-38, multiple like 2,4,9): 
+set /p choice=Enter your choice (1-39, multiple like 2,4,9): 
 
 :: If multiple numbers entered -> Run Selected
 echo %choice% | findstr "," >nul
@@ -96,9 +97,10 @@ if "%choice%"=="32" call :SCRCPY
 if "%choice%"=="33" call :LOCALSEND
 if "%choice%"=="34" call :NOTEPADPP
 if "%choice%"=="35" call :SHAREX
-if "%choice%"=="36" goto RUNALL
-if "%choice%"=="37" goto RUNSELECTED
-if "%choice%"=="38" exit
+if "%choice%"=="36" call :VCREDIST
+if "%choice%"=="37" goto RUNALL
+if "%choice%"=="38" goto RUNSELECTED
+if "%choice%"=="39" exit
 goto MENU
 
 :: ==============================
@@ -159,6 +161,7 @@ if "%~1"=="32" call :SCRCPY
 if "%~1"=="33" call :LOCALSEND
 if "%~1"=="34" call :NOTEPADPP
 if "%~1"=="35" call :SHAREX
+if "%~1"=="36" call :VCREDIST
 exit /b
 
 :RUNALL
@@ -832,3 +835,45 @@ if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
 
+:VCREDIST
+echo ==========================================
+echo Installing Visual C++ Runtimes
+echo ==========================================
+where curl >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Curl is required but not found.
+    goto :VCREDIST_END
+)
+
+set "ZIP_URL=https://github.com/planetshine0000/vc-redist-latest/releases/download/v1.0.0/Visual-C-Runtimes-All-in-One-Dec-2025.zip"
+set "ZIP_FILE=%TEMP%\VC_Runtimes.zip"
+set "EXTRACT_DIR=%TEMP%\VC_Runtimes_Temp"
+
+echo Downloading Visual C++ Runtimes...
+curl -L -o "%ZIP_FILE%" "%ZIP_URL%"
+
+if exist "%ZIP_FILE%" (
+    echo Extracting files...
+    if not exist "%EXTRACT_DIR%" mkdir "%EXTRACT_DIR%"
+    tar -xf "%ZIP_FILE%" -C "%EXTRACT_DIR%"
+
+    echo Running install_all.bat as Administrator...
+    :: Find the directory where install_all.bat is located
+    for /r "%EXTRACT_DIR%" %%f in (install_all.bat) do (
+        pushd "%%~dpf"
+        powershell -command "Start-Process 'install_all.bat' -Verb runAs"
+        popd
+    )
+    
+    echo Cleaning up ZIP file...
+    del "%ZIP_FILE%"
+    echo Note: The temporary extraction folder was left intact because the installer runs separately.
+) else (
+    echo Failed to download Visual C++ Runtimes.
+)
+
+:VCREDIST_END
+echo.
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
