@@ -935,9 +935,9 @@ powershell -c "Start-Process '%DXSETUP_PATH%' -Verb RunAs"
 echo.
 echo ==========================================
 echo The installer has been launched.
-echo Waiting 20 seconds before deleting temporary files...
+echo Waiting 30 seconds before deleting temporary files...
 echo ==========================================
-timeout /t 20 /nobreak
+timeout /t 30 /nobreak
 
 echo.
 echo Cleaning up temporary files...
@@ -955,3 +955,4 @@ echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
+
