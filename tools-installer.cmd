@@ -894,6 +894,7 @@ if %errorlevel% neq 0 (
 
 :: 2. Setup Directories
 set "TEMP_DIR=%TEMP%\DirectX_Install"
+:: Clean old attempts
 if exist "%TEMP_DIR%" rmdir /s /q "%TEMP_DIR%"
 mkdir "%TEMP_DIR%" 2>nul
 
@@ -904,45 +905,44 @@ set "DX_ZIP=%TEMP_DIR%\DirectX.zip"
 echo Downloading DirectX...
 curl -L -o "%DX_ZIP%" "%DX_URL%"
 if not exist "%DX_ZIP%" (
-    echo [ERROR] Failed to download DirectX.
+    echo [ERROR] Failed to download DirectX zip file.
     goto :DX_END
 )
 
-:: 4. Extract
-echo Extracting DirectX...
+:: 4. Unblock and Extract
+echo Preparing files...
+powershell -c "Unblock-File -Path '%DX_ZIP%'"
 tar -xf "%DX_ZIP%" -C "%TEMP_DIR%"
 
-:: 5. Locate DXSETUP.exe (Flexible Search)
+:: 5. Locate DXSETUP.exe
 echo Locating DXSETUP.exe...
 set "DXSETUP_PATH="
 for /r "%TEMP_DIR%" %%f in (DXSETUP.exe) do (
     if exist "%%f" (
         set "DXSETUP_PATH=%%f"
-        goto :FOUND_DX
     )
 )
 
-:FOUND_DX
-if not defined DXSETUP_PATH (
-    echo [ERROR] Critical error: DXSETUP.exe not found in extracted files.
-    dir /s "%TEMP_DIR%"
+if not exist "%DXSETUP_PATH%" (
+    echo [ERROR] DXSETUP.exe not found in extracted files.
     goto :DX_CLEANUP
 )
 
-:: 6. Run as Admin and WAIT
+:: 6. Run as Admin (Visible Mode)
 echo Found DXSETUP at: %DXSETUP_PATH%
-echo Running DXSETUP.exe...
-echo NOTE: Please complete the installer window before this script continues.
+echo Launching installer...
+echo.
+echo NOTE: If you don't see a window, check your taskbar for a flashing Admin/UAC icon!
+echo.
 
-:: Use -Wait so the script doesn't delete files while the installer is running
-powershell -c "Start-Process '%DXSETUP_PATH%' -ArgumentList '/silent' -Verb RunAs -Wait"
+:: We use -Wait so the script doesn't delete the files while you're still installing
+powershell -c "Start-Process '%DXSETUP_PATH%' -Verb RunAs -Wait"
 
 echo Installation process finished.
 
 :DX_CLEANUP
 echo Cleaning up temporary files...
-:: Small delay to ensure handles are released
-timeout /t 2 >nul
+timeout /t 3 >nul
 rmdir /s /q "%TEMP_DIR%" >nul 2>&1
 
 :DX_END
