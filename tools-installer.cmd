@@ -474,7 +474,7 @@ if %errorlevel% neq 0 (
     set "PATH=%PATH%;%ProgramFiles%\nodejs"
 )
 echo Opening new CMD window to install n8n...
-start cmd /k "echo Installing n8n Workflow Automation... && npm install -g n8n@latest --verbose && echo Installation completed. Press any key to close this window. && pause"
+start cmd /k "echo Installing n8n Workflow Automation... && npm install -g n8n@latest --verbose && echo n8n installation completed. && echo Setting NODES_EXCLUDE environment variable... && setx NODES_EXCLUDE "[]" && setx NODES_EXCLUDE "[]" /M && echo Environment variables set successfully. Press any key to close this window. && pause"
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
