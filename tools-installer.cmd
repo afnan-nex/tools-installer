@@ -215,7 +215,7 @@ exit /b
 echo ==========================================
 echo Setting PowerShell Policy to Unrestricted
 echo ==========================================
-powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Unrestricted -Force -Scope CurrentUser; Set-ExecutionPolicy Unrestricted -Force -Scope LocalMachine"
+powershell -NoProfile -Command "Set-ExecutionPolicy Unrestricted -Force -Scope CurrentUser -ErrorAction SilentlyContinue; Set-ExecutionPolicy Unrestricted -Force -Scope LocalMachine -ErrorAction SilentlyContinue"
 echo Policy updated successfully.
 echo.
 if "%multiChoice%"=="" pause
@@ -955,6 +955,7 @@ echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
+
 
 
 
