@@ -1,7 +1,7 @@
 @echo off
 title Tool Installer Menu by Afnan
 color 0a
-
+powershell -command "&{$h=Get-Host;$w=$h.UI.RawUI;$w.BufferSize=New-Object System.Management.Automation.Host.Size(80,3000);$w.WindowSize=New-Object System.Management.Automation.Host.Size(80,40);}"
 :: Check for Administrator Privileges
 net session >nul 2>&1
 if %errorlevel% neq 0 (
@@ -52,8 +52,7 @@ echo   ^|35. Notepad++     36. ShareX              ^|  ^|                    ^|
 echo   ^|37. VC++ Runtimes 38. DirectX             ^|  ^|                    ^|
 echo   ^|__________________________________________^|  ^|____________________^|
 echo.
-echo     ================================
-set /p choice=Enter your choice (1-41, multiple like 2,4,9): 
+set /p choice=   Enter your choice (1-41, multiple like 2,4,9): 
 
 :: If multiple numbers entered -> Run Selected
 echo %choice% | findstr "," >nul
