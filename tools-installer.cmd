@@ -29,31 +29,31 @@ echo   ^|_______________________________^|  ^|_______________________________^|
 echo    ___________________________    _______________________________
 echo   ^|        Run Scripts        ^|  ^|       Recommended Tools       ^|
 echo   ^|---------------------------^|  ^|-------------------------------^|
-echo   ^|6. Chris Titus Tool        ^|  ^|9. Git         10. Python      ^|
-echo   ^|7. Mass Grave              ^|  ^|11. Dotnet     12. ffmpeg      ^|
-echo   ^|8. Coporton                ^|  ^|13. 7z         14. WinDirStat  ^|
-echo   ^|                           ^|  ^|15. yt-dlp     16. ngrok       ^|
+echo   ^|6. Chris Titus Tool        ^|  ^|10. Git         11. Python      ^|
+echo   ^|7. Mass Grave              ^|  ^|12. Dotnet     13. ffmpeg      ^|
+echo   ^|8. Coporton                ^|  ^|14. 7z         15. WinDirStat  ^|
+echo   ^|9. Sparkle                 ^|  ^|16. yt-dlp     17. ngrok       ^|
 echo   ^|___________________________^|  ^|_______________________________^|
 echo    _______________    _______________________    ____________________
 echo   ^|   Automation  ^|  ^|        AI in PC       ^|  ^|    Context Menu    ^|
 echo   ^|---------------^|  ^|-----------------------^|  ^|--------------------^|
-echo   ^|17. n8n        ^|  ^|18. Gemini    19. Qwen ^|  ^|20. New    21. Old  ^|
+echo   ^|18. n8n        ^|  ^|19. Gemini    20. Qwen ^|  ^|21. New    22. Old  ^|
 echo   ^|_______________^|  ^|_______________________^|  ^|____________________^|
 echo    __________________________________________    ____________________
 echo   ^|                  Others                  ^|  ^|       Actions      ^|
 echo   ^|------------------------------------------^|  ^|--------------------^|
-echo   ^|22. Winget        23. Office365           ^|  ^|                    ^|
-echo   ^|24. Everything    25. Chrome              ^|  ^|                    ^|
-echo   ^|26. Zen           27. cursor              ^|  ^|                    ^|
-echo   ^|28. CMD Clr 0a    29. OBS Studio          ^|  ^|38. Run All         ^|
-echo   ^|30. RustDesk      31. HiBit Uninstaller   ^|  ^|39. Run Selected    ^|
-echo   ^|32. Scrcpy GUI    33. LocalSend           ^|  ^|40. Exit            ^|
-echo   ^|34. Notepad++     35. ShareX              ^|  ^|                    ^|
-echo   ^|36. VC++ Runtimes 37. DirectX             ^|  ^|                    ^|
-echo   ^|__________________________________________^|  ^|____________________^|
+echo   ^|23. Winget        24. Office365           ^|  ^|                    ^|
+echo   ^|25. Everything    26. Chrome              ^|  ^|                    ^|
+echo   ^|27. Zen           28. cursor              ^|  ^|                    ^|
+echo   ^|29. CMD Clr 0a    30. OBS Studio          ^|  ^|39. Run All         ^|
+echo   ^|31. RustDesk      32. HiBit Uninstaller   ^|  ^|40. Run Selected    ^|
+echo   ^|33. Scrcpy GUI    34. LocalSend           ^|  ^|41. Exit            ^|
+echo   ^|35. Notepad++     36. ShareX              ^|  ^|                    ^|
+echo   ^|37. VC++ Runtimes 38. DirectX             ^|  ^|                    ^|
+echo   ^|__________________________________________^|  ^|____________________|^|
 echo.
 echo     ================================
-set /p choice=Enter your choice (1-40, multiple like 2,4,9): 
+set /p choice=Enter your choice (1-41, multiple like 2,4,9): 
 
 :: If multiple numbers entered -> Run Selected
 echo %choice% | findstr "," >nul
@@ -70,38 +70,39 @@ if "%choice%"=="5" call :NODELTS
 if "%choice%"=="6" call :TITUS
 if "%choice%"=="7" call :MASSGRAVE
 if "%choice%"=="8" call :COPORTON
-if "%choice%"=="9" call :GIT
-if "%choice%"=="10" call :PYTHON
-if "%choice%"=="11" call :DOTNET
-if "%choice%"=="12" call :FFMPEG
-if "%choice%"=="13" call :SEVENZIP
-if "%choice%"=="14" call :WINDIRSTAT
-if "%choice%"=="15" call :YTDLP
-if "%choice%"=="16" call :NGROK
-if "%choice%"=="17" call :N8N
-if "%choice%"=="18" call :GEMINI
-if "%choice%"=="19" call :QWEN
-if "%choice%"=="20" call :WIN11MENU
-if "%choice%"=="21" call :WIN10MENU
-if "%choice%"=="22" call :WINGET
-if "%choice%"=="23" call :OFFICE365
-if "%choice%"=="24" call :EVERYTHING
-if "%choice%"=="25" call :CHROME
-if "%choice%"=="26" call :ZEN
-if "%choice%"=="27" call :CUR
-if "%choice%"=="28" call :CMD0A
-if "%choice%"=="29" call :OBS
-if "%choice%"=="30" call :RUSTDESK
-if "%choice%"=="31" call :HIBIT
-if "%choice%"=="32" call :SCRCPY
-if "%choice%"=="33" call :LOCALSEND
-if "%choice%"=="34" call :NOTEPADPP
-if "%choice%"=="35" call :SHAREX
-if "%choice%"=="36" call :VCREDIST
-if "%choice%"=="37" call :DIRECTX
-if "%choice%"=="38" goto RUNALL
-if "%choice%"=="39" goto RUNSELECTED
-if "%choice%"=="40" exit
+if "%choice%"=="9" call :SPARKLE
+if "%choice%"=="10" call :GIT
+if "%choice%"=="11" call :PYTHON
+if "%choice%"=="12" call :DOTNET
+if "%choice%"=="13" call :FFMPEG
+if "%choice%"=="14" call :SEVENZIP
+if "%choice%"=="15" call :WINDIRSTAT
+if "%choice%"=="16" call :YTDLP
+if "%choice%"=="17" call :NGROK
+if "%choice%"=="18" call :N8N
+if "%choice%"=="19" call :GEMINI
+if "%choice%"=="20" call :QWEN
+if "%choice%"=="21" call :WIN11MENU
+if "%choice%"=="22" call :WIN10MENU
+if "%choice%"=="23" call :WINGET
+if "%choice%"=="24" call :OFFICE365
+if "%choice%"=="25" call :EVERYTHING
+if "%choice%"=="26" call :CHROME
+if "%choice%"=="27" call :ZEN
+if "%choice%"=="28" call :CUR
+if "%choice%"=="29" call :CMD0A
+if "%choice%"=="30" call :OBS
+if "%choice%"=="31" call :RUSTDESK
+if "%choice%"=="32" call :HIBIT
+if "%choice%"=="33" call :SCRCPY
+if "%choice%"=="34" call :LOCALSEND
+if "%choice%"=="35" call :NOTEPADPP
+if "%choice%"=="36" call :SHAREX
+if "%choice%"=="37" call :VCREDIST
+if "%choice%"=="38" call :DIRECTX
+if "%choice%"=="39" goto RUNALL
+if "%choice%"=="40" goto RUNSELECTED
+if "%choice%"=="41" exit
 goto MENU
 
 :: ==============================
@@ -135,35 +136,36 @@ if "%~1"=="5" call :NODELTS
 if "%~1"=="6" call :TITUS
 if "%~1"=="7" call :MASSGRAVE
 if "%~1"=="8" call :COPORTON
-if "%~1"=="9" call :GIT
-if "%~1"=="10" call :PYTHON
-if "%~1"=="11" call :DOTNET
-if "%~1"=="12" call :FFMPEG
-if "%~1"=="13" call :SEVENZIP
-if "%~1"=="14" call :WINDIRSTAT
-if "%~1"=="15" call :YTDLP
-if "%~1"=="16" call :NGROK
-if "%~1"=="17" call :N8N
-if "%~1"=="18" call :GEMINI
-if "%~1"=="19" call :QWEN
-if "%~1"=="20" call :WIN11MENU
-if "%~1"=="21" call :WIN10MENU
-if "%~1"=="22" call :WINGET
-if "%~1"=="23" call :OFFICE365
-if "%~1"=="24" call :EVERYTHING
-if "%~1"=="25" call :CHROME
-if "%~1"=="26" call :ZEN
-if "%~1"=="27" call :CUR
-if "%~1"=="28" call :CMD0A
-if "%~1"=="29" call :OBS
-if "%~1"=="30" call :RUSTDESK
-if "%~1"=="31" call :HIBIT
-if "%~1"=="32" call :SCRCPY
-if "%~1"=="33" call :LOCALSEND
-if "%~1"=="34" call :NOTEPADPP
-if "%~1"=="35" call :SHAREX
-if "%~1"=="36" call :VCREDIST
-if "%~1"=="37" call :DIRECTX
+if "%~1"=="9" call :SPARKLE
+if "%~1"=="10" call :GIT
+if "%~1"=="11" call :PYTHON
+if "%~1"=="12" call :DOTNET
+if "%~1"=="13" call :FFMPEG
+if "%~1"=="14" call :SEVENZIP
+if "%~1"=="15" call :WINDIRSTAT
+if "%~1"=="16" call :YTDLP
+if "%~1"=="17" call :NGROK
+if "%~1"=="18" call :N8N
+if "%~1"=="19" call :GEMINI
+if "%~1"=="20" call :QWEN
+if "%~1"=="21" call :WIN11MENU
+if "%~1"=="22" call :WIN10MENU
+if "%~1"=="23" call :WINGET
+if "%~1"=="24" call :OFFICE365
+if "%~1"=="25" call :EVERYTHING
+if "%~1"=="26" call :CHROME
+if "%~1"=="27" call :ZEN
+if "%~1"=="28" call :CUR
+if "%~1"=="29" call :CMD0A
+if "%~1"=="30" call :OBS
+if "%~1"=="31" call :RUSTDESK
+if "%~1"=="32" call :HIBIT
+if "%~1"=="33" call :SCRCPY
+if "%~1"=="34" call :LOCALSEND
+if "%~1"=="35" call :NOTEPADPP
+if "%~1"=="36" call :SHAREX
+if "%~1"=="37" call :VCREDIST
+if "%~1"=="38" call :DIRECTX
 exit /b
 
 :RUNALL
@@ -291,6 +293,16 @@ echo ==========================================
 echo Running Coporton Tool
 echo ==========================================
 start "" cmd /k powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://coporton.com/ias | iex"
+if "%multiChoice%"=="" pause
+if "%multiChoice%"=="" goto MENU
+exit /b
+
+:SPARKLE
+echo ==========================================
+echo Running Sparkle Tool
+echo ==========================================
+start "" cmd /k powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/Parcoil/Sparkle/v2/get.ps1 | iex"
+echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
