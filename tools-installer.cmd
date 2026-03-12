@@ -29,7 +29,7 @@ echo   ^|_______________________________^|  ^|_______________________________^|
 echo    ___________________________    _______________________________
 echo   ^|        Run Scripts        ^|  ^|       Recommended Tools       ^|
 echo   ^|---------------------------^|  ^|-------------------------------^|
-echo   ^|6. Chris Titus Tool        ^|  ^|10. Git         11. Python     ^|
+echo   ^|6. Chris Titus Tool        ^|  ^|10. Git        11. Python      ^|
 echo   ^|7. Mass Grave              ^|  ^|12. Dotnet     13. ffmpeg      ^|
 echo   ^|8. Coporton                ^|  ^|14. 7z         15. WinDirStat  ^|
 echo   ^|9. Sparkle                 ^|  ^|16. yt-dlp     17. ngrok       ^|
@@ -51,7 +51,7 @@ echo   ^|33. Scrcpy GUI    34. LocalSend           ^|  ^|41. Exit            ^|
 echo   ^|35. Notepad++     36. ShareX              ^|  ^|                    ^|
 echo   ^|37. VC++ Runtimes 38. DirectX             ^|  ^|                    ^|
 echo   ^|__________________________________________^|  ^|____________________^|
-echo
+echo.
 echo     ================================
 set /p choice=Enter your choice (1-41, multiple like 2,4,9): 
 
