@@ -272,7 +272,7 @@ exit /b
 echo ==========================================
 echo Running Chris Titus Tech Windows Utility
 echo ==========================================
-powershell -NoProfile -ExecutionPolicy Bypass -Command "irm 'https://christitus.com/win' | iex"
+start "" cmd /k powershell -NoProfile -ExecutionPolicy Bypass -Command "irm 'https://christitus.com/win' | iex"
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
@@ -282,7 +282,7 @@ exit /b
 echo ==========================================
 echo Running Microsoft Activation Scripts
 echo ==========================================
-powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://get.activated.win | iex"
+start "" cmd /k powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://get.activated.win | iex"
 echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
@@ -967,6 +967,7 @@ echo.
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
+
 
 
 
