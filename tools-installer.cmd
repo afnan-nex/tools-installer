@@ -197,7 +197,7 @@ goto MENU
 echo ==========================================
 echo Opening Your Browser with Portfolio
 echo ==========================================
-start https://afnanportfolio1.netlify.app/
+start https://afnan-nex.github.io/portfolio/index.html
 if "%multiChoice%"=="" pause
 if "%multiChoice%"=="" goto MENU
 exit /b
