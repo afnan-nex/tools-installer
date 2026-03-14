@@ -640,17 +640,7 @@ if %errorlevel% neq 0 (
     goto :ZEN_END
 )
 
-echo Downloading Zen Browser installer...
-curl -L -o "%TEMP%\zen-installer.exe" "https://github.com/zen-browser/desktop/releases/latest/download/zen.installer.exe"
-
-if exist "%TEMP%\zen-installer.exe" (
-    echo Running installer...
-    start /wait "" "%TEMP%\zen-installer.exe"
-    del "%TEMP%\zen-installer.exe"
-) else (
-    echo Download failed. Please install manually.
-    start https://zen-browser.app/download
-)
+start "" cmd /k "echo Downloading Zen Browser installer... & curl -L -o "%TEMP%\zen-installer.exe" "https://github.com/zen-browser/desktop/releases/latest/download/zen.installer.exe" & if exist "%TEMP%\zen-installer.exe" (echo Running installer... & start /wait "" "%TEMP%\zen-installer.exe" & del "%TEMP%\zen-installer.exe") else (echo Download failed. Please install manually. & start https://zen-browser.app/download)"
 
 :ZEN_END
 echo.
