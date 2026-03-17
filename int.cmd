@@ -96,13 +96,16 @@ echo.
 echo    Portfolio: https://afnan-nex.github.io/portfolio/
 echo.
 echo   ================================================================
-echo    Press Z to go BACK
+echo    [1] Open Portfolio       [Z] Go Back
 echo   ================================================================
 echo.
 
-choice /c Z /n /m "   Press Z to go back: "
-call :OPENPORTFOLIO
-goto MAINMENU
+choice /c 1Z /n /m "   Your Choice: "
+set "subChoice=%errorlevel%"
+
+if "%subChoice%"=="1" (call :OPENPORTFOLIO & goto ABOUTAFNAN)
+if "%subChoice%"=="2" goto MAINMENU
+goto ABOUTAFNAN
 
 :: ==============================
 :: POWERSHELL TWEAKS MENU (2)
