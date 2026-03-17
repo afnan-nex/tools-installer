@@ -1,7 +1,7 @@
 @echo off
 title Tool Installer Menu by Afnan
 color 0a
-powershell -command "&{$h=Get-Host;$w=$h.UI.RawUI;$w.BufferSize=New-Object System.Management.Automation.Host.Size(80,3000);$w.WindowSize=New-Object System.Management.Automation.Host.Size(80,40);}"
+::powershell -command "&{$h=Get-Host;$w=$h.UI.RawUI;$w.BufferSize=New-Object System.Management.Automation.Host.Size(80,3000);$w.WindowSize=New-Object System.Management.Automation.Host.Size(80,40);}"
 :: Check for Administrator Privileges
 net session >nul 2>&1
 if %errorlevel% neq 0 (
@@ -26,28 +26,18 @@ echo   ================================================================
 echo   =                    MAIN MENU - Press Key                     =
 echo   ================================================================
 echo.
-echo    [1] About AFNAN
+echo    [1] About AFNAN                 [2] PowerShell Tweaks
 echo.
-echo    [2] PowerShell Tweaks
+echo    [3] ^>^>^>^>^>^> Essential ^<^<^<^<^<^<     [4] Run Scripts
 echo.
-echo    [3] ^>^>^>^>^>^> Essential ^<^<^<^<^<^<
+echo    [5] Recommended Tools           [6] Automation
 echo.
-echo    [4] Run Scripts
+echo    [7] AI in PC                    [8] Context Menu
 echo.
-echo    [5] Recommended Tools
-echo.
-echo    [6] Automation
-echo.
-echo    [7] AI in PC
-echo.
-echo    [8] Context Menu
-echo.
-echo    [9] System and Development Tools
-echo.
-echo    [0] Productivity and Media Apps
+echo    [9] System Tools                [0] Productivity Apps
 echo.
 echo   ================================================================
-echo    Press Z to EXIT
+echo    [Z] exit
 echo   ================================================================
 echo.
 
@@ -128,7 +118,7 @@ echo.
 echo    [2] Unrestrict Policy
 echo.
 echo   ================================================================
-echo    Press Z to go BACK
+echo    [Z] Go Back
 echo   ================================================================
 echo.
 
@@ -161,7 +151,7 @@ echo.
 echo    [2] Node.js LTS
 echo.
 echo   ================================================================
-echo    Press Z to go BACK
+echo    [Z] Go Back
 echo   ================================================================
 echo.
 
@@ -200,7 +190,7 @@ echo.
 echo    [5] Sparkle                                                              
 echo.
 echo   ================================================================
-echo    Press Z to go BACK
+echo    [Z] Go Back
 echo   ================================================================
 echo.
 
@@ -211,8 +201,8 @@ if "%subChoice%"=="1" (call :TITUS & goto RUNSCRIPTSMENU)
 if "%subChoice%"=="2" (call :MASSGRAVE & goto RUNSCRIPTSMENU)
 if "%subChoice%"=="3" (call :COPORTON & goto RUNSCRIPTSMENU)
 if "%subChoice%"=="4" (call :IDM & goto RUNSCRIPTSMENU)                       
-if "%subChoice%"=="6" goto MAINMENU                                             
 if "%subChoice%"=="5" (call :SPARKLE & goto RUNSCRIPTSMENU)                     
+if "%subChoice%"=="6" goto MAINMENU                                             
 goto RUNSCRIPTSMENU
 
 :: ==============================
@@ -240,7 +230,7 @@ echo.
 echo    [4] FFmpeg           [8] ngrok
 echo.
 echo   ================================================================
-echo    Press Z to go BACK
+echo    [Z] Go Back
 echo   ================================================================
 echo.
 
@@ -277,7 +267,7 @@ echo.
 echo    [1] n8n Workflow Automation
 echo.
 echo   ================================================================
-echo    Press Z to go BACK
+echo    [Z] Go Back
 echo   ================================================================
 echo.
 
@@ -309,7 +299,7 @@ echo.
 echo    [2] Qwen AI CLI
 echo.
 echo   ================================================================
-echo    Press Z to go BACK
+echo    [Z] Go Back
 echo   ================================================================
 echo.
 
@@ -342,7 +332,7 @@ echo.
 echo    [2] Windows 10 Classic Context Menu
 echo.
 echo   ================================================================
-echo    Press Z to go BACK
+echo    [Z] Go Back
 echo   ================================================================
 echo.
 
@@ -381,7 +371,7 @@ echo.
 echo    [5] HiBit Uninstaller
 echo.
 echo   ================================================================
-echo    Press Z to go BACK
+echo    [Z] Go Back
 echo   ================================================================
 echo.
 
@@ -425,7 +415,7 @@ echo.
 echo    [4] OBS Studio
 echo.
 echo   ================================================================
-echo    Press Z to go BACK
+echo    [Z] Go Back
 echo   ================================================================
 echo.
 
