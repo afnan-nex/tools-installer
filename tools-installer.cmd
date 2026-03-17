@@ -54,7 +54,7 @@ if "%mainChoice%"=="7" goto AIINPCMENU
 if "%mainChoice%"=="8" goto CONTEXTMENUMENU
 if "%mainChoice%"=="9" goto SYSTEMDEVMENU
 if "%mainChoice%"=="10" goto PRODUCTIVITYMENU
-if "%mainChoice%"=="11" exit
+if "%mainChoice%"=="11" goto CONFIRM_EXIT
 goto MAINMENU
 
 :: ==============================
@@ -431,6 +431,43 @@ if "%subChoice%"=="6" (call :NOTEPADPP & goto PRODUCTIVITYMENU)
 if "%subChoice%"=="7" (call :SHAREX & goto PRODUCTIVITYMENU)
 if "%subChoice%"=="8" goto MAINMENU
 goto PRODUCTIVITYMENU
+
+:: ==============================
+:: CONFIRM EXIT PROMPT
+:: ==============================
+:CONFIRM_EXIT
+cls
+echo.
+echo                         _    _____ _   _    _    _   _ 
+echo                        / \  ^|  ___^| \ ^| ^|  / \  ^| \ ^| ^|
+echo                       / _ \ ^| ^|_  ^|  \^| ^| / _ \ ^|  \^| ^|
+echo                      / ___ \^|  _^| ^| ^|\  ^|/ ___ \^| ^|\  ^|
+echo                     /_/   \_\_^|   ^|_^| \_/_/   \_\_^| \_^|
+echo.
+echo   ================================================================
+echo   =                    CONFIRM EXIT                              =
+echo   ================================================================
+echo.
+echo    Do you want to exit the script?
+echo.
+echo    [1] Yes - Exit Script
+echo    [2] No  - Return to Main Menu
+echo.
+echo   ================================================================
+echo.
+
+choice /c 12 /n /m "   Press 1 to exit, 2 to return: "
+set "exitChoice=%errorlevel%"
+
+if "%exitChoice%"=="1" (
+    echo.
+    echo   Thank you for using Tool Installer by AFNAN! Goodbye.
+    echo.
+    timeout /t 2 /nobreak >nul
+    exit
+)
+if "%exitChoice%"=="2" goto MAINMENU
+goto CONFIRM_EXIT
 
 :: ==============================
 :: ALL FUNCTION DEFINITIONS
