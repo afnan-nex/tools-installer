@@ -211,6 +211,7 @@ if "%subChoice%"=="1" (call :TITUS & goto RUNSCRIPTSMENU)
 if "%subChoice%"=="2" (call :MASSGRAVE & goto RUNSCRIPTSMENU)
 if "%subChoice%"=="3" (call :COPORTON & goto RUNSCRIPTSMENU)
 if "%subChoice%"=="4" (call :IDM & goto RUNSCRIPTSMENU)                       
+if "%subChoice%"=="6" goto MAINMENU                                             
 if "%subChoice%"=="5" (call :SPARKLE & goto RUNSCRIPTSMENU)                     
 goto RUNSCRIPTSMENU
 
