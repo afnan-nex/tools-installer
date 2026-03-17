@@ -451,12 +451,12 @@ echo.
 echo    Do you want to exit the script?
 echo.
 echo    [1] Yes - Exit Script
-echo    [2] No  - Return to Main Menu
+echo    [Z] No  - Return to Main Menu
 echo.
 echo   ================================================================
 echo.
 
-choice /c 12 /n /m "   Press 1 to exit, 2 to return: "
+choice /c 1Z /n /m "   Press 1 to exit, Z to return: "
 set "exitChoice=%errorlevel%"
 
 if "%exitChoice%"=="1" (
