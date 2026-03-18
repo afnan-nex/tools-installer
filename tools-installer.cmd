@@ -28,7 +28,7 @@ echo   ================================================================
 echo.
 echo    [1] About AFNAN                 [2] PowerShell Tweaks
 echo.
-echo    [3] ^>^>^>^>^>^> Essential ^<^<^<^<^<^<     [4] Run Scripts
+echo    [3] ^>^> Essential ^<^<             [4] Run Scripts
 echo.
 echo    [5] Recommended Tools           [6] Automation
 echo.
@@ -179,30 +179,27 @@ echo   ================================================================
 echo   =                    RUN SCRIPTS                               =
 echo   ================================================================
 echo.
-echo    [1] Chris Titus Tool
+echo    [1] Chris Titus Tool          [4] IDM
 echo.
-echo    [2] Mass Grave
+echo    [2] Mass Grave                [5] Sparkle
 echo.
-echo    [3] Coporton
-echo.
-echo    [4] IDM
-echo.                                                                            
-echo    [5] Sparkle                                                              
+echo    [3] Coporton                  [6] GHGrab (GitHub Repo Grabber)
 echo.
 echo   ================================================================
 echo    [Z] Go Back
 echo   ================================================================
 echo.
 
-choice /c 12345Z /n /m "   Your Choice: "
+choice /c 123456Z /n /m "   Your Choice: "
 set "subChoice=%errorlevel%"
 
 if "%subChoice%"=="1" (call :TITUS & goto RUNSCRIPTSMENU)
 if "%subChoice%"=="2" (call :MASSGRAVE & goto RUNSCRIPTSMENU)
 if "%subChoice%"=="3" (call :COPORTON & goto RUNSCRIPTSMENU)
 if "%subChoice%"=="4" (call :IDM & goto RUNSCRIPTSMENU)                       
-if "%subChoice%"=="5" (call :SPARKLE & goto RUNSCRIPTSMENU)                     
-if "%subChoice%"=="6" goto MAINMENU                                             
+if "%subChoice%"=="5" (call :SPARKLE & goto RUNSCRIPTSMENU)
+if "%subChoice%"=="6" (call :GHGRAB & goto RUNSCRIPTSMENU)
+if "%subChoice%"=="7" goto MAINMENU                                             
 goto RUNSCRIPTSMENU
 
 :: ==============================
@@ -357,7 +354,7 @@ echo                      / ___ \^|  _^| ^| ^|\  ^|/ ___ \^| ^|\  ^|
 echo                     /_/   \_\_^|   ^|_^| \_/_/   \_\_^| \_^|
 echo.
 echo   ================================================================
-echo   =             SYSTEM AND DEVELOPMENT TOOLS                     =
+echo   =                         SYSTEM TOOLS                         =
 echo   ================================================================
 echo.
 echo    [1] Winget              [6] Scrcpy GUI
@@ -403,7 +400,7 @@ echo                      / ___ \^|  _^| ^| ^|\  ^|/ ___ \^| ^|\  ^|
 echo                     /_/   \_\_^|   ^|_^| \_/_/   \_\_^| \_^|
 echo.
 echo   ================================================================
-echo   =              PRODUCTIVITY AND MEDIA APPS                     =
+echo   =                       PRODUCTIVITY APPS                      =
 echo   ================================================================
 echo.
 echo    [1] Office365           [5] LocalSend
@@ -582,6 +579,44 @@ echo ==========================================
 echo Running Sparkle Tool
 echo ==========================================
 start "" cmd /k powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/Parcoil/Sparkle/v2/get.ps1 | iex"
+echo.
+pause
+exit /b
+
+:GHGRAB
+echo ==========================================
+echo Running GHGrab - GitHub Repository Grabber
+echo ==========================================
+echo.
+echo   GHGrab allows you to quickly download files/folders from GitHub repos.
+echo   Example usage: npx @ghgrab/ghgrab https://github.com/user/repo/path
+echo.
+echo   Checking for Node.js/npx...
+
+:: Check if npx is available
+where npx >nul 2>&1
+if %errorlevel% neq 0 (
+    echo.
+    echo   [!] npx not found. Installing Node.js LTS via Chocolatey...
+    echo.
+    where choco >nul 2>&1
+    if %errorlevel% neq 0 (
+        echo   Installing Chocolatey first...
+        call :CHOCO
+    )
+    echo   Installing Node.js LTS...
+    choco install nodejs-lts -y
+    echo   Refreshing environment...
+    call refreshenv >nul 2>&1
+)
+
+echo.
+echo   Launching GHGrab...
+echo   ------------------------------------------
+echo.
+
+:: Run GHGrab in a new window so user can interact
+start "" cmd /k "echo === GHGrab === && npx @ghgrab/ghgrab && echo. && echo Press any key to return... && pause"
 echo.
 pause
 exit /b
