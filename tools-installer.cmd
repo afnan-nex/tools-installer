@@ -251,7 +251,7 @@ goto RECOMMENDEDTOOLS
 :AUTOMATIONMENU
 cls
 echo.
-echo                         _    _____ _   _    _    _   _ 
+echo                         _    _____ _   _    _    _   _
 echo                        / \  ^|  ___^| \ ^| ^|  / \  ^| \ ^| ^|
 echo                       / _ \ ^| ^|_  ^|  \^| ^| / _ \ ^|  \^| ^|
 echo                      / ___ \^|  _^| ^| ^|\  ^|/ ___ \^| ^|\  ^|
@@ -263,16 +263,19 @@ echo   ================================================================
 echo.
 echo    [1] n8n Workflow Automation
 echo.
+echo    [2] Google Workspace CLI (GWS)
+echo.
 echo   ================================================================
 echo    [Z] Go Back
 echo   ================================================================
 echo.
 
-choice /c 1Z /n /m "   Your Choice: "
+choice /c 12Z /n /m "   Your Choice: "
 set "subChoice=%errorlevel%"
 
 if "%subChoice%"=="1" (call :N8N & goto AUTOMATIONMENU)
-if "%subChoice%"=="2" goto MAINMENU
+if "%subChoice%"=="2" (call :GWS & goto AUTOMATIONMENU)
+if "%subChoice%"=="3" goto MAINMENU
 goto AUTOMATIONMENU
 
 :: ==============================
@@ -793,6 +796,23 @@ if %errorlevel% neq 0 (
 )
 echo Opening new CMD window to install n8n...
 start cmd /k "echo Installing n8n Workflow Automation... && npm install -g n8n@latest --verbose && echo n8n installation completed. && echo Setting NODES_EXCLUDE environment variable... && setx NODES_EXCLUDE "[]" && setx NODES_EXCLUDE "[]" /M && echo Environment variables set successfully. Press any key to close this window. && pause"
+echo.
+pause
+exit /b
+
+:GWS
+echo ==========================================
+echo Installing Google Workspace CLI (GWS)
+echo ==========================================
+where npm >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Node.js is required. Installing Node.js first...
+    call :NODELTS
+    echo Refreshing PATH environment variable...
+    set "PATH=%PATH%;%ProgramFiles%\nodejs"
+)
+echo Opening new CMD window to install Google Workspace CLI...
+start cmd /k "echo Installing Google Workspace CLI... && npm install -g @googleworkspace/cli && echo Installation completed. Press any key to close this window. && pause"
 echo.
 pause
 exit /b
