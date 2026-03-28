@@ -10,6 +10,7 @@ curl -o tools-installer.cmd https://raw.githubusercontent.com/afnan-nex/tools-in
 ## PS1 script
 ```
 curl -o tools-installer.ps1 https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.ps1 && powershell -ExecutionPolicy Bypass -File tools-installer.ps1
+
 ```
 
 ## **Run in PowerShell or CMD 🖥️**
