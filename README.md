@@ -2,14 +2,16 @@
 
 A Windows batch script with an interactive menu to quickly install developer tools and run automation scripts. This script simplifies the setup of essential development tools and automation utilities on Windows systems.
 
+## Run in CMD
+```
+curl -o tools-installer.ps1 https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.ps1 && powershell -ExecutionPolicy Bypass -File tools-installer.ps1
+
+```
+<details>
+  <summary>Other Commands</summary>
 ## **Curl Command**
 ```
 curl -o tools-installer.cmd https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd && tools-installer.cmd
-
-```
-## PS1 script
-```
-curl -o tools-installer.ps1 https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.ps1 && powershell -ExecutionPolicy Bypass -File tools-installer.ps1
 
 ```
 
@@ -25,7 +27,7 @@ Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/afnan-nex/
 Start-Process "$env:TEMP\tools-installer.cmd" -Verb RunAs
 
 ```
-
+<details>
 ## **Features**
 
 *   **Interactive Menu**: Choose from a list of options to install tools or run scripts.
