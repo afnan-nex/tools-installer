@@ -328,9 +328,9 @@ function Show-AIInPCMenu {
     Write-Host "   =                      AI IN PC                                ="
     Write-Host "   ================================================================"
     Write-Host ""
-    Write-Host "    [1] Google Gemini CLI"
+    Write-Host "    [1] Google Gemini CLI       [3] LLM-Checker Recommend"
     Write-Host ""
-    Write-Host "    [2] Qwen AI CLI"
+    Write-Host "    [2] Qwen AI CLI             [4] Ollama"
     Write-Host ""
     Write-Host "   ================================================================"
     Write-Host "    [Z] Go Back"
@@ -342,6 +342,8 @@ function Show-AIInPCMenu {
     switch ($subChoice) {
         '1' { Install-Gemini; Show-AIInPCMenu }
         '2' { Install-Qwen; Show-AIInPCMenu }
+        '3' { Run-LLMChecker; Show-AIInPCMenu }
+        '4' { Install-Ollama; Show-AIInPCMenu }
         'Z' { Show-MainMenu }
         default { Show-AIInPCMenu }
     }
@@ -889,6 +891,37 @@ function Install-Qwen {
     $qwenCmd = 'echo Installing Qwen AI CLI... && npm install -g @qwen-code/qwen-code@latest --verbose && echo Installation completed. If failed, visit: https://github.com/QwenLM/Qwen && echo Press any key to close this window. && pause'
     Start-Process cmd -ArgumentList "/k", $qwenCmd
     Write-Host ""
+    Pause-Script
+}
+
+function Run-LLMChecker {
+    Write-Host "=========================================="
+    Write-Host "Running LLM-Checker Recommendation"
+    Write-Host "=========================================="
+    if (-not (Get-Command npx -ErrorAction SilentlyContinue)) {
+        Write-Host "Node.js is required. Installing Node.js first..."
+        Install-NodeLTS
+    }
+    Write-Host "Opening new window to run LLM-Checker..."
+    $checkerCmd = 'echo Running LLM-Checker recommend... && npx llm-checker recommend && echo. && echo Finished. Press any key to close... && pause'
+    Start-Process cmd -ArgumentList "/k", $checkerCmd
+    Write-Host ""
+    Pause-Script
+}
+
+function Install-Ollama {
+    Write-Host "=========================================="
+    Write-Host "Installing Ollama"
+    Write-Host "=========================================="
+    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+        Write-Host "Winget is required. Installing Winget first..."
+        Install-Winget
+    }
+    Write-Host "Opening new window to install Ollama..."
+    $ollamaCmd = 'echo Installing Ollama... && winget install Ollama.Ollama && echo. && echo Finished. Press any key to close... && pause'
+    Start-Process cmd -ArgumentList "/k", $ollamaCmd
+    Write-Host ""
+    Refresh-Env
     Pause-Script
 }
 
