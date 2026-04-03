@@ -8,12 +8,14 @@ curl -o tools-installer.ps1 https://raw.githubusercontent.com/afnan-nex/tools-in
 
 ```
 
+<details>
+  <summary>Other commands</summary>
+  
 ## **Curl Command**
 ```
 curl -o tools-installer.cmd https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd && tools-installer.cmd
 
 ```
-
 ## **Run in PowerShell or CMD 🖥️**
 ```
 powershell -NoProfile -ExecutionPolicy Bypass -Command "irm 'https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd?$(Get-Date -Format yyyyMMddHHmmss)' -OutFile tools-installer.cmd; Start-Process tools-installer.cmd"
@@ -27,6 +29,7 @@ Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/afnan-nex/
 Start-Process "$env:TEMP\tools-installer.cmd" -Verb RunAs
 
 ```
+</details>
 
 ## **Features**
 
