@@ -7,8 +7,7 @@ A Windows batch script with an interactive menu to quickly install developer too
 curl -o tools-installer.ps1 https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.ps1 && powershell -ExecutionPolicy Bypass -File tools-installer.ps1
 
 ```
-<details>
-  <summary>Other Commands</summary>
+
 ## **Curl Command**
 ```
 curl -o tools-installer.cmd https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd && tools-installer.cmd
@@ -22,12 +21,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "irm 'https://raw.githubu
 ```
 ## **To Run Strictly in Powershell**
 ```
+
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
 Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd?$(Get-Date -Format yyyyMMddHHmmss)" -OutFile "$env:TEMP\tools-installer.cmd";
 Start-Process "$env:TEMP\tools-installer.cmd" -Verb RunAs
 
 ```
-<details>
+
 ## **Features**
 
 *   **Interactive Menu**: Choose from a list of options to install tools or run scripts.
