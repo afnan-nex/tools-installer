@@ -8,6 +8,12 @@ curl -o tools-installer.ps1 https://raw.githubusercontent.com/afnan-nex/tools-in
 
 ```
 
+## Run in CMD (Beta)
+```
+curl -o tools-installer-beta.ps1 https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer-beta.ps1 && powershell -ExecutionPolicy Bypass -File tools-installer-beta.ps1
+
+```
+
 <details>
   <summary>Other commands</summary>
   
