@@ -328,9 +328,9 @@ function Show-AIInPCMenu {
     Write-Host "   =                      AI IN PC                                ="
     Write-Host "   ================================================================"
     Write-Host ""
-    Write-Host "    [1] Google Gemini CLI       [3] LLM-Checker Recommend"
+    Write-Host "    [1] Agy                     [3] LLM-Checker Recommend"
     Write-Host ""
-    Write-Host "    [2] Qwen AI CLI             [4] Ollama"
+    Write-Host "    [2] Opencode                [4] Ollama"
     Write-Host ""
     Write-Host "   ================================================================"
     Write-Host "    [Z] Go Back"
@@ -340,8 +340,8 @@ function Show-AIInPCMenu {
     $subChoice = Get-MenuChoice
 
     switch ($subChoice) {
-        '1' { Install-Gemini; Show-AIInPCMenu }
-        '2' { Install-Qwen; Show-AIInPCMenu }
+        '1' { Install-Agy; Show-AIInPCMenu }
+        '2' { Install-Opencode; Show-AIInPCMenu }
         '3' { Run-LLMChecker; Show-AIInPCMenu }
         '4' { Install-Ollama; Show-AIInPCMenu }
         'Z' { Show-MainMenu }
@@ -860,26 +860,20 @@ function Install-GWS {
     Pause-Script
 }
 
-function Install-Gemini {
+function Install-Agy {
     Write-Host "=========================================="
-    Write-Host "Installing Google AI CLI (Official CLI)"
+    Write-Host "Installing Agy"
     Write-Host "=========================================="
-    if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
-        Write-Host "Node.js is required. Installing Node.js first..."
-        Install-NodeLTS
-        Write-Host "Refreshing PATH environment variable..."
-        $env:Path += ";$env:ProgramFiles\nodejs"
-    }
-    Write-Host "Opening new CMD window to install Google AI CLI..."
-    $geminiCmd = 'echo Installing Google AI CLI... && npm install -g @google/gemini-cli@latest --verbose && echo Installation completed. Press any key to close this window. && pause'
-    Start-Process cmd -ArgumentList "/k", $geminiCmd
+    Write-Host "Opening new CMD window to install Agy..."
+    $agyCmd = 'echo Installing Agy... && curl -fsSL https://antigravity.google/cli/install.cmd -o install.cmd && install.cmd && del install.cmd && echo Installation completed. Press any key to close this window. && pause'
+    Start-Process cmd -ArgumentList "/k", $agyCmd
     Write-Host ""
     Pause-Script
 }
 
-function Install-Qwen {
+function Install-Opencode {
     Write-Host "=========================================="
-    Write-Host "Installing Qwen AI"
+    Write-Host "Installing Opencode"
     Write-Host "=========================================="
     if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
         Write-Host "Node.js is required. Installing Node.js first..."
@@ -887,9 +881,9 @@ function Install-Qwen {
         Write-Host "Refreshing PATH environment variable..."
         $env:Path += ";$env:ProgramFiles\nodejs"
     }
-    Write-Host "Opening new CMD window to install Qwen AI CLI..."
-    $qwenCmd = 'echo Installing Qwen AI CLI... && npm install -g @qwen-code/qwen-code@latest --verbose && echo Installation completed. If failed, visit: https://github.com/QwenLM/Qwen && echo Press any key to close this window. && pause'
-    Start-Process cmd -ArgumentList "/k", $qwenCmd
+    Write-Host "Opening new CMD window to install Opencode..."
+    $opencodeCmd = 'echo Installing Opencode... && npm i -g opencode-ai && echo Installation completed. Press any key to close this window. && pause'
+    Start-Process cmd -ArgumentList "/k", $opencodeCmd
     Write-Host ""
     Pause-Script
 }
