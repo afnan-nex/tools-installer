@@ -328,11 +328,9 @@ function Show-AIInPCMenu {
     Write-Host "   =                      AI IN PC                                ="
     Write-Host "   ================================================================"
     Write-Host ""
-    Write-Host "    [1] Agy                     [4] LLM-Checker Recommend"
+    Write-Host "    [1] Agy                     [3] LLM-Checker Recommend"
     Write-Host ""
-    Write-Host "    [2] Opencode                [5] Ollama"
-    Write-Host ""
-    Write-Host "    [3] Google Desktop App"
+    Write-Host "    [2] Opencode                [4] Ollama"
     Write-Host ""
     Write-Host "   ================================================================"
     Write-Host "    [Z] Go Back"
@@ -344,9 +342,8 @@ function Show-AIInPCMenu {
     switch ($subChoice) {
         '1' { Install-Agy; Show-AIInPCMenu }
         '2' { Install-Opencode; Show-AIInPCMenu }
-        '3' { Open-GoogleDesktopApp; Show-AIInPCMenu }
-        '4' { Run-LLMChecker; Show-AIInPCMenu }
-        '5' { Install-Ollama; Show-AIInPCMenu }
+        '3' { Run-LLMChecker; Show-AIInPCMenu }
+        '4' { Install-Ollama; Show-AIInPCMenu }
         'Z' { Show-MainMenu }
         default { Show-AIInPCMenu }
     }
@@ -702,7 +699,7 @@ function Install-Agy {
     Write-Host "Installing Agy"
     Write-Host "=========================================="
     Write-Host "Launching installation in a new window..."
-    $agyCmd = 'echo Installing Agy... && curl -fsSL https://antigravity.google/cli/install.cmd -o install.cmd && install.cmd --verbose && del install.cmd && echo. && echo Installation completed. Press any key to close this window. && pause'
+    $agyCmd = 'echo Installing Agy... && curl -fsSL https://antigravity.google/cli/install.cmd -o install.cmd && install.cmd && del install.cmd && echo. && echo Installation completed. Press any key to close this window. && pause'
     Start-Process cmd -ArgumentList "/k", $agyCmd
 }
 
@@ -711,16 +708,8 @@ function Install-Opencode {
     Write-Host "Installing Opencode"
     Write-Host "=========================================="
     Write-Host "Launching installation in a new window..."
-    $opencodeCmd = 'echo Installing Opencode... && npm i -g opencode-ai --verbose && echo. && echo Installation completed. Press any key to close this window. && pause'
+    $opencodeCmd = 'echo Installing Opencode... && npm i -g opencode-ai && echo. && echo Installation completed. Press any key to close this window. && pause'
     Start-Process cmd -ArgumentList "/k", $opencodeCmd
-}
-
-function Open-GoogleDesktopApp {
-    Write-Host "=========================================="
-    Write-Host "Opening Google Desktop App"
-    Write-Host "=========================================="
-    Write-Host "Opening link in browser..."
-    Start-Process "https://search.google/google-app/desktop/next-steps/"
 }
 
 function Run-LLMChecker {
