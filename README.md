@@ -8,6 +8,12 @@ curl -o tools-installer.ps1 https://raw.githubusercontent.com/afnan-nex/tools-in
 
 ```
 
+<p align="center">
+  <a href="https://github.com/afnan-nex/tools-installer/blob/main/Setup/Tools-Installer-Setup.exe">
+    <img src="https://img.shields.io/badge/Download-Setup.exe-blue?style=for-the-badge&logo=windows" alt="Download Setup">
+  </a>
+</p>
+
 ## Run in CMD (Beta)
 ```
 curl -o tools-installer-beta.ps1 https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer-beta.ps1 && powershell -ExecutionPolicy Bypass -File tools-installer-beta.ps1
