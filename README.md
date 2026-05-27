@@ -9,7 +9,7 @@ curl -o tools-installer.ps1 https://raw.githubusercontent.com/afnan-nex/tools-in
 ```
 
 <p align="center">
-  <a href="https://github.com/afnan-nex/tools-installer/blob/main/Setup/Tools-Installer-Setup.exe">
+  <a href="https://raw.githubusercontent.com/afnan-nex/tools-installer/refs/heads/main/Setup/Tools-Installer-Setup.exe">
     <img src="https://img.shields.io/badge/Download-Setup.exe-blue?style=for-the-badge&logo=windows" alt="Download Setup">
   </a>
 </p>
