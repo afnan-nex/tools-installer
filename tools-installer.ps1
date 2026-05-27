@@ -213,6 +213,8 @@ function Show-RunScriptsMenu {
     Write-Host ""
     Write-Host "    [3] Coporton                  [6] GHGrab (GitHub Repo Grabber)"
     Write-Host ""
+    Write-Host "    [7] Install Tools Installer Setup"
+    Write-Host ""
     Write-Host "   ================================================================"
     Write-Host "    [Z] Go Back"
     Write-Host "   ================================================================"
@@ -227,6 +229,7 @@ function Show-RunScriptsMenu {
         '4' { Install-IDM; Show-RunScriptsMenu }
         '5' { Run-Sparkle; Show-RunScriptsMenu }
         '6' { Run-GHGrab; Show-RunScriptsMenu }
+        '7' { Run-Setup; Show-RunScriptsMenu }
         'Z' { Show-MainMenu }
         default { Show-RunScriptsMenu }
     }
@@ -328,9 +331,11 @@ function Show-AIInPCMenu {
     Write-Host "   =                      AI IN PC                                ="
     Write-Host "   ================================================================"
     Write-Host ""
-    Write-Host "    [1] Agy                     [3] LLM-Checker Recommend"
+    Write-Host "    [1] Agy                     [4] LLM-Checker Recommend"
     Write-Host ""
-    Write-Host "    [2] Opencode                [4] Ollama"
+    Write-Host "    [2] Opencode                [5] Ollama"
+    Write-Host ""
+    Write-Host "    [3] Google Desktop App"
     Write-Host ""
     Write-Host "   ================================================================"
     Write-Host "    [Z] Go Back"
@@ -342,8 +347,9 @@ function Show-AIInPCMenu {
     switch ($subChoice) {
         '1' { Install-Agy; Show-AIInPCMenu }
         '2' { Install-Opencode; Show-AIInPCMenu }
-        '3' { Run-LLMChecker; Show-AIInPCMenu }
-        '4' { Install-Ollama; Show-AIInPCMenu }
+        '3' { Open-GoogleDesktopApp; Show-AIInPCMenu }
+        '4' { Run-LLMChecker; Show-AIInPCMenu }
+        '5' { Install-Ollama; Show-AIInPCMenu }
         'Z' { Show-MainMenu }
         default { Show-AIInPCMenu }
     }
@@ -604,6 +610,15 @@ function Run-GHGrab {
     Start-Process cmd -ArgumentList "/k", "echo === GHGrab === && npx @ghgrab/ghgrab && echo. && echo Press any key to close... && pause"
 }
 
+function Run-Setup {
+    Write-Host "=========================================="
+    Write-Host "Running Install Tools Installer Setup"
+    Write-Host "=========================================="
+    Write-Host "Downloading and launching Install Tools Installer Setup in a new window..."
+    $setupCmd = 'echo Downloading Setup... && curl.exe -L -o "%TEMP%\Tools-Installer-Setup.exe" "https://github.com/afnan-nex/tools-installer/raw/main/Setup/Tools-Installer-Setup.exe" && if exist "%TEMP%\Tools-Installer-Setup.exe" ( "%TEMP%\Tools-Installer-Setup.exe" ) else ( echo Download failed! ) && pause'
+    Start-Process cmd -ArgumentList "/k", $setupCmd
+}
+
 function Install-Python {
     Write-Host "=========================================="
     Write-Host "Installing Python"
@@ -699,7 +714,7 @@ function Install-Agy {
     Write-Host "Installing Agy"
     Write-Host "=========================================="
     Write-Host "Launching installation in a new window..."
-    $agyCmd = 'echo Installing Agy... && curl -fsSL https://antigravity.google/cli/install.cmd -o install.cmd && install.cmd && del install.cmd && echo. && echo Installation completed. Press any key to close this window. && pause'
+    $agyCmd = 'echo Installing Agy... && curl -fsSL https://antigravity.google/cli/install.cmd -o install.cmd && install.cmd --verbose && del install.cmd && echo. && echo Installation completed. Press any key to close this window. && pause'
     Start-Process cmd -ArgumentList "/k", $agyCmd
 }
 
@@ -708,8 +723,16 @@ function Install-Opencode {
     Write-Host "Installing Opencode"
     Write-Host "=========================================="
     Write-Host "Launching installation in a new window..."
-    $opencodeCmd = 'echo Installing Opencode... && npm i -g opencode-ai && echo. && echo Installation completed. Press any key to close this window. && pause'
+    $opencodeCmd = 'echo Installing Opencode... && npm i -g opencode-ai --verbose && echo. && echo Installation completed. Press any key to close this window. && pause'
     Start-Process cmd -ArgumentList "/k", $opencodeCmd
+}
+
+function Open-GoogleDesktopApp {
+    Write-Host "=========================================="
+    Write-Host "Opening Google Desktop App"
+    Write-Host "=========================================="
+    Write-Host "Opening link in browser..."
+    Start-Process "https://search.google/google-app/desktop/next-steps/"
 }
 
 function Run-LLMChecker {
