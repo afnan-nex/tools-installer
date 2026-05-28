@@ -330,7 +330,7 @@ function Show-AIInPCMenu {
     Write-Host "   =                      AI IN PC                                ="
     Write-Host "   ================================================================"
     Write-Host ""
-    Write-Host "    [1] Agy                     [4] LLM-Checker Recommend"
+    Write-Host "    [1] Agy                     [4] LLM-Checker"
     Write-Host ""
     Write-Host "    [2] Opencode                [5] Ollama"
     Write-Host ""
@@ -704,7 +704,7 @@ function Run-LLMChecker {
     Write-Host "Running LLM-Checker Recommendation"
     Write-Host "=========================================="
     Write-Host "Launching in a new window..."
-    $checkerCmd = 'echo Running LLM-Checker recommend... && npx llm-checker recommend && echo. && echo Finished. Press any key to close... && pause'
+    $checkerCmd = 'echo Running LLM-Checker Recommendation... && npx llm-checker Recommendation && echo. && echo Finished. Press any key to close... && pause'
     Start-Process cmd -ArgumentList "/k", $checkerCmd
 }
 
