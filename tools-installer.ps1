@@ -52,9 +52,9 @@ function Show-MainMenu {
     Write-Host ""
     Write-Host "    [5] Recommended Tools           [6] Automation"
     Write-Host ""
-    Write-Host "    [7] AI in PC                    [8] Context Menu"
+    Write-Host "    [7] AI in PC                    [8] System Tools"
     Write-Host ""
-    Write-Host "    [9] System Tools                [0] Productivity Apps"
+    Write-Host "    [9] Productivity Apps"
     Write-Host ""
     Write-Host "   ================================================================"
     Write-Host "    [Z] exit"
@@ -71,9 +71,8 @@ function Show-MainMenu {
         '5' { Show-RecommendedTools }
         '6' { Show-AutomationMenu }
         '7' { Show-AIInPCMenu }
-        '8' { Show-ContextMenuMenu }
-        '9' { Show-SystemDevMenu }
-        '0' { Show-ProductivityMenu }
+        '8' { Show-SystemDevMenu }
+        '9' { Show-ProductivityMenu }
         'Z' { Show-ConfirmExit }
         default { Show-MainMenu }
     }
@@ -356,42 +355,7 @@ function Show-AIInPCMenu {
 }
 
 # ==============================
-# CONTEXT MENU MENU (8)
-# ==============================
-function Show-ContextMenuMenu {
-    Clear-Host
-    Write-Host ""
-    Write-Host "                         _    _____ _   _    _    _   _ "
-    Write-Host "                        / \  |  ___| \ | |  / \  | \ | |"
-    Write-Host "                       / _ \ | |_  |  \| | / _ \ |  \| |"
-    Write-Host "                      / ___ \|  _| | |\  |/ ___ \| |\  |"
-    Write-Host "                     /_/   \_\_|   |_| \_/_/   \_\_| \_|"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "   =                    CONTEXT MENU                              ="
-    Write-Host "   ================================================================"
-    Write-Host ""
-    Write-Host "    [1] Windows 11 New Context Menu"
-    Write-Host ""
-    Write-Host "    [2] Windows 10 Classic Context Menu"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "    [Z] Go Back"
-    Write-Host "   ================================================================"
-    Write-Host ""
-
-    $subChoice = Get-MenuChoice
-
-    switch ($subChoice) {
-        '1' { Set-Win11Menu; Show-ContextMenuMenu }
-        '2' { Set-Win10Menu; Show-ContextMenuMenu }
-        'Z' { Show-MainMenu }
-        default { Show-ContextMenuMenu }
-    }
-}
-
-# ==============================
-# SYSTEM & DEVELOPMENT TOOLS MENU (9)
+# SYSTEM & DEVELOPMENT TOOLS MENU (8)
 # ==============================
 function Show-SystemDevMenu {
     Clear-Host
@@ -439,7 +403,7 @@ function Show-SystemDevMenu {
 }
 
 # ==============================
-# PRODUCTIVITY & MEDIA APPS MENU (0)
+# PRODUCTIVITY & MEDIA APPS MENU (9)
 # ==============================
 function Show-ProductivityMenu {
     Clear-Host
@@ -753,19 +717,6 @@ function Install-Ollama {
     Start-Process cmd -ArgumentList "/k", $ollamaCmd
 }
 
-function Set-Win11Menu {
-    Write-Host "=========================================="
-    Write-Host "Switching to Windows 11 New Context Menu"
-    Write-Host "=========================================="
-    Start-Process cmd -ArgumentList "/k", "reg delete HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2} /f && taskkill /f /im explorer.exe && start explorer.exe"
-}
-
-function Set-Win10Menu {
-    Write-Host "=========================================="
-    Write-Host "Switching to Windows 10 Classic Context Menu"
-    Write-Host "=========================================="
-    Start-Process cmd -ArgumentList "/k", "reg add HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32 /f /ve && taskkill /f /im explorer.exe && start explorer.exe"
-}
 
 function Install-Winget {
     Write-Host "=========================================="
