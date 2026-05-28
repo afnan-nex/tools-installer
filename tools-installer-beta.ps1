@@ -477,7 +477,7 @@ function Show-ConfirmExit {
             Write-Host ""
             Write-Host "   Thank you for using Tool Installer by AFNAN! Goodbye."
             Write-Host ""
-            Start-Sleep -Seconds 2
+            Start-Sleep -Seconds 1
             exit
         }
         'Z' { Show-MainMenu }
