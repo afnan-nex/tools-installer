@@ -22,20 +22,37 @@ OutputBaseFilename=Tools-Installer
 SetupIconFile=C:\Users\Admin\Downloads\{#MyAppIconName}
 SolidCompression=yes
 WizardStyle=modern dynamic
+; FIX 1: Ensures the uninstaller runs with administrative privileges to modify Program Files
+PrivilegesRequired=admin
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
-; Removed the 'unchecked' flag so it is ticked by default
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
 Source: "C:\Users\Admin\Downloads\{#MyAppIconName}"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{autoprograms}\{#MyAppName}"; Filename: "{cmd}"; Parameters: "/c ""cd /d ""{app}"" & curl -L -o tools-installer.ps1 https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.ps1 & powershell -NoProfile -ExecutionPolicy Bypass -File .\tools-installer.ps1"""; IconFilename: "{app}\{#MyAppIconName}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{cmd}"; Parameters: "/c ""cd /d ""{app}"" & curl -L -o tools-installer.ps1 https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.ps1 & powershell -NoProfile -ExecutionPolicy Bypass -File .\tools-installer.ps1"""; Tasks: desktopicon; IconFilename: "{app}\{#MyAppIconName}"
+Name: "{autoprograms}\{#MyAppName}"; Filename: "{cmd}"; Parameters: "/c ""curl -L -o ""%TEMP%\tools-installer.ps1"" https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File ""%TEMP%\tools-installer.ps1"""""; IconFilename: "{app}\{#MyAppIconName}"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{cmd}"; Parameters: "/c ""curl -L -o ""%TEMP%\tools-installer.ps1"" https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File ""%TEMP%\tools-installer.ps1"""""; Tasks: desktopicon; IconFilename: "{app}\{#MyAppIconName}"
 
 [Run]
-Filename: "{cmd}"; Parameters: "/c ""cd /d ""{app}"" & curl -L -o tools-installer.ps1 https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.ps1 & powershell -NoProfile -ExecutionPolicy Bypass -File .\tools-installer.ps1"""; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: postinstall skipifsilent
+Filename: "{cmd}"; Parameters: "/c ""curl -L -o ""%TEMP%\tools-installer.ps1"" https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File ""%TEMP%\tools-installer.ps1"""""; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: postinstall skipifsilent
+
+[UninstallDelete]
+Type: filesandordirs; Name: "{app}"
+
+; FIX 2: A code block that forces directory deletion after the uninstaller releases its own files
+[Code]
+procedure CurUninstallStepChanged(JustAfterAnUninstall: TUninstallStep);
+begin
+  if JustAfterAnUninstall = usPostUninstall then
+  begin
+    if DirExists(ExpandConstant('{app}')) then
+    begin
+      DelTree(ExpandConstant('{app}'), True, True, True);
+    end;
+  end;
+end;
