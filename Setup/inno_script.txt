@@ -18,7 +18,7 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
-OutputBaseFilename=Tools-Installer-Setup
+OutputBaseFilename=Tools-Installer
 SetupIconFile=C:\Users\Admin\Downloads\{#MyAppIconName}
 SolidCompression=yes
 WizardStyle=modern dynamic
@@ -27,7 +27,8 @@ WizardStyle=modern dynamic
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+; Removed the 'unchecked' flag so it is ticked by default
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
 Source: "C:\Users\Admin\Downloads\{#MyAppIconName}"; DestDir: "{app}"; Flags: ignoreversion
