@@ -4,7 +4,7 @@ A Windows batch script with an interactive menu to quickly install developer too
 
 ## Run in CMD
 ```
-curl -o tools-installer.ps1 https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.ps1 && powershell -ExecutionPolicy Bypass -File tools-installer.ps1
+curl -L -o "%TEMP%\tools-installer.ps1" https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\tools-installer.ps1"
 
 ```
 
@@ -16,7 +16,7 @@ curl -o tools-installer.ps1 https://raw.githubusercontent.com/afnan-nex/tools-in
 
 ## Run in CMD (Beta)
 ```
-curl -o tools-installer-beta.ps1 https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer-beta.ps1 && powershell -ExecutionPolicy Bypass -File tools-installer-beta.ps1
+curl -L -o "%TEMP%\tools-installer-beta.ps1" https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer-beta.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\tools-installer-beta.ps1"
 
 ```
 
