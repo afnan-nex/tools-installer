@@ -330,7 +330,7 @@ function Show-AIInPCMenu {
     Write-Host "   =                      AI IN PC                                ="
     Write-Host "   ================================================================"
     Write-Host ""
-    Write-Host "    [1] Agy                     [4] LLM-Checker Recommend"
+    Write-Host "    [1] Agy                     [4] LLM-Checker"
     Write-Host ""
     Write-Host "    [2] Opencode                [5] Ollama"
     Write-Host ""
@@ -579,7 +579,7 @@ function Run-Setup {
     Write-Host "Running Install Tools Installer Setup"
     Write-Host "=========================================="
     Write-Host "Downloading and launching Install Tools Installer Setup in a new window..."
-    $setupCmd = 'echo Downloading Setup... && curl.exe -L -o "%TEMP%\Tools-Installer-Setup.exe" "https://github.com/afnan-nex/tools-installer/raw/main/Setup/Tools-Installer-Setup.exe" && if exist "%TEMP%\Tools-Installer-Setup.exe" ( "%TEMP%\Tools-Installer-Setup.exe" ) else ( echo Download failed! ) && pause'
+    $setupCmd = 'echo Downloading Setup... && curl.exe -L -o "%TEMP%\Tools-Installer.exe" "https://github.com/afnan-nex/tools-installer/raw/main/Setup/Tools-Installer.exe" && if exist "%TEMP%\Tools-Installer.exe" ( "%TEMP%\Tools-Installer.exe" ) else ( echo Download failed! ) && pause'
     Start-Process cmd -ArgumentList "/k", $setupCmd
 }
 
@@ -704,7 +704,7 @@ function Run-LLMChecker {
     Write-Host "Running LLM-Checker Recommendation"
     Write-Host "=========================================="
     Write-Host "Launching in a new window..."
-    $checkerCmd = 'echo Running LLM-Checker recommend... && npx llm-checker recommend && echo. && echo Finished. Press any key to close... && pause'
+    $checkerCmd = 'echo Running LLM-Checker Recommendation... && npx llm-checker Recommendation && echo. && echo Finished. Press any key to close... && pause'
     Start-Process cmd -ArgumentList "/k", $checkerCmd
 }
 
