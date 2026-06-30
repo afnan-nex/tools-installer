@@ -704,7 +704,7 @@ function Run-LLMChecker {
     Write-Host "Running LLM-Checker Recommendation"
     Write-Host "=========================================="
     Write-Host "Launching in a new window..."
-    $checkerCmd = 'echo Running LLM-Checker Recommendation... && npx llm-checker Recommendation && echo. && echo Finished. Press any key to close... && pause'
+    $checkerCmd = 'echo Running LLM-Checker Recommendation... && npx --yes llm-checker Recommendation && echo. && echo Finished. Press any key to close... && pause'
     Start-Process cmd -ArgumentList "/k", $checkerCmd
 }
 
