@@ -571,7 +571,7 @@ function Run-GHGrab {
     Write-Host "Running GHGrab - GitHub Repository Grabber"
     Write-Host "=========================================="
     Write-Host "Launching GHGrab in a new window..."
-    Start-Process cmd -ArgumentList "/k", "echo === GHGrab === && npx @ghgrab/ghgrab && echo. && echo Press any key to close... && pause"
+    Start-Process cmd -ArgumentList "/k", "echo === GHGrab === && npx --yes @ghgrab/ghgrab && echo. && echo Press any key to close... && pause"
 }
 
 function Run-Setup {
