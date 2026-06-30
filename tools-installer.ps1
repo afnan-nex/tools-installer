@@ -578,9 +578,9 @@ function Run-GHGrab {
 }
 
 function Run-TorLink {
-    Write-Host "==============================================="
-    Write-Host "Running TorLink - Torrent Finder and Downloader"
-    Write-Host "==============================================="
+    Write-Host "================================================"
+    Write-Host "Running Tor Link - Torrent Finder and Downloader"
+    Write-Host "================================================"
     Write-Host "Launching TorLink in a new window..."
     Start-Process cmd -ArgumentList "/k", "echo === TorLink === && npx --yes torlnk && echo. && echo Press any key to close... && pause"
 }
