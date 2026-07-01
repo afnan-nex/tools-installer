@@ -427,7 +427,7 @@ function Show-ProductivityMenu {
     Write-Host ""
     Write-Host "    [3] Zen Browser         [7] ShareX"
     Write-Host ""
-    Write-Host "    [4] OBS Studio"
+    Write-Host "    [4] OBS Studio          [8] Q Bit Torrent"
     Write-Host ""
     Write-Host "   ================================================================"
     Write-Host "    [Z] Go Back"
@@ -444,6 +444,7 @@ function Show-ProductivityMenu {
         '5' { Install-LocalSend; Show-ProductivityMenu }
         '6' { Install-NotepadPP; Show-ProductivityMenu }
         '7' { Install-ShareX; Show-ProductivityMenu }
+        '8' { Install-QBit; Show-ProductivityMenu }
         'Z' { Show-MainMenu }
         default { Show-ProductivityMenu }
     }
@@ -879,6 +880,15 @@ function Install-ShareX {
     Write-Host "=========================================="
     Write-Host "Launching installation in a new window..."
     $sharexCmd = 'echo Installing ShareX via Chocolatey... && choco install sharex -y && echo. && echo ShareX installation completed. && pause'
+    Start-Process cmd -ArgumentList "/k", $sharexCmd
+}
+
+function Install-QBit {
+    Write-Host "=========================================="
+    Write-Host "Installing QBit Torrent"
+    Write-Host "=========================================="
+    Write-Host "Launching installation in a new window..."
+    $sharexCmd = 'echo Installing QBit Torrent via Chocolatey... && choco install qbittorrent -y && echo. && echo QBit Torrent installation completed. && pause'
     Start-Process cmd -ArgumentList "/k", $sharexCmd
 }
 
