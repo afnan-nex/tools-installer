@@ -214,6 +214,8 @@ function Show-RunScriptsMenu {
     Write-Host ""
     Write-Host "    [7] Install Tools Installer Setup"
     Write-Host ""
+    Write-Host "    [8] Tor Link"
+    Write-Host ""
     Write-Host "   ================================================================"
     Write-Host "    [Z] Go Back"
     Write-Host "   ================================================================"
@@ -229,6 +231,7 @@ function Show-RunScriptsMenu {
         '5' { Run-Sparkle; Show-RunScriptsMenu }
         '6' { Run-GHGrab; Show-RunScriptsMenu }
         '7' { Run-Setup; Show-RunScriptsMenu }
+        '8' { Run-TorLink; Show-RunScriptsMenu }
         'Z' { Show-MainMenu }
         default { Show-RunScriptsMenu }
     }
@@ -477,7 +480,7 @@ function Show-ConfirmExit {
             Write-Host ""
             Write-Host "   Thank you for using Tool Installer by AFNAN! Goodbye."
             Write-Host ""
-            Start-Sleep -Seconds 1
+            Start-Sleep -Seconds 0.5
             exit
         }
         'Z' { Show-MainMenu }
@@ -571,7 +574,15 @@ function Run-GHGrab {
     Write-Host "Running GHGrab - GitHub Repository Grabber"
     Write-Host "=========================================="
     Write-Host "Launching GHGrab in a new window..."
-    Start-Process cmd -ArgumentList "/k", "echo === GHGrab === && npx @ghgrab/ghgrab && echo. && echo Press any key to close... && pause"
+    Start-Process cmd -ArgumentList "/k", "echo === GHGrab === && npx --yes @ghgrab/ghgrab && echo. && echo Press any key to close... && pause"
+}
+
+function Run-TorLink {
+    Write-Host "================================================"
+    Write-Host "Running Tor Link - Torrent Finder and Downloader"
+    Write-Host "================================================"
+    Write-Host "Launching TorLink in a new window..."
+    Start-Process cmd -ArgumentList "/k", "echo === TorLink === && npx --yes torlnk && echo. && echo Press any key to close... && pause"
 }
 
 function Run-Setup {
@@ -704,7 +715,7 @@ function Run-LLMChecker {
     Write-Host "Running LLM-Checker Recommendation"
     Write-Host "=========================================="
     Write-Host "Launching in a new window..."
-    $checkerCmd = 'echo Running LLM-Checker Recommendation... && npx llm-checker Recommendation && echo. && echo Finished. Press any key to close... && pause'
+    $checkerCmd = 'echo Running LLM-Checker Recommendation... && npx --yes llm-checker Recommendation && echo. && echo Finished. Press any key to close... && pause'
     Start-Process cmd -ArgumentList "/k", $checkerCmd
 }
 
