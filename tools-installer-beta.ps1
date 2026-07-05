@@ -786,7 +786,7 @@ function Install-Zen {
     Write-Host "Installing Zen Browser"
     Write-Host "=========================================="
     Write-Host "Launching installation in a new window..."
-    $zenCmd = 'echo Downloading Zen Browser installer... & curl.exe -L -o "%TEMP%\zen-installer.exe" "https://github.com/zen-browser/desktop/releases/latest/download/zen.installer.exe" & if exist "%TEMP%\zen-installer.exe" (echo Running installer... & start /wait "" "%TEMP%\zen-installer.exe" & del "%TEMP%\zen-installer.exe") else (echo Download failed. Please install manually. & start https://zen-browser.app/download)'
+    $zenCmd = 'echo Installing Zen Browser via Chocolatey... && choco install zen-browser --prerelease -y && echo. && echo Zen Browser installation completed. && pause'
     Start-Process cmd -ArgumentList "/k", $zenCmd
 }
 
