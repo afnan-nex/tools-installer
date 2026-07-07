@@ -708,7 +708,7 @@ function Open-GoogleDesktopApp {
     Write-Host "Opening Google Desktop App"
     Write-Host "=========================================="
     Write-Host "Opening link in browser..."
-    Start-Process "https://search.google/google-app/desktop/next-steps/"
+    Start-Process "https://search.google/google-app/desktop/"
 }
 
 function Run-LLMChecker {
