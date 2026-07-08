@@ -522,7 +522,9 @@ function Install-Choco {
     Write-Host "Installing Chocolatey"
     Write-Host "=========================================="
     Write-Host "Launching installation in a new window..."
-    $chocoCmd = 'echo Installing Chocolatey... && powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString(''https://community.chocolatey.org/install.ps1''))" && echo. && echo Chocolatey installation completed. && pause'
+    
+    # Added 'refreshenv' to the end of the command chain so the new window recognizes 'choco' instantly
+    $chocoCmd = 'echo Installing Chocolatey... && powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString(''https://community.chocolatey.org/install.ps1''))" && echo. && echo Refreshing environment variables... && call refreshenv && echo Chocolatey installation completed. && pause'
     Start-Process cmd -ArgumentList "/k", $chocoCmd
 }
 
@@ -627,7 +629,9 @@ function Install-FFmpeg {
     Write-Host "Installing FFmpeg"
     Write-Host "=========================================="
     Write-Host "Launching installation in a new window..."
-    $ffmpegCmd = 'echo Installing FFmpeg via Chocolatey... && choco install ffmpeg -y && echo. && echo FFmpeg installation completed. && pause'
+    
+    # Added 'call refreshenv &&' at the start so the window recognizes 'choco' before running it
+    $ffmpegCmd = 'call refreshenv && echo Installing FFmpeg via Chocolatey... && choco install ffmpeg -y && echo. && echo FFmpeg installation completed. && pause'
     Start-Process cmd -ArgumentList "/k", $ffmpegCmd
 }
 
@@ -654,7 +658,9 @@ function Install-YTDLP {
     Write-Host "Installing yt-dlp"
     Write-Host "=========================================="
     Write-Host "Launching installation in a new window..."
-    $ytdlpCmd = 'echo Installing yt-dlp via Chocolatey... && choco install yt-dlp -y && echo. && echo yt-dlp installation completed. && pause'
+    # Added 'call refreshenv &&' at the start so this new window recognizes the 'choco' command
+    $ytdlpCmd = 'call refreshenv && echo Installing yt-dlp via Chocolatey... && choco install yt-dlp -y && echo. && echo yt-dlp installation completed. && pause'
+    
     Start-Process cmd -ArgumentList "/k", $ytdlpCmd
 }
 
