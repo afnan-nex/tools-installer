@@ -15,7 +15,7 @@ curl -L -o "%TEMP%\tools-installer.ps1" https://raw.githubusercontent.com/afnan-
 </p>
 
 ## Run in CMD (Beta)
-```
+```cmd
 curl -L -o "%TEMP%\tools-installer-beta.ps1" https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer-beta.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\tools-installer-beta.ps1"
 
 ```
@@ -25,24 +25,23 @@ curl -L -o "%TEMP%\tools-installer-beta.ps1" https://raw.githubusercontent.com/a
 
 ## **For Security Problem**
 Might I make it Permanent
-```
+```cmd
 curl -L -o "%TEMP%\tools-installer.ps1" https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\tools-installer.ps1"
 
 ```
 
 ## **Curl Command**
-```
+```cmd
 curl -o tools-installer.cmd https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd && tools-installer.cmd
 
 ```
 ## **Run in PowerShell or CMD 🖥️**
-```
+```ps1
 powershell -NoProfile -ExecutionPolicy Bypass -Command "irm 'https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd?$(Get-Date -Format yyyyMMddHHmmss)' -OutFile tools-installer.cmd; Start-Process tools-installer.cmd"
 
 ```
 ## **To Run Strictly in Powershell**
-```
-
+```ps1
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
 Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd?$(Get-Date -Format yyyyMMddHHmmss)" -OutFile "$env:TEMP\tools-installer.cmd";
 Start-Process "$env:TEMP\tools-installer.cmd" -Verb RunAs
