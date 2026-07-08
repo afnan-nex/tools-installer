@@ -1,746 +1,196 @@
-# Check for Administrator Privileges
-if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Host "Requesting administrator privileges..."
-    Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+# ============================================================
+#  Tool Installer GUI  -  by AFNAN
+#  Windows Forms GUI wrapper for tools-installer-beta.ps1
+#  Compatible with PowerShell 5.1 and PowerShell 7+
+# ============================================================
+
+# -- 1. ADMINISTRATOR ELEVATION -----------------------------------------------
+$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+if (-not $isAdmin) {
+    $relaunch = "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`""
+    Start-Process powershell -ArgumentList $relaunch -Verb RunAs
     exit
 }
 
-# Set Window Title and Color to match batch (Green text on Black background)
- $Host.UI.RawUI.WindowTitle = "Tool Installer Menu by Afnan"
- $Host.UI.RawUI.ForegroundColor = "Green"
- $Host.UI.RawUI.BackgroundColor = "Black"
-Clear-Host
+# -- 2. SUPPRESS CONSOLE WINDOW -----------------------------------------------
+Add-Type -Name Win32 -Namespace Native -MemberDefinition @'
+    [DllImport("kernel32.dll")] public static extern IntPtr GetConsoleWindow();
+    [DllImport("user32.dll")]   public static extern bool  ShowWindow(IntPtr hWnd, int nCmdShow);
+'@
+[Native.Win32]::ShowWindow([Native.Win32]::GetConsoleWindow(), 0) | Out-Null
 
-# Helper function to replicate batch 'pause'
-function Pause-Script {
-    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-}
+# -- 3. LOAD WINFORMS ---------------------------------------------------------
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
+[System.Windows.Forms.Application]::EnableVisualStyles()
 
-# Helper function to replicate batch 'choice /n'
-function Get-MenuChoice {
-    param([string]$Prompt = "   Your Choice: ")
-    Write-Host $Prompt -NoNewline
-    $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-    Write-Host $key.Character
-    return $key.Character.ToString().ToUpper()
-}
+# ============================================================
+#  SECTION A: ALL BACKEND FUNCTIONS (preserved from original)
+# ============================================================
 
-# Helper function to replicate batch 'refreshenv'
 function Refresh-Env {
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" +
+                [System.Environment]::GetEnvironmentVariable("Path","User")
 }
-
-# ==============================
-# MAIN MENU
-# ==============================
-function Show-MainMenu {
-    Clear-Host
-    Write-Host ""
-    Write-Host "                         _    _____ _   _    _    _   _ "
-    Write-Host "                        / \  |  ___| \ | |  / \  | \ | |"
-    Write-Host "                       / _ \ | |_  |  \| | / _ \ |  \| |"
-    Write-Host "                      / ___ \|  _| | |\  |/ ___ \| |\  |"
-    Write-Host "                     /_/   \_\_|   |_| \_/_/   \_\_| \_|"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "   =                    MAIN MENU - Press Key                     ="
-    Write-Host "   ================================================================"
-    Write-Host ""
-    Write-Host "    [1] About AFNAN                 [2] PowerShell Tweaks"
-    Write-Host ""
-    Write-Host "    [3] >> Essential <<             [4] Run Scripts"
-    Write-Host ""
-    Write-Host "    [5] Recommended Tools           [6] Automation"
-    Write-Host ""
-    Write-Host "    [7] AI in PC                    [8] System Tools"
-    Write-Host ""
-    Write-Host "    [9] Productivity Apps"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "    [Z] exit"
-    Write-Host "   ================================================================"
-    Write-Host ""
-
-    $mainChoice = Get-MenuChoice
-
-    switch ($mainChoice) {
-        '1' { Show-AboutAfnan }
-        '2' { Show-PowerShellMenu }
-        '3' { Show-EssentialMenu }
-        '4' { Show-RunScriptsMenu }
-        '5' { Show-RecommendedTools }
-        '6' { Show-AutomationMenu }
-        '7' { Show-AIInPCMenu }
-        '8' { Show-SystemDevMenu }
-        '9' { Show-ProductivityMenu }
-        'Z' { Show-ConfirmExit }
-        default { Show-MainMenu }
-    }
-}
-
-# ==============================
-# ABOUT AFNAN (1)
-# ==============================
-function Show-AboutAfnan {
-    Clear-Host
-    Write-Host ""
-    Write-Host "                         _    _____ _   _    _    _   _ "
-    Write-Host "                        / \  |  ___| \ | |  / \  | \ | |"
-    Write-Host "                       / _ \ | |_  |  \| | / _ \ |  \| |"
-    Write-Host "                      / ___ \|  _| | |\  |/ ___ \| |\  |"
-    Write-Host "                     /_/   \_\_|   |_| \_/_/   \_\_| \_|"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "   =                    ABOUT AFNAN                               ="
-    Write-Host "   ================================================================"
-    Write-Host ""
-    Write-Host "    This tool was created by AFNAN to help you quickly install"
-    Write-Host "    and configure various Windows tools, utilities, and scripts."
-    Write-Host ""
-    Write-Host "    Features:"
-    Write-Host "    - PowerShell policy management"
-    Write-Host "    - Essential development tools installation"
-    Write-Host "    - Popular scripts and utilities"
-    Write-Host "    - AI tools and automation setup"
-    Write-Host "    - System customization options"
-    Write-Host ""
-    Write-Host "    Portfolio: https://afnan-nex.github.io/portfolio/"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "    [1] Open Portfolio       [Z] Go Back"
-    Write-Host "   ================================================================"
-    Write-Host ""
-
-    $subChoice = Get-MenuChoice
-
-    switch ($subChoice) {
-        '1' { Open-Portfolio; Show-AboutAfnan }
-        'Z' { Show-MainMenu }
-        default { Show-AboutAfnan }
-    }
-}
-
-# ==============================
-# POWERSHELL TWEAKS MENU (2)
-# ==============================
-function Show-PowerShellMenu {
-    Clear-Host
-    Write-Host ""
-    Write-Host "                         _    _____ _   _    _    _   _ "
-    Write-Host "                        / \  |  ___| \ | |  / \  | \ | |"
-    Write-Host "                       / _ \ | |_  |  \| | / _ \ |  \| |"
-    Write-Host "                      / ___ \|  _| | |\  |/ ___ \| |\  |"
-    Write-Host "                     /_/   \_\_|   |_| \_/_/   \_\_| \_|"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "   =                 POWERSHELL TWEAKS                            ="
-    Write-Host "   ================================================================"
-    Write-Host ""
-    Write-Host "    [1] See Policy"
-    Write-Host ""
-    Write-Host "    [2] Unrestrict Policy"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "    [Z] Go Back"
-    Write-Host "   ================================================================"
-    Write-Host ""
-
-    $subChoice = Get-MenuChoice
-
-    switch ($subChoice) {
-        '1' { See-Policy; Show-PowerShellMenu }
-        '2' { Unrestrict-Policy; Show-PowerShellMenu }
-        'Z' { Show-MainMenu }
-        default { Show-PowerShellMenu }
-    }
-}
-
-# ==============================
-# ESSENTIAL MENU (3)
-# ==============================
-function Show-EssentialMenu {
-    Clear-Host
-    Write-Host ""
-    Write-Host "                         _    _____ _   _    _    _   _ "
-    Write-Host "                        / \  |  ___| \ | |  / \  | \ | |"
-    Write-Host "                       / _ \ | |_  |  \| | / _ \ |  \| |"
-    Write-Host "                      / ___ \|  _| | |\  |/ ___ \| |\  |"
-    Write-Host "                     /_/   \_\_|   |_| \_/_/   \_\_| \_|"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "   =               >>>>>> ESSENTIAL <<<<<<                 ="
-    Write-Host "   ================================================================"
-    Write-Host ""
-    Write-Host "    [1] Chocolatey"
-    Write-Host ""
-    Write-Host "    [2] Node.js LTS"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "    [Z] Go Back"
-    Write-Host "   ================================================================"
-    Write-Host ""
-
-    $subChoice = Get-MenuChoice
-
-    switch ($subChoice) {
-        '1' { Install-Choco; Show-EssentialMenu }
-        '2' { Install-NodeLTS; Show-EssentialMenu }
-        'Z' { Show-MainMenu }
-        default { Show-EssentialMenu }
-    }
-}
-
-# ==============================
-# RUN SCRIPTS MENU (4)
-# ==============================
-function Show-RunScriptsMenu {
-    Clear-Host
-    Write-Host ""
-    Write-Host "                         _    _____ _   _    _    _   _ "
-    Write-Host "                        / \  |  ___| \ | |  / \  | \ | |"
-    Write-Host "                       / _ \ | |_  |  \| | / _ \ |  \| |"
-    Write-Host "                      / ___ \|  _| | |\  |/ ___ \| |\  |"
-    Write-Host "                     /_/   \_\_|   |_| \_/_/   \_\_| \_|"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "   =                    RUN SCRIPTS                               ="
-    Write-Host "   ================================================================"
-    Write-Host ""
-    Write-Host "    [1] Chris Titus Tool          [4] IDM"
-    Write-Host ""
-    Write-Host "    [2] Mass Grave                [5] Sparkle"
-    Write-Host ""
-    Write-Host "    [3] Coporton                  [6] GHGrab (GitHub Repo Grabber)"
-    Write-Host ""
-    Write-Host "    [7] Install Tools Installer Setup"
-    Write-Host ""
-    Write-Host "    [8] Tor Link"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "    [Z] Go Back"
-    Write-Host "   ================================================================"
-    Write-Host ""
-
-    $subChoice = Get-MenuChoice
-
-    switch ($subChoice) {
-        '1' { Run-Titus; Show-RunScriptsMenu }
-        '2' { Run-MassGrave; Show-RunScriptsMenu }
-        '3' { Run-Coporton; Show-RunScriptsMenu }
-        '4' { Install-IDM; Show-RunScriptsMenu }
-        '5' { Run-Sparkle; Show-RunScriptsMenu }
-        '6' { Run-GHGrab; Show-RunScriptsMenu }
-        '7' { Run-Setup; Show-RunScriptsMenu }
-        '8' { Run-TorLink; Show-RunScriptsMenu }
-        'Z' { Show-MainMenu }
-        default { Show-RunScriptsMenu }
-    }
-}
-
-# ==============================
-# RECOMMENDED TOOLS MENU (5)
-# ==============================
-function Show-RecommendedTools {
-    Clear-Host
-    Write-Host ""
-    Write-Host "                         _    _____ _   _    _    _   _ "
-    Write-Host "                        / \  |  ___| \ | |  / \  | \ | |"
-    Write-Host "                       / _ \ | |_  |  \| | / _ \ |  \| |"
-    Write-Host "                      / ___ \|  _| | |\  |/ ___ \| |\  |"
-    Write-Host "                     /_/   \_\_|   |_| \_/_/   \_\_| \_|"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "   =                 RECOMMENDED TOOLS                            ="
-    Write-Host "   ================================================================"
-    Write-Host ""
-    Write-Host "    [1] Git              [5] 7-Zip"
-    Write-Host ""
-    Write-Host "    [2] Python           [6] WinDirStat"
-    Write-Host ""
-    Write-Host "    [3] .NET Runtime     [7] yt-dlp"
-    Write-Host ""
-    Write-Host "    [4] FFmpeg           [8] ngrok"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "    [Z] Go Back"
-    Write-Host "   ================================================================"
-    Write-Host ""
-
-    $subChoice = Get-MenuChoice
-
-    switch ($subChoice) {
-        '1' { Install-Git; Show-RecommendedTools }
-        '2' { Install-Python; Show-RecommendedTools }
-        '3' { Install-Dotnet; Show-RecommendedTools }
-        '4' { Install-FFmpeg; Show-RecommendedTools }
-        '5' { Install-7Zip; Show-RecommendedTools }
-        '6' { Install-WinDirStat; Show-RecommendedTools }
-        '7' { Install-YTDLP; Show-RecommendedTools }
-        '8' { Install-Ngrok; Show-RecommendedTools }
-        'Z' { Show-MainMenu }
-        default { Show-RecommendedTools }
-    }
-}
-
-# ==============================
-# AUTOMATION MENU (6)
-# ==============================
-function Show-AutomationMenu {
-    Clear-Host
-    Write-Host ""
-    Write-Host "                         _    _____ _   _    _    _   _ "
-    Write-Host "                        / \  |  ___| \ | |  / \  | \ | |"
-    Write-Host "                       / _ \ | |_  |  \| | / _ \ |  \| |"
-    Write-Host "                      / ___ \|  _| | |\  |/ ___ \| |\  |"
-    Write-Host "                     /_/   \_\_|   |_| \_/_/   \_\_| \_|"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "   =                     AUTOMATION                               ="
-    Write-Host "   ================================================================"
-    Write-Host ""
-    Write-Host "    [1] n8n Workflow Automation"
-    Write-Host ""
-    Write-Host "    [2] Google Workspace CLI (GWS)"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "    [Z] Go Back"
-    Write-Host "   ================================================================"
-    Write-Host ""
-
-    $subChoice = Get-MenuChoice
-
-    switch ($subChoice) {
-        '1' { Install-N8N; Show-AutomationMenu }
-        '2' { Install-GWS; Show-AutomationMenu }
-        'Z' { Show-MainMenu }
-        default { Show-AutomationMenu }
-    }
-}
-
-# ==============================
-# AI IN PC MENU (7)
-# ==============================
-function Show-AIInPCMenu {
-    Clear-Host
-    Write-Host ""
-    Write-Host "                         _    _____ _   _    _    _   _ "
-    Write-Host "                        / \  |  ___| \ | |  / \  | \ | |"
-    Write-Host "                       / _ \ | |_  |  \| | / _ \ |  \| |"
-    Write-Host "                      / ___ \|  _| | |\  |/ ___ \| |\  |"
-    Write-Host "                     /_/   \_\_|   |_| \_/_/   \_\_| \_|"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "   =                      AI IN PC                                ="
-    Write-Host "   ================================================================"
-    Write-Host ""
-    Write-Host "    [1] Agy                     [4] LLM-Checker"
-    Write-Host ""
-    Write-Host "    [2] Opencode                [5] Ollama"
-    Write-Host ""
-    Write-Host "    [3] Google Desktop App"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "    [Z] Go Back"
-    Write-Host "   ================================================================"
-    Write-Host ""
-
-    $subChoice = Get-MenuChoice
-
-    switch ($subChoice) {
-        '1' { Install-Agy; Show-AIInPCMenu }
-        '2' { Install-Opencode; Show-AIInPCMenu }
-        '3' { Open-GoogleDesktopApp; Show-AIInPCMenu }
-        '4' { Run-LLMChecker; Show-AIInPCMenu }
-        '5' { Install-Ollama; Show-AIInPCMenu }
-        'Z' { Show-MainMenu }
-        default { Show-AIInPCMenu }
-    }
-}
-
-# ==============================
-# SYSTEM & DEVELOPMENT TOOLS MENU (8)
-# ==============================
-function Show-SystemDevMenu {
-    Clear-Host
-    Write-Host ""
-    Write-Host "                         _    _____ _   _    _    _   _ "
-    Write-Host "                        / \  |  ___| \ | |  / \  | \ | |"
-    Write-Host "                       / _ \ | |_  |  \| | / _ \ |  \| |"
-    Write-Host "                      / ___ \|  _| | |\  |/ ___ \| |\  |"
-    Write-Host "                     /_/   \_\_|   |_| \_/_/   \_\_| \_|"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "   =                         SYSTEM TOOLS                         ="
-    Write-Host "   ================================================================"
-    Write-Host ""
-    Write-Host "    [1] Winget              [6] Scrcpy GUI"
-    Write-Host ""
-    Write-Host "    [2] Everything          [7] Cursor"
-    Write-Host ""
-    Write-Host "    [3] CMD Clr 0a          [8] VC++ Runtimes"
-    Write-Host ""
-    Write-Host "    [4] RustDesk            [9] DirectX"
-    Write-Host ""
-    Write-Host "    [5] HiBit Uninstaller"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "    [Z] Go Back"
-    Write-Host "   ================================================================"
-    Write-Host ""
-
-    $subChoice = Get-MenuChoice
-
-    switch ($subChoice) {
-        '1' { Install-Winget; Show-SystemDevMenu }
-        '2' { Install-Everything; Show-SystemDevMenu }
-        '3' { Set-CMD0A; Show-SystemDevMenu }
-        '4' { Install-RustDesk; Show-SystemDevMenu }
-        '5' { Install-HiBit; Show-SystemDevMenu }
-        '6' { Install-Scrcpy; Show-SystemDevMenu }
-        '7' { Install-Cursor; Show-SystemDevMenu }
-        '8' { Install-VCRedist; Show-SystemDevMenu }
-        '9' { Install-DirectX; Show-SystemDevMenu }
-        'Z' { Show-MainMenu }
-        default { Show-SystemDevMenu }
-    }
-}
-
-# ==============================
-# PRODUCTIVITY & MEDIA APPS MENU (9)
-# ==============================
-function Show-ProductivityMenu {
-    Clear-Host
-    Write-Host ""
-    Write-Host "                         _    _____ _   _    _    _   _ "
-    Write-Host "                        / \  |  ___| \ | |  / \  | \ | |"
-    Write-Host "                       / _ \ | |_  |  \| | / _ \ |  \| |"
-    Write-Host "                      / ___ \|  _| | |\  |/ ___ \| |\  |"
-    Write-Host "                     /_/   \_\_|   |_| \_/_/   \_\_| \_|"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "   =                       PRODUCTIVITY APPS                      ="
-    Write-Host "   ================================================================"
-    Write-Host ""
-    Write-Host "    [1] Office365           [5] LocalSend"
-    Write-Host ""
-    Write-Host "    [2] Chrome              [6] Notepad++"
-    Write-Host ""
-    Write-Host "    [3] Zen Browser         [7] ShareX"
-    Write-Host ""
-    Write-Host "    [4] OBS Studio          [8] Q Bit Torrent"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "    [Z] Go Back"
-    Write-Host "   ================================================================"
-    Write-Host ""
-
-    $subChoice = Get-MenuChoice
-
-    switch ($subChoice) {
-        '1' { Install-Office365; Show-ProductivityMenu }
-        '2' { Install-Chrome; Show-ProductivityMenu }
-        '3' { Install-Zen; Show-ProductivityMenu }
-        '4' { Install-OBS; Show-ProductivityMenu }
-        '5' { Install-LocalSend; Show-ProductivityMenu }
-        '6' { Install-NotepadPP; Show-ProductivityMenu }
-        '7' { Install-ShareX; Show-ProductivityMenu }
-        '8' { Install-QBit; Show-ProductivityMenu }
-        'Z' { Show-MainMenu }
-        default { Show-ProductivityMenu }
-    }
-}
-
-# ==============================
-# CONFIRM EXIT PROMPT
-# ==============================
-function Show-ConfirmExit {
-    Clear-Host
-    Write-Host ""
-    Write-Host "                         _    _____ _   _    _    _   _ "
-    Write-Host "                        / \  |  ___| \ | |  / \  | \ | |"
-    Write-Host "                       / _ \ | |_  |  \| | / _ \ |  \| |"
-    Write-Host "                      / ___ \|  _| | |\  |/ ___ \| |\  |"
-    Write-Host "                     /_/   \_\_|   |_| \_/_/   \_\_| \_|"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host "   =                    CONFIRM EXIT                              ="
-    Write-Host "   ================================================================"
-    Write-Host ""
-    Write-Host "    Do you want to exit the script?"
-    Write-Host ""
-    Write-Host "    [1] Yes - Exit Script"
-    Write-Host "    [Z] No  - Return to Main Menu"
-    Write-Host ""
-    Write-Host "   ================================================================"
-    Write-Host ""
-
-    $exitChoice = Get-MenuChoice "   Press 1 to exit, Z to return: "
-
-    switch ($exitChoice) {
-        '1' {
-            Write-Host ""
-            Write-Host "   Thank you for using Tool Installer by AFNAN! Goodbye."
-            Write-Host ""
-            Start-Sleep -Seconds 0.5
-            exit
-        }
-        'Z' { Show-MainMenu }
-        default { Show-ConfirmExit }
-    }
-}
-
-
-# ==============================
-# ALL FUNCTION DEFINITIONS
-# ==============================
 
 function Open-Portfolio {
-    Write-Host "=========================================="
-    Write-Host "Opening Your Browser with Portfolio"
-    Write-Host "=========================================="
     Start-Process "https://afnan-nex.github.io/portfolio/index.html"
 }
 
 function See-Policy {
-    Write-Host "=========================================="
-    Write-Host "Checking PowerShell Execution Policy"
-    Write-Host "=========================================="
-    Write-Host "Launching in a new window..."
-    Start-Process cmd -ArgumentList "/k", "echo Current Execution Policy: && powershell -NoProfile -ExecutionPolicy Bypass -Command ""Get-ExecutionPolicy -List"" && echo. && echo Press any key to close... && pause"
+    Start-Process cmd -ArgumentList "/k", ("echo Current Execution Policy: && " +
+        "powershell -NoProfile -ExecutionPolicy Bypass -Command " +
+        """Get-ExecutionPolicy -List"" && echo. && echo Press any key to close... && pause")
 }
 
 function Unrestrict-Policy {
-    Write-Host "=========================================="
-    Write-Host "Setting PowerShell Policy to Unrestricted"
-    Write-Host "=========================================="
-    Write-Host "Launching in a new window..."
-    Start-Process cmd -ArgumentList "/k", "echo Setting PowerShell Execution Policy to Unrestricted... && powershell -NoProfile -ExecutionPolicy Bypass -Command ""Set-ExecutionPolicy Unrestricted -Force -Scope CurrentUser; Set-ExecutionPolicy Unrestricted -Force -Scope LocalMachine; Write-Host 'Policy updated successfully.'"" && echo. && echo Press any key to close... && pause"
+    Start-Process cmd -ArgumentList "/k", ("echo Setting PowerShell Execution Policy to Unrestricted... && " +
+        "powershell -NoProfile -ExecutionPolicy Bypass -Command " +
+        """Set-ExecutionPolicy Unrestricted -Force -Scope CurrentUser; " +
+        "Set-ExecutionPolicy Unrestricted -Force -Scope LocalMachine; " +
+        "Write-Host 'Policy updated successfully.'"" && echo. && echo Press any key to close... && pause")
 }
 
 function Install-Choco {
-    Write-Host "=========================================="
-    Write-Host "Installing Chocolatey"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    
-    # Added 'refreshenv' to the end of the command chain so the new window recognizes 'choco' instantly
-    $chocoCmd = 'echo Installing Chocolatey... && powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString(''https://community.chocolatey.org/install.ps1''))" && echo. && echo Refreshing environment variables... && call refreshenv && echo Chocolatey installation completed. && pause'
+    $chocoCmd = ('echo Installing Chocolatey... && powershell -NoProfile -ExecutionPolicy Bypass -Command ' +
+        '"Set-ExecutionPolicy Bypass -Scope Process -Force; ' +
+        '[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; ' +
+        "iex ((New-Object System.Net.WebClient).DownloadString(''https://community.chocolatey.org/install.ps1''))" + '" ' +
+        '&& echo. && echo Chocolatey installation completed. && pause')
     Start-Process cmd -ArgumentList "/k", $chocoCmd
 }
 
 function Install-NodeLTS {
-    Write-Host "=========================================="
-    Write-Host "Installing Node.js LTS"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $nodeCmd = 'echo Installing Node.js LTS via Chocolatey... && choco install nodejs-lts -y && echo. && echo Node.js installation completed. && pause'
-    Start-Process cmd -ArgumentList "/k", $nodeCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing Node.js LTS via Chocolatey... && choco install nodejs-lts -y && echo. && echo Node.js installation completed. && pause"
 }
 
 function Run-Titus {
-    Write-Host "=========================================="
-    Write-Host "Running Chris Titus Tech Windows Utility"
-    Write-Host "=========================================="
-    Start-Process cmd -ArgumentList "/k", "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm 'https://christitus.com/win' | iex`""
+    Start-Process cmd -ArgumentList "/k",
+        "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm 'https://christitus.com/win' | iex`""
 }
 
 function Run-MassGrave {
-    Write-Host "=========================================="
-    Write-Host "Running Microsoft Activation Scripts"
-    Write-Host "=========================================="
-    Start-Process cmd -ArgumentList "/k", "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://get.activated.win | iex`""
+    Start-Process cmd -ArgumentList "/k",
+        "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://get.activated.win | iex`""
 }
 
 function Run-Coporton {
-    Write-Host "=========================================="
-    Write-Host "Running Coporton Tool"
-    Write-Host "=========================================="
-    Start-Process cmd -ArgumentList "/k", "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://coporton.com/ias | iex`""
+    Start-Process cmd -ArgumentList "/k",
+        "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://coporton.com/ias | iex`""
 }
 
 function Install-IDM {
-    Write-Host "=========================================="
-    Write-Host "Downloading with IDM"
-    Write-Host "=========================================="
-    Start-Process cmd -ArgumentList "/k", "curl.exe -L -O https://github.com/planetshine0000/vc-redist-latest/releases/download/v1.0.1/Download.exe && Download.exe"
+    Start-Process cmd -ArgumentList "/k",
+        "curl.exe -L -O https://github.com/planetshine0000/vc-redist-latest/releases/download/v1.0.1/Download.exe && Download.exe"
 }
 
 function Run-Sparkle {
-    Write-Host "=========================================="
-    Write-Host "Running Sparkle Tool"
-    Write-Host "=========================================="
-    Start-Process cmd -ArgumentList "/k", "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://raw.githubusercontent.com/Parcoil/Sparkle/v2/get.ps1 | iex`""
+    Start-Process cmd -ArgumentList "/k",
+        "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://raw.githubusercontent.com/Parcoil/Sparkle/v2/get.ps1 | iex`""
 }
 
 function Run-GHGrab {
-    Write-Host "=========================================="
-    Write-Host "Running GHGrab - GitHub Repository Grabber"
-    Write-Host "=========================================="
-    Write-Host "Launching GHGrab in a new window..."
-    Start-Process cmd -ArgumentList "/k", "echo === GHGrab === && npx --yes @ghgrab/ghgrab && echo. && echo Press any key to close... && pause"
+    Start-Process cmd -ArgumentList "/k",
+        "echo === GHGrab === && npx --yes @ghgrab/ghgrab && echo. && echo Press any key to close... && pause"
 }
 
 function Run-TorLink {
-    Write-Host "================================================"
-    Write-Host "Running Tor Link - Torrent Finder and Downloader"
-    Write-Host "================================================"
-    Write-Host "Launching TorLink in a new window..."
-    Start-Process cmd -ArgumentList "/k", "echo === TorLink === && npx --yes torlnk && echo. && echo Press any key to close... && pause"
+    Start-Process cmd -ArgumentList "/k",
+        "echo === TorLink === && npx --yes torlnk && echo. && echo Press any key to close... && pause"
 }
 
 function Run-Setup {
-    Write-Host "=========================================="
-    Write-Host "Running Install Tools Installer Setup"
-    Write-Host "=========================================="
-    Write-Host "Downloading and launching Install Tools Installer Setup in a new window..."
-    $setupCmd = 'echo Downloading Setup... && curl.exe -L -o "%TEMP%\Tools-Installer.exe" "https://github.com/afnan-nex/tools-installer/raw/main/Setup/Tools-Installer.exe" && if exist "%TEMP%\Tools-Installer.exe" ( "%TEMP%\Tools-Installer.exe" ) else ( echo Download failed! ) && pause'
+    $setupCmd = ('echo Downloading Setup... && curl.exe -L -o "%TEMP%\Tools-Installer.exe" ' +
+        '"https://github.com/afnan-nex/tools-installer/raw/main/Setup/Tools-Installer.exe" && ' +
+        'if exist "%TEMP%\Tools-Installer.exe" ( "%TEMP%\Tools-Installer.exe" ) ' +
+        'else ( echo Download failed! ) && pause')
     Start-Process cmd -ArgumentList "/k", $setupCmd
 }
 
 function Install-Python {
-    Write-Host "=========================================="
-    Write-Host "Installing Python"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $pythonCmd = 'echo Installing Python via Chocolatey... && choco install python -y && echo. && echo Python installation completed. && pause'
-    Start-Process cmd -ArgumentList "/k", $pythonCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing Python via Chocolatey... && choco install python -y && echo. && echo Python installation completed. && pause"
 }
 
 function Install-Git {
-    Write-Host "=========================================="
-    Write-Host "Installing Git"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $gitCmd = 'echo Installing Git via Chocolatey... && choco install git -y && echo. && echo Git installation completed. && pause'
-    Start-Process cmd -ArgumentList "/k", $gitCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing Git via Chocolatey... && choco install git -y && echo. && echo Git installation completed. && pause"
 }
 
 function Install-Dotnet {
-    Write-Host "=========================================="
-    Write-Host "Installing .NET Runtime and SDK"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $dotnetCmd = 'echo Installing .NET via Chocolatey... && choco install dotnet -y && echo. && echo .NET installation completed. && pause'
-    Start-Process cmd -ArgumentList "/k", $dotnetCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing .NET via Chocolatey... && choco install dotnet -y && echo. && echo .NET installation completed. && pause"
 }
 
 function Install-FFmpeg {
-    Write-Host "=========================================="
-    Write-Host "Installing FFmpeg"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    
-    # Added 'call refreshenv &&' at the start so the window recognizes 'choco' before running it
-    $ffmpegCmd = 'call refreshenv && echo Installing FFmpeg via Chocolatey... && choco install ffmpeg -y && echo. && echo FFmpeg installation completed. && pause'
-    Start-Process cmd -ArgumentList "/k", $ffmpegCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing FFmpeg via Chocolatey... && choco install ffmpeg -y && echo. && echo FFmpeg installation completed. && pause"
 }
 
 function Install-7Zip {
-    Write-Host "=========================================="
-    Write-Host "Installing 7-Zip"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $zipCmd = 'echo Installing 7-Zip via Chocolatey... && choco install 7zip -y && echo. && echo 7-Zip installation completed. && pause'
-    Start-Process cmd -ArgumentList "/k", $zipCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing 7-Zip via Chocolatey... && choco install 7zip -y && echo. && echo 7-Zip installation completed. && pause"
 }
 
 function Install-WinDirStat {
-    Write-Host "=========================================="
-    Write-Host "Installing WinDirStat"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $wdsCmd = 'echo Installing WinDirStat via Chocolatey... && choco install windirstat -y && echo. && echo WinDirStat installation completed. && pause'
-    Start-Process cmd -ArgumentList "/k", $wdsCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing WinDirStat via Chocolatey... && choco install windirstat -y && echo. && echo WinDirStat installation completed. && pause"
 }
 
 function Install-YTDLP {
-    Write-Host "=========================================="
-    Write-Host "Installing yt-dlp"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    # Added 'call refreshenv &&' at the start so this new window recognizes the 'choco' command
-    $ytdlpCmd = 'call refreshenv && echo Installing yt-dlp via Chocolatey... && choco install yt-dlp -y && echo. && echo yt-dlp installation completed. && pause'
-    
-    Start-Process cmd -ArgumentList "/k", $ytdlpCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing yt-dlp via Chocolatey... && choco install yt-dlp -y && echo. && echo yt-dlp installation completed. && pause"
 }
 
 function Install-Ngrok {
-    Write-Host "=========================================="
-    Write-Host "Installing ngrok"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $ngrokCmd = 'echo Installing ngrok via Chocolatey... && choco install ngrok -y && echo. && echo ngrok installation completed. && pause'
-    Start-Process cmd -ArgumentList "/k", $ngrokCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing ngrok via Chocolatey... && choco install ngrok -y && echo. && echo ngrok installation completed. && pause"
 }
 
 function Install-N8N {
-    Write-Host "=========================================="
-    Write-Host "Installing n8n Workflow Automation"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $n8nCmd = 'echo Installing n8n Workflow Automation... && npm install -g n8n@latest --verbose && echo n8n installation completed. && echo Setting NODES_EXCLUDE environment variable... && setx NODES_EXCLUDE "[]" && setx NODES_EXCLUDE "[]" /M && echo Environment variables set successfully. && echo. && echo Press any key to close this window. && pause'
+    $n8nCmd = ('echo Installing n8n Workflow Automation... && ' +
+        'npm install -g n8n@latest --verbose && echo n8n installation completed. && ' +
+        'echo Setting NODES_EXCLUDE environment variable... && ' +
+        'setx NODES_EXCLUDE "[]" && setx NODES_EXCLUDE "[]" /M && ' +
+        'echo Environment variables set successfully. && echo. && ' +
+        'echo Press any key to close this window. && pause')
     Start-Process cmd -ArgumentList "/k", $n8nCmd
 }
 
 function Install-GWS {
-    Write-Host "=========================================="
-    Write-Host "Installing Google Workspace CLI (GWS)"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $gwsCmd = 'echo Installing Google Workspace CLI... && npm install -g @googleworkspace/cli && echo. && echo Installation completed. Press any key to close this window. && pause'
-    Start-Process cmd -ArgumentList "/k", $gwsCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing Google Workspace CLI... && npm install -g @googleworkspace/cli && echo. && echo Installation completed. Press any key to close this window. && pause"
 }
 
 function Install-Agy {
-    Write-Host "=========================================="
-    Write-Host "Installing Agy"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $agyCmd = 'echo Installing Agy... && curl -fsSL https://antigravity.google/cli/install.cmd -o install.cmd && install.cmd --verbose && del install.cmd && echo. && echo Installation completed. Press any key to close this window. && pause'
+    $agyCmd = ('echo Installing Agy... && ' +
+        'curl -fsSL https://antigravity.google/cli/install.cmd -o install.cmd && ' +
+        'install.cmd --verbose && del install.cmd && echo. && ' +
+        'echo Installation completed. Press any key to close this window. && pause')
     Start-Process cmd -ArgumentList "/k", $agyCmd
 }
 
 function Install-Opencode {
-    Write-Host "=========================================="
-    Write-Host "Installing Opencode"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $opencodeCmd = 'echo Installing Opencode... && npm i -g opencode-ai --verbose && echo. && echo Installation completed. Press any key to close this window. && pause'
-    Start-Process cmd -ArgumentList "/k", $opencodeCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing Opencode... && npm i -g opencode-ai --verbose && echo. && echo Installation completed. Press any key to close this window. && pause"
 }
 
 function Open-GoogleDesktopApp {
-    Write-Host "=========================================="
-    Write-Host "Opening Google Desktop App"
-    Write-Host "=========================================="
-    Write-Host "Opening link in browser..."
     Start-Process "https://search.google/google-app/desktop/"
 }
 
 function Run-LLMChecker {
-    Write-Host "=========================================="
-    Write-Host "Running LLM-Checker Recommendation"
-    Write-Host "=========================================="
-    Write-Host "Launching in a new window..."
-    $checkerCmd = 'echo Running LLM-Checker Recommendation... && npx --yes llm-checker Recommendation && echo. && echo Finished. Press any key to close... && pause'
-    Start-Process cmd -ArgumentList "/k", $checkerCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Running LLM-Checker Recommendation... && npx --yes llm-checker Recommendation && echo. && echo Finished. Press any key to close... && pause"
 }
 
 function Install-Ollama {
-    Write-Host "=========================================="
-    Write-Host "Installing Ollama"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $ollamaCmd = 'echo Installing Ollama... && winget install Ollama.Ollama && echo. && echo Finished. Press any key to close... && pause'
-    Start-Process cmd -ArgumentList "/k", $ollamaCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing Ollama... && winget install Ollama.Ollama && echo. && echo Finished. Press any key to close... && pause"
 }
 
-
 function Install-Winget {
-    Write-Host "=========================================="
-    Write-Host "Installing Windows Package Manager (Winget)"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
     $wingetPs = @'
 Write-Host "Installing Winget..."
 try {
@@ -761,55 +211,36 @@ Read-Host "Press Enter to close"
 }
 
 function Install-Office365 {
-    Write-Host "=========================================="
-    Write-Host "Installing Office 365 ProPlus"
-    Write-Host "=========================================="
-    Write-Host "Launching download and installation in a new window..."
-    $officeCmd = 'echo Downloading Office 365 Setup... && curl.exe -L -o "%TEMP%\OfficeSetup.exe" "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA" && if exist "%TEMP%\OfficeSetup.exe" (echo Launching Office Installer... && start "" "%TEMP%\OfficeSetup.exe") else (echo Download failed.) && pause'
+    $officeCmd = ('echo Downloading Office 365 Setup... && ' +
+        'curl.exe -L -o "%TEMP%\OfficeSetup.exe" ' +
+        '"https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA" && ' +
+        'if exist "%TEMP%\OfficeSetup.exe" ' +
+        '(echo Launching Office Installer... && start "" "%TEMP%\OfficeSetup.exe") ' +
+        'else (echo Download failed.) && pause')
     Start-Process cmd -ArgumentList "/k", $officeCmd
 }
 
 function Install-Everything {
-    Write-Host "=========================================="
-    Write-Host "Installing Everything Search Engine"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $everythingCmd = 'echo Installing Everything via Chocolatey... && choco install everything -y && echo. && echo Everything installation completed. && pause'
-    Start-Process cmd -ArgumentList "/k", $everythingCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing Everything via Chocolatey... && choco install everything -y && echo. && echo Everything installation completed. && pause"
 }
 
 function Install-Chrome {
-    Write-Host "=========================================="
-    Write-Host "Installing Google Chrome"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $chromeCmd = 'echo Installing Google Chrome via Chocolatey... && choco install googlechrome -y && echo. && echo Chrome installation completed. && pause'
-    Start-Process cmd -ArgumentList "/k", $chromeCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing Google Chrome via Chocolatey... && choco install googlechrome -y && echo. && echo Chrome installation completed. && pause"
 }
 
 function Install-Zen {
-    Write-Host "=========================================="
-    Write-Host "Installing Zen Browser"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $zenCmd = 'echo Installing Zen Browser via Chocolatey... && choco install zen-browser --prerelease -y && echo. && echo Zen Browser installation completed. && pause'
-    Start-Process cmd -ArgumentList "/k", $zenCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing Zen Browser via Chocolatey... && choco install zen-browser --prerelease -y && echo. && echo Zen Browser installation completed. && pause"
 }
 
 function Install-Cursor {
-    Write-Host "=========================================="
-    Write-Host "Cloning Elegant Repository from GitHub"
-    Write-Host "=========================================="
-    Write-Host "Launching in a new window..."
-    $cursorCmd = 'echo Cloning Elegant repository from GitHub... && git clone https://github.com/afnan-nex/Elegant && echo. && echo Repository cloned successfully to Elegant folder. && pause'
-    Start-Process cmd -ArgumentList "/k", $cursorCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Cloning Elegant repository from GitHub... && git clone https://github.com/afnan-nex/Elegant && echo. && echo Repository cloned successfully to Elegant folder. && pause"
 }
 
 function Set-CMD0A {
-    Write-Host "=========================================="
-    Write-Host "Changing CMD color to 0a"
-    Write-Host "=========================================="
-    Write-Host "Launching in a new window..."
     $cmd0aPs = @'
 Write-Host "Downloading CMD color script..."
 try {
@@ -827,82 +258,56 @@ Read-Host "Press Enter to close"
 }
 
 function Install-OBS {
-    Write-Host "=========================================="
-    Write-Host "Installing OBS Studio"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $obsCmd = 'echo Installing OBS Studio via Chocolatey... && choco install obs-studio -y && echo. && echo OBS Studio installation completed. && pause'
-    Start-Process cmd -ArgumentList "/k", $obsCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing OBS Studio via Chocolatey... && choco install obs-studio -y && echo. && echo OBS Studio installation completed. && pause"
 }
 
 function Install-RustDesk {
-    Write-Host "=========================================="
-    Write-Host "Installing RustDesk"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $rustdeskCmd = 'echo Installing RustDesk via Chocolatey... && choco install rustdesk -y && echo. && echo RustDesk installation completed. && pause'
-    Start-Process cmd -ArgumentList "/k", $rustdeskCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing RustDesk via Chocolatey... && choco install rustdesk -y && echo. && echo RustDesk installation completed. && pause"
 }
 
 function Install-HiBit {
-    Write-Host "=========================================="
-    Write-Host "Installing HiBit Uninstaller"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $hibitCmd = 'echo Downloading HiBit Uninstaller... && curl.exe -L -o "%TEMP%\HiBitSetup.exe" "https://www.hibitsoft.ir/HiBitUninstaller/HiBitUninstaller-setup-4.0.10.exe" && if exist "%TEMP%\HiBitSetup.exe" (echo Running installer... && start /wait "" "%TEMP%\HiBitSetup.exe" && del /f "%TEMP%\HiBitSetup.exe" && echo Installation complete.) else (echo Download failed.) && pause'
+    $hibitCmd = ('echo Downloading HiBit Uninstaller... && ' +
+        'curl.exe -L -o "%TEMP%\HiBitSetup.exe" ' +
+        '"https://www.hibitsoft.ir/HiBitUninstaller/HiBitUninstaller-setup-4.0.10.exe" && ' +
+        'if exist "%TEMP%\HiBitSetup.exe" ' +
+        '(echo Running installer... && start /wait "" "%TEMP%\HiBitSetup.exe" && del /f "%TEMP%\HiBitSetup.exe" && echo Installation complete.) ' +
+        'else (echo Download failed.) && pause')
     Start-Process cmd -ArgumentList "/k", $hibitCmd
 }
 
 function Install-Scrcpy {
-    Write-Host "=========================================="
-    Write-Host "Installing Scrcpy GUI"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $scrcpyCmd = 'echo Downloading Scrcpy GUI... && curl.exe -L -o "%TEMP%\ScrcpyGUI_Setup.exe" "https://github.com/pizi-0/flutter-scrcpygui/releases/download/1.4.18/scrcpygui-1.4.18-win.exe" && if exist "%TEMP%\ScrcpyGUI_Setup.exe" (echo Running installer... && start /wait "" "%TEMP%\ScrcpyGUI_Setup.exe" && del /f "%TEMP%\ScrcpyGUI_Setup.exe" && echo Installation complete.) else (echo Download failed.) && pause'
+    $scrcpyCmd = ('echo Downloading Scrcpy GUI... && ' +
+        'curl.exe -L -o "%TEMP%\ScrcpyGUI_Setup.exe" ' +
+        '"https://github.com/pizi-0/flutter-scrcpygui/releases/download/1.4.18/scrcpygui-1.4.18-win.exe" && ' +
+        'if exist "%TEMP%\ScrcpyGUI_Setup.exe" ' +
+        '(echo Running installer... && start /wait "" "%TEMP%\ScrcpyGUI_Setup.exe" && del /f "%TEMP%\ScrcpyGUI_Setup.exe" && echo Installation complete.) ' +
+        'else (echo Download failed.) && pause')
     Start-Process cmd -ArgumentList "/k", $scrcpyCmd
 }
 
 function Install-LocalSend {
-    Write-Host "=========================================="
-    Write-Host "Installing LocalSend"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $localsendCmd = 'echo Installing LocalSend via Chocolatey... && choco install localsend -y && echo. && echo LocalSend installation completed. && pause'
-    Start-Process cmd -ArgumentList "/k", $localsendCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing LocalSend via Chocolatey... && choco install localsend -y && echo. && echo LocalSend installation completed. && pause"
 }
 
 function Install-NotepadPP {
-    Write-Host "=========================================="
-    Write-Host "Installing Notepad++"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $nppCmd = 'echo Installing Notepad++ via Chocolatey... && choco install notepadplusplus -y && echo. && echo Notepad++ installation completed. && pause'
-    Start-Process cmd -ArgumentList "/k", $nppCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing Notepad++ via Chocolatey... && choco install notepadplusplus -y && echo. && echo Notepad++ installation completed. && pause"
 }
 
 function Install-ShareX {
-    Write-Host "=========================================="
-    Write-Host "Installing ShareX"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $sharexCmd = 'echo Installing ShareX via Chocolatey... && choco install sharex -y && echo. && echo ShareX installation completed. && pause'
-    Start-Process cmd -ArgumentList "/k", $sharexCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing ShareX via Chocolatey... && choco install sharex -y && echo. && echo ShareX installation completed. && pause"
 }
 
 function Install-QBit {
-    Write-Host "=========================================="
-    Write-Host "Installing QBit Torrent"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
-    $sharexCmd = 'echo Installing QBit Torrent via Chocolatey... && choco install qbittorrent -y && echo. && echo QBit Torrent installation completed. && pause'
-    Start-Process cmd -ArgumentList "/k", $sharexCmd
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing qBittorrent via Chocolatey... && choco install qbittorrent -y && echo. && echo qBittorrent installation completed. && pause"
 }
 
 function Install-VCRedist {
-    Write-Host "=========================================="
-    Write-Host "Installing Visual C++ Runtimes"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
     $vcPs = @'
 Write-Host "Downloading Visual C++ Runtimes..."
 $ZIP_URL  = "https://github.com/planetshine0000/vc-redist-latest/releases/download/v1.0.0/Visual-C-Runtimes-All-in-One-Dec-2025.zip"
@@ -932,10 +337,6 @@ Read-Host "Press Enter to close"
 }
 
 function Install-DirectX {
-    Write-Host "=========================================="
-    Write-Host "Installing DirectX Runtime"
-    Write-Host "=========================================="
-    Write-Host "Launching installation in a new window..."
     $dxPs = @'
 Write-Host "Preparing DirectX installer..."
 $TEMP_DIR = "$env:TEMP\DirectX_Install"
@@ -977,7 +378,607 @@ Read-Host "Press Enter to close"
     Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
 }
 
-# ==============================
-# START SCRIPT
-# ==============================
-Show-MainMenu
+# ============================================================
+#  SECTION B: GUI COLOUR AND STYLE CONSTANTS
+# ============================================================
+
+$CLR_BG      = [System.Drawing.Color]::FromArgb( 18,  18,  28)
+$CLR_PANEL   = [System.Drawing.Color]::FromArgb( 24,  24,  38)
+$CLR_GROUP   = [System.Drawing.Color]::FromArgb( 30,  30,  48)
+$CLR_ACCENT  = [System.Drawing.Color]::FromArgb( 99, 179, 237)
+$CLR_BTN     = [System.Drawing.Color]::FromArgb( 42,  42,  68)
+$CLR_BTNHOV  = [System.Drawing.Color]::FromArgb( 60,  60,  96)
+$CLR_TEXT    = [System.Drawing.Color]::FromArgb(218, 218, 232)
+$CLR_MUTED   = [System.Drawing.Color]::FromArgb(120, 120, 155)
+$CLR_GREEN   = [System.Drawing.Color]::FromArgb( 72, 199, 142)
+$CLR_RED     = [System.Drawing.Color]::FromArgb(252, 110, 110)
+$CLR_YELLOW  = [System.Drawing.Color]::FromArgb(253, 203,  88)
+$CLR_RUNBTN  = [System.Drawing.Color]::FromArgb( 72, 149, 239)
+$CLR_RUNHOV  = [System.Drawing.Color]::FromArgb( 48, 112, 192)
+$CLR_SEP     = [System.Drawing.Color]::FromArgb( 48,  48,  78)
+
+$FNT_MAIN  = New-Object System.Drawing.Font("Segoe UI",  9, [System.Drawing.FontStyle]::Regular)
+$FNT_BOLD  = New-Object System.Drawing.Font("Segoe UI",  9, [System.Drawing.FontStyle]::Bold)
+$FNT_TITLE = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+$FNT_HEAD  = New-Object System.Drawing.Font("Segoe UI", 13, [System.Drawing.FontStyle]::Bold)
+$FNT_MONO  = New-Object System.Drawing.Font("Consolas",  9, [System.Drawing.FontStyle]::Regular)
+$FNT_SMALL = New-Object System.Drawing.Font("Segoe UI",  8, [System.Drawing.FontStyle]::Regular)
+
+# ============================================================
+#  SECTION C: TASK REGISTRY
+#  Each task: @{ Name; Function; CheckBox; Button }
+# ============================================================
+$script:AllTasks = [System.Collections.Generic.List[hashtable]]::new()
+
+# ============================================================
+#  SECTION D: MAIN WINDOW
+# ============================================================
+
+$form = New-Object System.Windows.Forms.Form
+$form.Text            = "Tool Installer  -  by AFNAN"
+$form.Size            = New-Object System.Drawing.Size(1050, 600)
+$form.MinimumSize     = New-Object System.Drawing.Size(820, 620)
+$form.StartPosition   = "CenterScreen"
+$form.BackColor       = $CLR_BG
+$form.ForeColor       = $CLR_TEXT
+$form.Font            = $FNT_MAIN
+$iconPath = "$env:TEMP\Tools-Installer.ico"
+try {
+    if (-not (Test-Path $iconPath)) {
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/afnan-nex/tools-installer/main/Setup/Tools-Installer.ico" -OutFile $iconPath -UseBasicParsing -TimeoutSec 5 -ErrorAction Stop
+    }
+    $form.Icon = New-Object System.Drawing.Icon($iconPath)
+} catch {
+    $form.Icon = [System.Drawing.SystemIcons]::Shield
+}
+$form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::Sizable
+
+# -- HEADER BAR ---------------------------------------------------------------
+$pnlHeader = New-Object System.Windows.Forms.Panel
+$pnlHeader.Dock      = "Top"
+$pnlHeader.Height    = 62
+$pnlHeader.BackColor = $CLR_PANEL
+$form.Controls.Add($pnlHeader)
+
+$lblTitle = New-Object System.Windows.Forms.Label
+$lblTitle.Text      = "  Tool Installer"
+$lblTitle.Font      = $FNT_HEAD
+$lblTitle.ForeColor = $CLR_ACCENT
+$lblTitle.AutoSize  = $true
+$lblTitle.Location  = New-Object System.Drawing.Point(12, 8)
+$pnlHeader.Controls.Add($lblTitle)
+
+$lblSub = New-Object System.Windows.Forms.Label
+$lblSub.Text      = "  Check items for batch run   |   Click a button for immediate single execution"
+$lblSub.Font      = $FNT_SMALL
+$lblSub.ForeColor = $CLR_MUTED
+$lblSub.AutoSize  = $true
+$lblSub.Location  = New-Object System.Drawing.Point(12, 36)
+$pnlHeader.Controls.Add($lblSub)
+
+$btnPortfolio = New-Object System.Windows.Forms.Button
+$btnPortfolio.Text      = "Portfolio"
+$btnPortfolio.Font      = $FNT_MAIN
+$btnPortfolio.ForeColor = $CLR_ACCENT
+$btnPortfolio.BackColor = $CLR_BTN
+$btnPortfolio.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+$btnPortfolio.FlatAppearance.BorderColor = $CLR_ACCENT
+$btnPortfolio.FlatAppearance.BorderSize  = 1
+$btnPortfolio.FlatAppearance.MouseOverBackColor = $CLR_BTNHOV
+$btnPortfolio.Size     = New-Object System.Drawing.Size(92, 28)
+$btnPortfolio.Location = New-Object System.Drawing.Point(930, 17)
+$btnPortfolio.Anchor   = "Top,Right"
+$btnPortfolio.Cursor   = [System.Windows.Forms.Cursors]::Hand
+$btnPortfolio.Add_Click({ Open-Portfolio })
+$pnlHeader.Controls.Add($btnPortfolio)
+
+# -- BOTTOM PANEL (Log + Controls) --------------------------------------------
+$pnlBottom = New-Object System.Windows.Forms.Panel
+$pnlBottom.Dock      = "Bottom"
+$pnlBottom.Height    = 230
+$pnlBottom.BackColor = $CLR_PANEL
+$form.Controls.Add($pnlBottom)
+
+# Separator at top of bottom panel
+$pnlSep = New-Object System.Windows.Forms.Panel
+$pnlSep.Dock      = "Top"
+$pnlSep.Height    = 2
+$pnlSep.BackColor = $CLR_SEP
+$pnlBottom.Controls.Add($pnlSep)
+
+# Log label + clear button
+$lblLog = New-Object System.Windows.Forms.Label
+$lblLog.Text      = "OUTPUT LOG"
+$lblLog.Font      = New-Object System.Drawing.Font("Segoe UI", 7, [System.Drawing.FontStyle]::Bold)
+$lblLog.ForeColor = $CLR_MUTED
+$lblLog.AutoSize  = $true
+$lblLog.Location  = New-Object System.Drawing.Point(10, 12)
+$pnlBottom.Controls.Add($lblLog)
+
+$btnClear = New-Object System.Windows.Forms.Button
+$btnClear.Text      = "Clear"
+$btnClear.Font      = $FNT_SMALL
+$btnClear.ForeColor = $CLR_MUTED
+$btnClear.BackColor = $CLR_BTN
+$btnClear.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+$btnClear.FlatAppearance.BorderSize = 0
+$btnClear.Size      = New-Object System.Drawing.Size(48, 20)
+$btnClear.Location  = New-Object System.Drawing.Point(74, 10)
+$btnClear.Cursor    = [System.Windows.Forms.Cursors]::Hand
+$btnClear.Add_Click({ $script:LogBox.Clear() })
+$pnlBottom.Controls.Add($btnClear)
+
+# Log RichTextBox
+$script:LogBox = New-Object System.Windows.Forms.RichTextBox
+$script:LogBox.BackColor   = [System.Drawing.Color]::FromArgb(10, 10, 18)
+$script:LogBox.ForeColor   = $CLR_TEXT
+$script:LogBox.Font        = $FNT_MONO
+$script:LogBox.ReadOnly    = $true
+$script:LogBox.BorderStyle = [System.Windows.Forms.BorderStyle]::None
+$script:LogBox.ScrollBars  = "Vertical"
+$script:LogBox.WordWrap    = $false
+$script:LogBox.Size        = New-Object System.Drawing.Size(710, 165)
+$script:LogBox.Location    = New-Object System.Drawing.Point(10, 34)
+$script:LogBox.Anchor      = "Top,Left,Bottom,Right"
+$pnlBottom.Controls.Add($script:LogBox)
+
+# Progress bar
+$script:ProgressBar = New-Object System.Windows.Forms.ProgressBar
+$script:ProgressBar.Style    = [System.Windows.Forms.ProgressBarStyle]::Continuous
+$script:ProgressBar.Minimum  = 0
+$script:ProgressBar.Maximum  = 100
+$script:ProgressBar.Value    = 0
+$script:ProgressBar.Size     = New-Object System.Drawing.Size(710, 10)
+$script:ProgressBar.Location = New-Object System.Drawing.Point(10, 204)
+$script:ProgressBar.Anchor   = "Bottom,Left,Right"
+$pnlBottom.Controls.Add($script:ProgressBar)
+
+# Right-side controls inside bottom panel
+$script:LblStatus = New-Object System.Windows.Forms.Label
+$script:LblStatus.Text      = "Ready"
+$script:LblStatus.Font      = $FNT_SMALL
+$script:LblStatus.ForeColor = $CLR_MUTED
+$script:LblStatus.AutoSize  = $true
+$script:LblStatus.Location  = New-Object System.Drawing.Point(735, 12)
+$script:LblStatus.Anchor    = "Top,Right"
+$pnlBottom.Controls.Add($script:LblStatus)
+
+$btnSelAll = New-Object System.Windows.Forms.Button
+$btnSelAll.Text      = "Select All"
+$btnSelAll.Font      = $FNT_MAIN
+$btnSelAll.ForeColor = $CLR_TEXT
+$btnSelAll.BackColor = $CLR_BTN
+$btnSelAll.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+$btnSelAll.FlatAppearance.BorderColor = $CLR_SEP
+$btnSelAll.FlatAppearance.BorderSize  = 1
+$btnSelAll.FlatAppearance.MouseOverBackColor = $CLR_BTNHOV
+$btnSelAll.Size     = New-Object System.Drawing.Size(120, 28)
+$btnSelAll.Location = New-Object System.Drawing.Point(735, 36)
+$btnSelAll.Anchor   = "Top,Right"
+$btnSelAll.Cursor   = [System.Windows.Forms.Cursors]::Hand
+$btnSelAll.Add_Click({ foreach ($t in $script:AllTasks) { $t.CheckBox.Checked = $true } })
+$pnlBottom.Controls.Add($btnSelAll)
+
+$btnDeselAll = New-Object System.Windows.Forms.Button
+$btnDeselAll.Text      = "Deselect All"
+$btnDeselAll.Font      = $FNT_MAIN
+$btnDeselAll.ForeColor = $CLR_TEXT
+$btnDeselAll.BackColor = $CLR_BTN
+$btnDeselAll.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+$btnDeselAll.FlatAppearance.BorderColor = $CLR_SEP
+$btnDeselAll.FlatAppearance.BorderSize  = 1
+$btnDeselAll.FlatAppearance.MouseOverBackColor = $CLR_BTNHOV
+$btnDeselAll.Size     = New-Object System.Drawing.Size(120, 28)
+$btnDeselAll.Location = New-Object System.Drawing.Point(735, 70)
+$btnDeselAll.Anchor   = "Top,Right"
+$btnDeselAll.Cursor   = [System.Windows.Forms.Cursors]::Hand
+$btnDeselAll.Add_Click({ foreach ($t in $script:AllTasks) { $t.CheckBox.Checked = $false } })
+$pnlBottom.Controls.Add($btnDeselAll)
+
+$script:BtnRun = New-Object System.Windows.Forms.Button
+$script:BtnRun.Text      = "Run Selected"
+$script:BtnRun.Font      = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
+$script:BtnRun.ForeColor = [System.Drawing.Color]::White
+$script:BtnRun.BackColor = $CLR_RUNBTN
+$script:BtnRun.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+$script:BtnRun.FlatAppearance.BorderSize = 0
+$script:BtnRun.FlatAppearance.MouseOverBackColor  = $CLR_RUNHOV
+$script:BtnRun.FlatAppearance.MouseDownBackColor  = [System.Drawing.Color]::FromArgb(28, 82, 160)
+$script:BtnRun.Size     = New-Object System.Drawing.Size(250, 52)
+$script:BtnRun.Location = New-Object System.Drawing.Point(735, 112)
+$script:BtnRun.Anchor   = "Top,Right"
+$script:BtnRun.Cursor   = [System.Windows.Forms.Cursors]::Hand
+$pnlBottom.Controls.Add($script:BtnRun)
+
+# -- SCROLLABLE MAIN CONTENT PANEL --------------------------------------------
+$pnlScroll = New-Object System.Windows.Forms.Panel
+$pnlScroll.Dock       = "Fill"
+$pnlScroll.AutoScroll = $true
+$pnlScroll.BackColor  = $CLR_BG
+$form.Controls.Add($pnlScroll)
+$pnlScroll.BringToFront()
+
+# Mouse-wheel forwarding so scrolling works over child controls
+$wheelHandler = [System.Windows.Forms.MouseEventHandler]{
+    param($sender, $e)
+    $newY = [Math]::Max(0, -$pnlScroll.AutoScrollPosition.Y - $e.Delta)
+    $pnlScroll.AutoScrollPosition = New-Object System.Drawing.Point(
+        -$pnlScroll.AutoScrollPosition.X, $newY)
+}
+
+$pnlScroll.Add_MouseWheel($wheelHandler)
+$form.Add_MouseWheel($wheelHandler)
+
+# ============================================================
+#  SECTION E: HELPER FUNCTIONS FOR BUILDING GUI ROWS
+# ============================================================
+
+function Write-Log {
+    param([string]$Message, [string]$Level = "Info")
+    $color = switch ($Level) {
+        "Running" { $CLR_YELLOW }
+        "Success" { $CLR_GREEN  }
+        "Error"   { $CLR_RED    }
+        default   { $CLR_TEXT   }
+    }
+    $ts   = (Get-Date).ToString("HH:mm:ss")
+    $line = "[$ts] $Message"
+    $script:LogBox.Invoke([System.Action]{
+        $script:LogBox.SelectionStart  = $script:LogBox.TextLength
+        $script:LogBox.SelectionLength = 0
+        $script:LogBox.SelectionColor  = $color
+        $script:LogBox.AppendText("$line`r`n")
+        $script:LogBox.ScrollToCaret()
+    })
+}
+
+function New-TaskRow {
+    param(
+        [string]         $Name,
+        [scriptblock]    $Func,
+        [System.Windows.Forms.Panel] $Parent,
+        [int]            $Y
+    )
+
+    # CheckBox (for batch queue)
+    $cb = New-Object System.Windows.Forms.CheckBox
+    $cb.Text      = ""
+    $cb.ForeColor = $CLR_TEXT
+    $cb.BackColor = [System.Drawing.Color]::Transparent
+    $cb.Size      = New-Object System.Drawing.Size(20, 26)
+    $cb.Location  = New-Object System.Drawing.Point(6, ($Y + 1))
+    $cb.Cursor    = [System.Windows.Forms.Cursors]::Hand
+    $Parent.Controls.Add($cb)
+
+    # Button (immediate execution)
+    $btn = New-Object System.Windows.Forms.Button
+    $btn.Text      = $Name
+    $btn.Font      = $FNT_MAIN
+    $btn.ForeColor = $CLR_TEXT
+    $btn.BackColor = $CLR_BTN
+    $btn.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+    $btn.FlatAppearance.BorderColor = $CLR_SEP
+    $btn.FlatAppearance.BorderSize  = 1
+    $btn.FlatAppearance.MouseOverBackColor = $CLR_BTNHOV
+    $btn.FlatAppearance.MouseDownBackColor = $CLR_ACCENT
+    $btn.TextAlign  = [System.Drawing.ContentAlignment]::MiddleLeft
+    $btn.Size       = New-Object System.Drawing.Size(190, 26)
+    $btn.Location   = New-Object System.Drawing.Point(30, $Y)
+    $btn.Cursor     = [System.Windows.Forms.Cursors]::Hand
+    $btn.Tag        = $Func
+    $Parent.Controls.Add($btn)
+
+    # Wire mouse-wheel on button and checkbox to the scroll panel
+    $btn.Add_MouseWheel($wheelHandler)
+    $cb.Add_MouseWheel($wheelHandler)
+
+    # Immediate-run on button click
+    $btn.Add_Click({
+        param($s, $e)
+        $f    = $s.Tag
+        $name = $s.Text
+        Write-Log "Launching: $name ..." -Level Running
+        try {
+            & $f
+            Write-Log "$name - launched." -Level Success
+        } catch {
+            Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error
+        }
+    })
+
+    # Register in global list
+    $entry = @{ Name = $Name; Function = $Func; CheckBox = $cb; Button = $btn }
+    $script:AllTasks.Add($entry)
+    return $entry
+}
+
+function New-CategoryGroup {
+    param(
+        [string]  $Title,
+        [array]   $Items,
+        [System.Windows.Forms.Panel] $Parent,
+        [int]     $X,
+        [int]     $Y
+    )
+    $ROW_H   = 32
+    $PAD_TOP = 26
+    $PAD_BOT = 8
+    $gbH = $PAD_TOP + ($Items.Count * $ROW_H) + $PAD_BOT
+
+    $gb = New-Object System.Windows.Forms.GroupBox
+    $gb.Text      = $Title
+    $gb.Font      = $FNT_TITLE
+    $gb.ForeColor = $CLR_ACCENT
+    $gb.BackColor = $CLR_GROUP
+    $gb.Size      = New-Object System.Drawing.Size(236, $gbH)
+    $gb.Location  = New-Object System.Drawing.Point($X, $Y)
+    $gb.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+    $Parent.Controls.Add($gb)
+
+    $inner = New-Object System.Windows.Forms.Panel
+    $inner.BackColor = [System.Drawing.Color]::Transparent
+    $inner.Size      = New-Object System.Drawing.Size(234, ($gbH - $PAD_TOP))
+    $inner.Location  = New-Object System.Drawing.Point(0, $PAD_TOP)
+    $gb.Controls.Add($inner)
+
+    $inner.Add_MouseWheel($wheelHandler)
+    $gb.Add_MouseWheel($wheelHandler)
+
+    $ry = 2
+    foreach ($item in $Items) {
+        New-TaskRow -Name $item.Name -Func $item.Func -Parent $inner -Y $ry | Out-Null
+        $ry += $ROW_H
+    }
+    return $gb
+}
+
+# ============================================================
+#  SECTION F: POPULATE ALL CATEGORIES
+# ============================================================
+
+$COL_W   = 250   # column stride (group width 236 + 14 gap)
+$GAP_Y   = 14
+$START_X = 14
+$START_Y = 12
+$colY    = @($START_Y, $START_Y, $START_Y, $START_Y)   # current Y per column
+
+function Add-Category {
+    param([int]$Col, [string]$Title, [array]$Items)
+    $x  = $START_X + $Col * $COL_W
+    $gb = New-CategoryGroup -Title $Title -Items $Items -Parent $pnlScroll -X $x -Y $colY[$Col]
+    $colY[$Col] += $gb.Height + $GAP_Y
+}
+
+# Column 0 ---------------------------------------------------------------------
+Add-Category -Col 0 -Title "About AFNAN" -Items @(
+    @{ Name = "Open Portfolio";    Func = { Open-Portfolio } }
+)
+
+Add-Category -Col 0 -Title "PowerShell Tweaks" -Items @(
+    @{ Name = "See Policy";        Func = { See-Policy        } },
+    @{ Name = "Unrestrict Policy"; Func = { Unrestrict-Policy } }
+)
+
+Add-Category -Col 0 -Title "Essential" -Items @(
+    @{ Name = "Chocolatey";   Func = { Install-Choco   } },
+    @{ Name = "Node.js LTS";  Func = { Install-NodeLTS } }
+)
+
+Add-Category -Col 0 -Title "Automation" -Items @(
+    @{ Name = "n8n Workflow Automation";    Func = { Install-N8N } },
+    @{ Name = "Google Workspace CLI (GWS)"; Func = { Install-GWS } }
+)
+
+# Column 1 ---------------------------------------------------------------------
+Add-Category -Col 1 -Title "Recommended Tools" -Items @(
+    @{ Name = "Git";          Func = { Install-Git        } },
+    @{ Name = "Python";       Func = { Install-Python     } },
+    @{ Name = ".NET Runtime"; Func = { Install-Dotnet     } },
+    @{ Name = "FFmpeg";       Func = { Install-FFmpeg     } },
+    @{ Name = "7-Zip";        Func = { Install-7Zip       } },
+    @{ Name = "WinDirStat";   Func = { Install-WinDirStat } },
+    @{ Name = "yt-dlp";       Func = { Install-YTDLP      } },
+    @{ Name = "ngrok";        Func = { Install-Ngrok      } }
+)
+
+# Column 2 ---------------------------------------------------------------------
+Add-Category -Col 2 -Title "Run Scripts" -Items @(
+    @{ Name = "Chris Titus Tool";        Func = { Run-Titus     } },
+    @{ Name = "Mass Grave (Activation)"; Func = { Run-MassGrave } },
+    @{ Name = "Coporton";                Func = { Run-Coporton  } },
+    @{ Name = "IDM";                     Func = { Install-IDM   } },
+    @{ Name = "Sparkle";                 Func = { Run-Sparkle   } },
+    @{ Name = "GHGrab (GitHub Grabber)"; Func = { Run-GHGrab    } },
+    @{ Name = "Tools Installer Setup";   Func = { Run-Setup     } },
+    @{ Name = "Tor Link";                Func = { Run-TorLink   } }
+)
+
+Add-Category -Col 2 -Title "AI in PC" -Items @(
+    @{ Name = "Agy";                Func = { Install-Agy           } },
+    @{ Name = "Opencode";           Func = { Install-Opencode      } },
+    @{ Name = "Google Desktop App"; Func = { Open-GoogleDesktopApp } },
+    @{ Name = "LLM-Checker";        Func = { Run-LLMChecker        } },
+    @{ Name = "Ollama";             Func = { Install-Ollama        } }
+)
+
+# Column 3 ---------------------------------------------------------------------
+Add-Category -Col 3 -Title "System Tools" -Items @(
+    @{ Name = "Winget";            Func = { Install-Winget    } },
+    @{ Name = "Everything Search"; Func = { Install-Everything} },
+    @{ Name = "CMD Color 0a";      Func = { Set-CMD0A         } },
+    @{ Name = "RustDesk";          Func = { Install-RustDesk  } },
+    @{ Name = "HiBit Uninstaller"; Func = { Install-HiBit     } },
+    @{ Name = "Scrcpy GUI";        Func = { Install-Scrcpy    } },
+    @{ Name = "Cursor / Elegant";  Func = { Install-Cursor    } },
+    @{ Name = "VC++ Runtimes";     Func = { Install-VCRedist  } },
+    @{ Name = "DirectX Runtime";   Func = { Install-DirectX   } }
+)
+
+Add-Category -Col 3 -Title "Productivity Apps" -Items @(
+    @{ Name = "Office 365";  Func = { Install-Office365 } },
+    @{ Name = "Chrome";      Func = { Install-Chrome    } },
+    @{ Name = "Zen Browser"; Func = { Install-Zen       } },
+    @{ Name = "OBS Studio";  Func = { Install-OBS       } },
+    @{ Name = "LocalSend";   Func = { Install-LocalSend } },
+    @{ Name = "Notepad++";   Func = { Install-NotepadPP } },
+    @{ Name = "ShareX";      Func = { Install-ShareX    } },
+    @{ Name = "qBittorrent"; Func = { Install-QBit      } }
+)
+
+# Let AutoScroll automatically compute the required virtual bounds
+# based on the scaled locations of the child GroupBoxes.
+
+
+# ============================================================
+#  SECTION G: RUN SELECTED (non-blocking via Runspace)
+# ============================================================
+
+$script:BtnRun.Add_Click({
+
+    # Gather checked items in their current visual order
+    $selected = $script:AllTasks | Where-Object { $_.CheckBox.Checked }
+
+    if (-not $selected) {
+        [System.Windows.Forms.MessageBox]::Show(
+            "No items are checked.`nPlease check at least one item before clicking Run Selected.",
+            "Nothing Selected",
+            [System.Windows.Forms.MessageBoxButtons]::OK,
+            [System.Windows.Forms.MessageBoxIcon]::Information
+        ) | Out-Null
+        return
+    }
+
+    # Disable button while running
+    $script:BtnRun.Enabled = $false
+    $script:BtnRun.Text    = "Running..."
+    $script:ProgressBar.Value   = 0
+    $script:ProgressBar.Maximum = $selected.Count
+
+    Write-Log ("=== Batch run started: {0} item(s) ===" -f $selected.Count) -Level Info
+
+    # Share references into runspace
+    $rsData = @{
+        SelectedTasks = $selected
+        LogBox        = $script:LogBox
+        ProgressBar   = $script:ProgressBar
+        StatusLabel   = $script:LblStatus
+        RunButton     = $script:BtnRun
+        CLR_TEXT      = $CLR_TEXT
+        CLR_YELLOW    = $CLR_YELLOW
+        CLR_GREEN     = $CLR_GREEN
+        CLR_RED       = $CLR_RED
+    }
+
+    $rs = [System.Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
+    $rs.ApartmentState = "STA"
+    $rs.ThreadOptions  = "ReuseThread"
+    $rs.Open()
+    foreach ($k in $rsData.Keys) { $rs.SessionStateProxy.SetVariable($k, $rsData[$k]) }
+
+    $ps = [System.Management.Automation.PowerShell]::Create()
+    $ps.Runspace = $rs
+
+    [void]$ps.AddScript({
+
+        function Ui-Log {
+            param([string]$Msg, $Clr)
+            $ts = (Get-Date).ToString("HH:mm:ss")
+            $LogBox.Invoke([System.Action]{
+                $LogBox.SelectionStart  = $LogBox.TextLength
+                $LogBox.SelectionLength = 0
+                $LogBox.SelectionColor  = $Clr
+                $LogBox.AppendText("[$ts] $Msg`r`n")
+                $LogBox.ScrollToCaret()
+            })
+        }
+
+        $total = $SelectedTasks.Count
+        $ok    = 0
+        $fail  = 0
+
+        for ($i = 0; $i -lt $total; $i++) {
+            $task = $SelectedTasks[$i]
+
+            $idx  = $i    # capture for closure
+            $tName = $task.Name
+            $StatusLabel.Invoke([System.Action]{
+                $StatusLabel.Text = "Task $($idx+1) of $total : $tName"
+            })
+
+            Ui-Log -Msg "Running: $($task.Name) ..." -Clr $CLR_YELLOW
+
+            try {
+                & $task.Function
+                Ui-Log -Msg "Done:    $($task.Name)" -Clr $CLR_GREEN
+                $ok++
+            } catch {
+                Ui-Log -Msg "FAILED:  $($task.Name) | $($_.Exception.Message)" -Clr $CLR_RED
+                $fail++
+            }
+
+            $pVal = $i + 1
+            $ProgressBar.Invoke([System.Action]{
+                $ProgressBar.Value = [Math]::Min($pVal, $ProgressBar.Maximum)
+            })
+
+            Start-Sleep -Milliseconds 250
+        }
+
+        # Summary line
+        $sumMsg = "=== Completed: $ok Successful  |  $fail Failed ==="
+        $sumClr = if ($fail -gt 0) { $CLR_RED } else { $CLR_GREEN }
+        Ui-Log -Msg $sumMsg -Clr $sumClr
+
+        # Restore button
+        $RunButton.Invoke([System.Action]{
+            $RunButton.Enabled = $true
+            $RunButton.Text    = "Run Selected"
+        })
+        $StatusLabel.Invoke([System.Action]{
+            $StatusLabel.Text = "Done   OK: $ok   Failed: $fail"
+        })
+
+        # Summary dialog
+        $RunButton.Invoke([System.Action]{
+            $icon = if ($fail -gt 0) {
+                [System.Windows.Forms.MessageBoxIcon]::Warning
+            } else {
+                [System.Windows.Forms.MessageBoxIcon]::Information
+            }
+            [System.Windows.Forms.MessageBox]::Show(
+                "Batch run complete.`n`nSuccessful : $ok`nFailed     : $fail",
+                "Run Summary",
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                $icon
+            ) | Out-Null
+        })
+    })
+
+    [void]$ps.BeginInvoke()   # non-blocking; UI stays live
+})
+
+# ============================================================
+#  SECTION H: RESIZE HANDLER  (keep right-side controls tidy)
+# ============================================================
+$form.Add_Resize({
+    $w = $pnlHeader.Width
+    $btnPortfolio.Location = New-Object System.Drawing.Point(($w - 108), 17)
+
+    $logW = $pnlBottom.Width - 320
+    if ($logW -gt 100) {
+        $script:LogBox.Width    = $logW
+        $script:ProgressBar.Width = $logW
+    }
+})
+
+# ============================================================
+#  SECTION I: STARTUP MESSAGE AND LAUNCH
+# ============================================================
+$form.Add_Shown({
+    Write-Log "Tool Installer GUI ready - running as Administrator." -Level Success
+    Write-Log "Tip: Check boxes next to items and press [Run Selected] for batch install." -Level Info
+    Write-Log "Tip: Click any tool button to launch it immediately without queuing." -Level Info
+})
+
+[System.Windows.Forms.Application]::Run($form)
