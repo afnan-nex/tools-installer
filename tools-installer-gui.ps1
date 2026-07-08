@@ -416,7 +416,7 @@ $script:AllTasks = [System.Collections.Generic.List[hashtable]]::new()
 
 $form = New-Object System.Windows.Forms.Form
 $form.Text            = "Tool Installer  -  by AFNAN"
-$form.Size            = New-Object System.Drawing.Size(1040, 820)
+$form.Size            = New-Object System.Drawing.Size(1000, 600)
 $form.MinimumSize     = New-Object System.Drawing.Size(820, 620)
 $form.StartPosition   = "CenterScreen"
 $form.BackColor       = $CLR_BG
