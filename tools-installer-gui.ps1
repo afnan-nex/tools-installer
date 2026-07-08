@@ -422,7 +422,16 @@ $form.StartPosition   = "CenterScreen"
 $form.BackColor       = $CLR_BG
 $form.ForeColor       = $CLR_TEXT
 $form.Font            = $FNT_MAIN
-$form.Icon            = [System.Drawing.SystemIcons]::Shield
+$iconPath = "$env:TEMP\Tools-Installer.ico"
+try {
+    if (-not (Test-Path $iconPath)) {
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/afnan-nex/tools-installer/main/Setup/Tools-Installer.ico" -OutFile $iconPath -UseBasicParsing -TimeoutSec 5 -ErrorAction Stop
+    }
+    $form.Icon = New-Object System.Drawing.Icon($iconPath)
+} catch {
+    $form.Icon = [System.Drawing.SystemIcons]::Shield
+}
 $form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::Sizable
 
 # -- HEADER BAR ---------------------------------------------------------------
@@ -588,6 +597,7 @@ $pnlScroll.Dock       = "Fill"
 $pnlScroll.AutoScroll = $true
 $pnlScroll.BackColor  = $CLR_BG
 $form.Controls.Add($pnlScroll)
+$pnlScroll.BringToFront()
 
 # Mouse-wheel forwarding so scrolling works over child controls
 $wheelHandler = [System.Windows.Forms.MouseEventHandler]{
