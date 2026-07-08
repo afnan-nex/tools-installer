@@ -122,6 +122,14 @@ function Run-TorLink {
         "echo === TorLink === && npx --yes torlnk && echo. && echo Press any key to close... && pause"
 }
 
+function Run-YTDLPFrontend {
+    $ytdlpCmd = ('echo Downloading and running YTDLP-Frontend... && ' +
+        'curl -L -o "%TEMP%\YTDLP-Frontend.ps1" https://raw.githubusercontent.com/afnan-nex/YTDLP-Frontend/main/YTDLP-Frontend.ps1 && ' +
+        'powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\YTDLP-Frontend.ps1" && ' +
+        'echo. && echo Process finished. Press any key to close this window. && pause')
+    Start-Process cmd -ArgumentList "/k", $ytdlpCmd
+}
+
 # ============================================================
 #  Recommended Tools
 # ============================================================
@@ -386,7 +394,6 @@ function Install-Zen {
     Start-Process cmd -ArgumentList "/k",
         "echo Installing Zen Browser via Chocolatey... && choco install zen-browser --prerelease -y && echo. && echo Zen Browser installation completed. && pause"
 }
-
 
 function Install-OBS {
     Start-Process cmd -ArgumentList "/k",
@@ -827,7 +834,8 @@ Add-Category -Col 2 -Title "Run Scripts" -Items @(
     @{ Name = "Sparkle";                 Func = { Run-Sparkle   } },
     @{ Name = "GHGrab (GitHub Grabber)"; Func = { Run-GHGrab    } },
     @{ Name = "Tools Installer Setup";   Func = { Run-Setup     } },
-    @{ Name = "Tor Link";                Func = { Run-TorLink   } }
+    @{ Name = "Tor Link";                Func = { Run-TorLink   } },
+    @{ Name = "YTDLP Frontend";          Func = { Run-YTDLPFrontend   } }
 )
 
 Add-Category -Col 2 -Title "AI in PC" -Items @(
