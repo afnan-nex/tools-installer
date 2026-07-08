@@ -816,9 +816,9 @@ Add-Category -Col 3 -Title "Productivity Apps" -Items @(
     @{ Name = "qBittorrent"; Func = { Install-QBit      } }
 )
 
-# Set virtual scroll height so all content is reachable
-$maxColY = ($colY | Measure-Object -Maximum).Maximum + 20
-$pnlScroll.AutoScrollMinSize = New-Object System.Drawing.Size(($START_X + 4 * $COL_W), $maxColY)
+# Let AutoScroll automatically compute the required virtual bounds
+# based on the scaled locations of the child GroupBoxes.
+
 
 # ============================================================
 #  SECTION G: RUN SELECTED (non-blocking via Runspace)
