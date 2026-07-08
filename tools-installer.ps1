@@ -32,10 +32,16 @@ function Refresh-Env {
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" +
                 [System.Environment]::GetEnvironmentVariable("Path","User")
 }
-
+# ============================================================
+#  About AFNAN
+# ============================================================
 function Open-Portfolio {
     Start-Process "https://afnan-nex.github.io/portfolio/index.html"
 }
+
+# ============================================================
+#  PowerShell Tweaks
+# ============================================================
 
 function See-Policy {
     Start-Process cmd -ArgumentList "/k", ("echo Current Execution Policy: && " +
@@ -51,6 +57,10 @@ function Unrestrict-Policy {
         "Write-Host 'Policy updated successfully.'"" && echo. && echo Press any key to close... && pause")
 }
 
+# ============================================================
+#  Essential
+# ============================================================
+
 function Install-Choco {
     $chocoCmd = ('echo Installing Chocolatey... && powershell -NoProfile -ExecutionPolicy Bypass -Command ' +
         '"Set-ExecutionPolicy Bypass -Scope Process -Force; ' +
@@ -64,6 +74,10 @@ function Install-NodeLTS {
     Start-Process cmd -ArgumentList "/k",
         "echo Installing Node.js LTS via Chocolatey... && choco install nodejs-lts -y && echo. && echo Node.js installation completed. && pause"
 }
+
+# ============================================================
+#  Run Scripts
+# ============================================================
 
 function Run-Titus {
     Start-Process cmd -ArgumentList "/k",
@@ -95,11 +109,6 @@ function Run-GHGrab {
         "echo === GHGrab === && npx --yes @ghgrab/ghgrab && echo. && echo Press any key to close... && pause"
 }
 
-function Run-TorLink {
-    Start-Process cmd -ArgumentList "/k",
-        "echo === TorLink === && npx --yes torlnk && echo. && echo Press any key to close... && pause"
-}
-
 function Run-Setup {
     $setupCmd = ('echo Downloading Setup... && curl.exe -L -o "%TEMP%\Tools-Installer.exe" ' +
         '"https://github.com/afnan-nex/tools-installer/raw/main/Setup/Tools-Installer.exe" && ' +
@@ -108,14 +117,23 @@ function Run-Setup {
     Start-Process cmd -ArgumentList "/k", $setupCmd
 }
 
-function Install-Python {
+function Run-TorLink {
     Start-Process cmd -ArgumentList "/k",
-        "echo Installing Python via Chocolatey... && choco install python -y && echo. && echo Python installation completed. && pause"
+        "echo === TorLink === && npx --yes torlnk && echo. && echo Press any key to close... && pause"
 }
+
+# ============================================================
+#  Recommended Tools
+# ============================================================
 
 function Install-Git {
     Start-Process cmd -ArgumentList "/k",
         "echo Installing Git via Chocolatey... && choco install git -y && echo. && echo Git installation completed. && pause"
+}
+
+function Install-Python {
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing Python via Chocolatey... && choco install python -y && echo. && echo Python installation completed. && pause"
 }
 
 function Install-Dotnet {
@@ -148,6 +166,10 @@ function Install-Ngrok {
         "echo Installing ngrok via Chocolatey... && choco install ngrok -y && echo. && echo ngrok installation completed. && pause"
 }
 
+# ============================================================
+#  Automation
+# ============================================================
+
 function Install-N8N {
     $n8nCmd = ('echo Installing n8n Workflow Automation... && ' +
         'npm install -g n8n@latest --verbose && echo n8n installation completed. && ' +
@@ -162,6 +184,10 @@ function Install-GWS {
     Start-Process cmd -ArgumentList "/k",
         "echo Installing Google Workspace CLI... && npm install -g @googleworkspace/cli && echo. && echo Installation completed. Press any key to close this window. && pause"
 }
+
+# ============================================================
+#  AI in PC
+# ============================================================
 
 function Install-Agy {
     $agyCmd = ('echo Installing Agy... && ' +
@@ -190,6 +216,10 @@ function Install-Ollama {
         "echo Installing Ollama... && winget install Ollama.Ollama && echo. && echo Finished. Press any key to close... && pause"
 }
 
+# ============================================================
+#  System tools
+# ============================================================
+
 function Install-Winget {
     $wingetPs = @'
 Write-Host "Installing Winget..."
@@ -210,34 +240,9 @@ Read-Host "Press Enter to close"
     Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
 }
 
-function Install-Office365 {
-    $officeCmd = ('echo Downloading Office 365 Setup... && ' +
-        'curl.exe -L -o "%TEMP%\OfficeSetup.exe" ' +
-        '"https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA" && ' +
-        'if exist "%TEMP%\OfficeSetup.exe" ' +
-        '(echo Launching Office Installer... && start "" "%TEMP%\OfficeSetup.exe") ' +
-        'else (echo Download failed.) && pause')
-    Start-Process cmd -ArgumentList "/k", $officeCmd
-}
-
 function Install-Everything {
     Start-Process cmd -ArgumentList "/k",
         "echo Installing Everything via Chocolatey... && choco install everything -y && echo. && echo Everything installation completed. && pause"
-}
-
-function Install-Chrome {
-    Start-Process cmd -ArgumentList "/k",
-        "echo Installing Google Chrome via Chocolatey... && choco install googlechrome -y && echo. && echo Chrome installation completed. && pause"
-}
-
-function Install-Zen {
-    Start-Process cmd -ArgumentList "/k",
-        "echo Installing Zen Browser via Chocolatey... && choco install zen-browser --prerelease -y && echo. && echo Zen Browser installation completed. && pause"
-}
-
-function Install-Cursor {
-    Start-Process cmd -ArgumentList "/k",
-        "echo Cloning Elegant repository from GitHub... && git clone https://github.com/afnan-nex/Elegant && echo. && echo Repository cloned successfully to Elegant folder. && pause"
 }
 
 function Set-CMD0A {
@@ -255,11 +260,6 @@ Read-Host "Press Enter to close"
     $tmp = "$env:TEMP\set_cmd0a.ps1"
     $cmd0aPs | Out-File -FilePath $tmp -Encoding UTF8
     Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
-}
-
-function Install-OBS {
-    Start-Process cmd -ArgumentList "/k",
-        "echo Installing OBS Studio via Chocolatey... && choco install obs-studio -y && echo. && echo OBS Studio installation completed. && pause"
 }
 
 function Install-RustDesk {
@@ -287,24 +287,9 @@ function Install-Scrcpy {
     Start-Process cmd -ArgumentList "/k", $scrcpyCmd
 }
 
-function Install-LocalSend {
+function Install-Cursor {
     Start-Process cmd -ArgumentList "/k",
-        "echo Installing LocalSend via Chocolatey... && choco install localsend -y && echo. && echo LocalSend installation completed. && pause"
-}
-
-function Install-NotepadPP {
-    Start-Process cmd -ArgumentList "/k",
-        "echo Installing Notepad++ via Chocolatey... && choco install notepadplusplus -y && echo. && echo Notepad++ installation completed. && pause"
-}
-
-function Install-ShareX {
-    Start-Process cmd -ArgumentList "/k",
-        "echo Installing ShareX via Chocolatey... && choco install sharex -y && echo. && echo ShareX installation completed. && pause"
-}
-
-function Install-QBit {
-    Start-Process cmd -ArgumentList "/k",
-        "echo Installing qBittorrent via Chocolatey... && choco install qbittorrent -y && echo. && echo qBittorrent installation completed. && pause"
+        "echo Cloning Elegant repository from GitHub... && git clone https://github.com/afnan-nex/Elegant && echo. && echo Repository cloned successfully to Elegant folder. && pause"
 }
 
 function Install-VCRedist {
@@ -376,6 +361,57 @@ Read-Host "Press Enter to close"
     $tmp = "$env:TEMP\install_directx.ps1"
     $dxPs | Out-File -FilePath $tmp -Encoding UTF8
     Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+}
+
+# ============================================================
+#  System tools
+# ============================================================
+
+function Install-Office365 {
+    $officeCmd = ('echo Downloading Office 365 Setup... && ' +
+        'curl.exe -L -o "%TEMP%\OfficeSetup.exe" ' +
+        '"https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA" && ' +
+        'if exist "%TEMP%\OfficeSetup.exe" ' +
+        '(echo Launching Office Installer... && start "" "%TEMP%\OfficeSetup.exe") ' +
+        'else (echo Download failed.) && pause')
+    Start-Process cmd -ArgumentList "/k", $officeCmd
+}
+
+function Install-Chrome {
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing Google Chrome via Chocolatey... && choco install googlechrome -y && echo. && echo Chrome installation completed. && pause"
+}
+
+function Install-Zen {
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing Zen Browser via Chocolatey... && choco install zen-browser --prerelease -y && echo. && echo Zen Browser installation completed. && pause"
+}
+
+
+function Install-OBS {
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing OBS Studio via Chocolatey... && choco install obs-studio -y && echo. && echo OBS Studio installation completed. && pause"
+}
+
+
+function Install-LocalSend {
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing LocalSend via Chocolatey... && choco install localsend -y && echo. && echo LocalSend installation completed. && pause"
+}
+
+function Install-NotepadPP {
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing Notepad++ via Chocolatey... && choco install notepadplusplus -y && echo. && echo Notepad++ installation completed. && pause"
+}
+
+function Install-ShareX {
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing ShareX via Chocolatey... && choco install sharex -y && echo. && echo ShareX installation completed. && pause"
+}
+
+function Install-QBit {
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing qBittorrent via Chocolatey... && choco install qbittorrent -y && echo. && echo qBittorrent installation completed. && pause"
 }
 
 # ============================================================
