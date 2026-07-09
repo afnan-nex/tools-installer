@@ -338,75 +338,85 @@ function Install-Cursor {
         "echo Cloning Elegant repository from GitHub... && git clone https://github.com/afnan-nex/Elegant && echo. && echo Repository cloned successfully to Elegant folder. && pause"
 }
 
-function Install-VCRedist {
-    $vcPs = @'
-Write-Host "Downloading Visual C++ Runtimes..."
-$ZIP_URL  = "https://github.com/planetshine0000/vc-redist-latest/releases/download/v1.0.0/Visual-C-Runtimes-All-in-One-Dec-2025.zip"
-$ZIP_FILE = "$env:TEMP\VC_Runtimes.zip"
-$EXTR_DIR = "$env:TEMP\VC_Runtimes_Temp"
-curl.exe -L -o $ZIP_FILE $ZIP_URL
-if (Test-Path $ZIP_FILE) {
-    Write-Host "Extracting files..."
-    if (-not (Test-Path $EXTR_DIR)) { New-Item -ItemType Directory -Path $EXTR_DIR | Out-Null }
-    Expand-Archive -Path $ZIP_FILE -DestinationPath $EXTR_DIR -Force
-    Write-Host "Running install_all.bat as Administrator..."
-    Get-ChildItem -Path $EXTR_DIR -Filter "install_all.bat" -Recurse | ForEach-Object {
-        Push-Location $_.DirectoryName
-        Start-Process powershell -ArgumentList "-command", "Start-Process 'install_all.bat' -Verb runAs"
-        Pop-Location
-    }
-    Remove-Item $ZIP_FILE -Force
-    Write-Host "Installer launched. You can close this window."
-} else {
-    Write-Host "Download failed."
-}
-Read-Host "Press Enter to close"
-'@
-    $tmp = "$env:TEMP\install_vcredist.ps1"
-    $vcPs | Out-File -FilePath $tmp -Encoding UTF8
-    Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+# function Install-VCC-Runtimes {
+#     $vcPs = @'
+# Write-Host "Downloading Visual C++ Runtimes..."
+# $ZIP_URL  = "https://github.com/planetshine0000/vc-redist-latest/releases/download/v1.0.0/Visual-C-Runtimes-All-in-One-Dec-2025.zip"
+# $ZIP_FILE = "$env:TEMP\VC_Runtimes.zip"
+# $EXTR_DIR = "$env:TEMP\VC_Runtimes_Temp"
+# curl.exe -L -o $ZIP_FILE $ZIP_URL
+# if (Test-Path $ZIP_FILE) {
+#     Write-Host "Extracting files..."
+#     if (-not (Test-Path $EXTR_DIR)) { New-Item -ItemType Directory -Path $EXTR_DIR | Out-Null }
+#     Expand-Archive -Path $ZIP_FILE -DestinationPath $EXTR_DIR -Force
+#     Write-Host "Running install_all.bat as Administrator..."
+#     Get-ChildItem -Path $EXTR_DIR -Filter "install_all.bat" -Recurse | ForEach-Object {
+#         Push-Location $_.DirectoryName
+#         Start-Process powershell -ArgumentList "-command", "Start-Process 'install_all.bat' -Verb runAs"
+#         Pop-Location
+#     }
+#     Remove-Item $ZIP_FILE -Force
+#     Write-Host "Installer launched. You can close this window."
+# } else {
+#     Write-Host "Download failed."
+# }
+# Read-Host "Press Enter to close"
+# '@
+#     $tmp = "$env:TEMP\install_vcredist.ps1"
+#     $vcPs | Out-File -FilePath $tmp -Encoding UTF8
+#     Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+# }
+
+function Install-VCC-Runtimes {
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing all Visual C++ Runtimes via winget... && winget install -e --id abbodi1406.vcredist --silent && echo. && echo Visual C++ Runtimes installation completed. && pause"
 }
 
+# function Install-DirectX {
+#     $dxPs = @'
+# Write-Host "Preparing DirectX installer..."
+# $TEMP_DIR = "$env:TEMP\DirectX_Install"
+# if (-not (Test-Path $TEMP_DIR)) { New-Item -ItemType Directory -Path $TEMP_DIR | Out-Null }
+# $DX_URL = "https://github.com/planetshine0000/direct-x/releases/download/v1.0.0/DirectX-Redist-Jun-2010.zip"
+# $DX_ZIP = "$TEMP_DIR\DirectX.zip"
+# if (-not (Test-Path $DX_ZIP)) {
+#     Write-Host "Downloading DirectX..."
+#     curl.exe -L -o $DX_ZIP $DX_URL
+# } else {
+#     Write-Host "DirectX zip already exists, skipping download."
+# }
+# Write-Host "Extracting files..."
+# Unblock-File -Path $DX_ZIP
+# Expand-Archive -Path $DX_ZIP -DestinationPath $TEMP_DIR -Force
+# Write-Host "Locating DXSETUP.exe..."
+# $setup = Get-ChildItem -Path $TEMP_DIR -Filter "DXSETUP.exe" -Recurse | Select-Object -First 1
+# if (-not $setup) {
+#     Write-Host "[ERROR] DXSETUP.exe not found in extracted files."
+#     Read-Host "Press Enter to close"
+#     return
+# }
+# Write-Host "Launching DirectX installer..."
+# Start-Process -FilePath $setup.FullName -Verb RunAs
+# Write-Host ""
+# Write-Host "Installer launched. Waiting 30 seconds before cleanup..."
+# Start-Sleep -Seconds 30
+# Remove-Item $DX_ZIP -Force -ErrorAction SilentlyContinue
+# Remove-Item $TEMP_DIR -Recurse -Force -ErrorAction SilentlyContinue
+# if (Test-Path $TEMP_DIR) {
+#     Write-Host "[NOTE] Some files still in use by the installer - not deleted."
+# } else {
+#     Write-Host "Cleanup successful."
+# }
+# Read-Host "Press Enter to close"
+# '@
+#     $tmp = "$env:TEMP\install_directx.ps1"
+#     $dxPs | Out-File -FilePath $tmp -Encoding UTF8
+#     Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+# }
+
 function Install-DirectX {
-    $dxPs = @'
-Write-Host "Preparing DirectX installer..."
-$TEMP_DIR = "$env:TEMP\DirectX_Install"
-if (-not (Test-Path $TEMP_DIR)) { New-Item -ItemType Directory -Path $TEMP_DIR | Out-Null }
-$DX_URL = "https://github.com/planetshine0000/direct-x/releases/download/v1.0.0/DirectX-Redist-Jun-2010.zip"
-$DX_ZIP = "$TEMP_DIR\DirectX.zip"
-if (-not (Test-Path $DX_ZIP)) {
-    Write-Host "Downloading DirectX..."
-    curl.exe -L -o $DX_ZIP $DX_URL
-} else {
-    Write-Host "DirectX zip already exists, skipping download."
-}
-Write-Host "Extracting files..."
-Unblock-File -Path $DX_ZIP
-Expand-Archive -Path $DX_ZIP -DestinationPath $TEMP_DIR -Force
-Write-Host "Locating DXSETUP.exe..."
-$setup = Get-ChildItem -Path $TEMP_DIR -Filter "DXSETUP.exe" -Recurse | Select-Object -First 1
-if (-not $setup) {
-    Write-Host "[ERROR] DXSETUP.exe not found in extracted files."
-    Read-Host "Press Enter to close"
-    return
-}
-Write-Host "Launching DirectX installer..."
-Start-Process -FilePath $setup.FullName -Verb RunAs
-Write-Host ""
-Write-Host "Installer launched. Waiting 30 seconds before cleanup..."
-Start-Sleep -Seconds 30
-Remove-Item $DX_ZIP -Force -ErrorAction SilentlyContinue
-Remove-Item $TEMP_DIR -Recurse -Force -ErrorAction SilentlyContinue
-if (Test-Path $TEMP_DIR) {
-    Write-Host "[NOTE] Some files still in use by the installer - not deleted."
-} else {
-    Write-Host "Cleanup successful."
-}
-Read-Host "Press Enter to close"
-'@
-    $tmp = "$env:TEMP\install_directx.ps1"
-    $dxPs | Out-File -FilePath $tmp -Encoding UTF8
-    Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing DirectX End-User Runtime via winget... && winget install -e --id Microsoft.DirectX --silent && echo. && echo DirectX installation completed. && pause"
 }
 
 # ============================================================
@@ -908,7 +918,7 @@ Add-Category -Col 3 -Title "System Tools" -Items @(
     @{ Name = "HiBit Uninstaller"; Func = { Install-HiBit     } },
     @{ Name = "Scrcpy GUI";        Func = { Install-Scrcpy    } },
     @{ Name = "Cursor / Elegant";  Func = { Install-Cursor    } },
-    @{ Name = "VC++ Runtimes";     Func = { Install-VCRedist  } },
+    @{ Name = "VC++ Runtimes";     Func = { Install-VCC-Runtimes  } },
     @{ Name = "DirectX Runtime";   Func = { Install-DirectX   } }
 )
 
