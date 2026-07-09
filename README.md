@@ -19,11 +19,6 @@ curl -L -o "%TEMP%\tools-installer.ps1" https://raw.githubusercontent.com/afnan-
 curl -L -o "%TEMP%\tools-installer-beta.ps1" https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer-beta.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\tools-installer-beta.ps1"
 
 ```
-## Run in CMD GUI (Beta)
-```cmd
-curl -L -o "%TEMP%\tools-installer-gui.ps1" https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer-gui.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\tools-installer-gui.ps1"
-
-```
 
 <details>
   <summary>Other commands</summary>
