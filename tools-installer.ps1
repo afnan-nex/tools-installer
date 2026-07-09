@@ -402,8 +402,13 @@ function Install-OBS {
 
 
 function Install-LocalSend {
-    Start-Process cmd -ArgumentList "/k",
-        "echo Installing LocalSend via Chocolatey... && choco install localsend -y && echo. && echo LocalSend installation completed. && pause"
+    $localSendCmd = ('echo Downloading LocalSend v1.17.0... && ' +
+        'curl.exe -L -o "%TEMP%\localsend.exe" "https://github.com/localsend/localsend/releases/download/v1.17.0/LocalSend-1.17.0-windows-x86-64.exe" && ' +
+        'if exist "%TEMP%\localsend.exe" ' +
+        '(echo Installing LocalSend silently... && start /wait "" "%TEMP%\localsend.exe" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /ALLUSERS && echo LocalSend installation completed.) ' +
+        'else (echo Download failed.) && pause')
+    
+    Start-Process cmd -ArgumentList "/k", $localSendCmd
 }
 
 function Install-NotepadPP {
