@@ -2188,4 +2188,10 @@ $form.Add_Shown({
         Write-Log "Tip: Click any tool button to launch it immediately without queuing." -Level Info
     })
 
+# -- Force-kill the process when the window is closed so the hidden
+#    console never reappears and no background runspace keeps PS alive.
+$form.Add_FormClosing({
+        [System.Environment]::Exit(0)
+    })
+
 [System.Windows.Forms.Application]::Run($form)
