@@ -70,7 +70,6 @@ function Install-Choco {
     Start-Process cmd -ArgumentList "/k", $chocoCmd
 }
 
-
 function Install-NodeLTS {
     Start-Process cmd -ArgumentList "/k",
     "echo Installing Node.js LTS via Chocolatey... && choco install nodejs-lts -y --force && echo. && echo Node.js installation completed. && pause"
