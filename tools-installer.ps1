@@ -9,13 +9,6 @@ $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIden
 if (-not $isAdmin) {
     $relaunch = "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`""
     Start-Process powershell -ArgumentList $relaunch -Verb RunAs
-    # Kill the parent cmd.exe that launched this script so its window
-    # doesn't resurface when the elevated GUI is later closed.
-    $parentId = (Get-CimInstance Win32_Process -Filter "ProcessId=$PID").ParentProcessId
-    $parentName = (Get-Process -Id $parentId -ErrorAction SilentlyContinue).Name
-    if ($parentName -eq 'cmd') {
-        Stop-Process -Id $parentId -Force -ErrorAction SilentlyContinue
-    }
     exit
 }
 
@@ -69,11 +62,11 @@ function Unrestrict-Policy {
 # ============================================================
 
 function Install-Choco {
-    $chocoCmd = ('echo Installing Chocolatey... && powershell -NoProfile -ExecutionPolicy Bypass -Command ' +
-        '"Set-ExecutionPolicy Bypass -Scope Process -Force; ' +
-        '[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; ' +
-        "iex ((New-Object System.Net.WebClient).DownloadString(''https://community.chocolatey.org/install.ps1''))" + '" ' +
-        '&& echo. && echo Chocolatey installation completed. && pause')
+    $chocoCmd = "echo Installing Chocolatey... && powershell -NoProfile -ExecutionPolicy Bypass -Command " +
+        "`"Set-ExecutionPolicy Bypass -Scope Process -Force; " +
+        "[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; " +
+        "iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))`" " +
+        "&& echo. && echo Chocolatey installation completed. && pause"
     Start-Process cmd -ArgumentList "/k", $chocoCmd
 }
 
@@ -1165,11 +1158,11 @@ function Unrestrict-Policy {
 # ============================================================
 
 function Install-Choco {
-    $chocoCmd = "echo Installing Chocolatey... && powershell -NoProfile -ExecutionPolicy Bypass -Command " +
-        "`"Set-ExecutionPolicy Bypass -Scope Process -Force; " +
-        "[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; " +
-        "iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))`" " +
-        "&& echo. && echo Chocolatey installation completed. && pause"
+    $chocoCmd = ('echo Installing Chocolatey... && powershell -NoProfile -ExecutionPolicy Bypass -Command ' +
+        '"Set-ExecutionPolicy Bypass -Scope Process -Force; ' +
+        '[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; ' +
+        "iex ((New-Object System.Net.WebClient).DownloadString(''https://community.chocolatey.org/install.ps1''))" + '" ' +
+        '&& echo. && echo Chocolatey installation completed. && pause')
     Start-Process cmd -ArgumentList "/k", $chocoCmd
 }
 
@@ -2193,12 +2186,6 @@ $form.Add_Shown({
         Write-Log "Tool Installer GUI ready - running as Administrator." -Level Success
         Write-Log "Tip: Check boxes next to items and press [Run Selected] for batch install." -Level Info
         Write-Log "Tip: Click any tool button to launch it immediately without queuing." -Level Info
-    })
-
-# -- Force-kill the process when the window is closed so the hidden
-#    console never reappears and no background runspace keeps PS alive.
-$form.Add_FormClosing({
-        [System.Environment]::Exit(0)
     })
 
 [System.Windows.Forms.Application]::Run($form)
