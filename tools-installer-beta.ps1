@@ -9,6 +9,13 @@ $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIden
 if (-not $isAdmin) {
     $relaunch = "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`""
     Start-Process powershell -ArgumentList $relaunch -Verb RunAs
+    # Kill the parent cmd.exe that launched this script so its window
+    # doesn't resurface when the elevated GUI is later closed.
+    $parentId = (Get-CimInstance Win32_Process -Filter "ProcessId=$PID").ParentProcessId
+    $parentName = (Get-Process -Id $parentId -ErrorAction SilentlyContinue).Name
+    if ($parentName -eq 'cmd') {
+        Stop-Process -Id $parentId -Force -ErrorAction SilentlyContinue
+    }
     exit
 }
 
