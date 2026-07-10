@@ -9,6 +9,13 @@ $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIden
 if (-not $isAdmin) {
     $relaunch = "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`""
     Start-Process powershell -ArgumentList $relaunch -Verb RunAs
+    # Kill the parent cmd.exe that launched this script so its window
+    # doesn't resurface when the elevated GUI is later closed.
+    $parentId = (Get-CimInstance Win32_Process -Filter "ProcessId=$PID").ParentProcessId
+    $parentName = (Get-Process -Id $parentId -ErrorAction SilentlyContinue).Name
+    if ($parentName -eq 'cmd') {
+        Stop-Process -Id $parentId -Force -ErrorAction SilentlyContinue
+    }
     exit
 }
 
@@ -62,17 +69,17 @@ function Unrestrict-Policy {
 # ============================================================
 
 function Install-Choco {
-    $chocoCmd = "echo Installing Chocolatey... && powershell -NoProfile -ExecutionPolicy Bypass -Command " +
-        "`"Set-ExecutionPolicy Bypass -Scope Process -Force; " +
-        "[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; " +
-        "iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))`" " +
-        "&& echo. && echo Chocolatey installation completed. && pause"
+    $chocoCmd = ('echo Installing Chocolatey... && powershell -NoProfile -ExecutionPolicy Bypass -Command ' +
+        '"Set-ExecutionPolicy Bypass -Scope Process -Force; ' +
+        '[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; ' +
+        "iex ((New-Object System.Net.WebClient).DownloadString(''https://community.chocolatey.org/install.ps1''))" + '" ' +
+        '&& echo. && echo Chocolatey installation completed. && pause')
     Start-Process cmd -ArgumentList "/k", $chocoCmd
 }
 
 function Install-NodeLTS {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing Node.js LTS via Chocolatey... && choco install nodejs-lts -y && echo. && echo Node.js installation completed. && pause"
+    "echo Installing Node.js LTS via Chocolatey... && choco install nodejs-lts -y --force && echo. && echo Node.js installation completed. && pause"
 }
 
 # ============================================================
@@ -136,42 +143,42 @@ function Run-YTDLPFrontend {
 
 function Install-Git {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing Git via Chocolatey... && choco install git -y && echo. && echo Git installation completed. && pause"
+    "echo Installing Git via Chocolatey... && choco install git -y --force && echo. && echo Git installation completed. && pause"
 }
 
 function Install-Python {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing Python via Chocolatey... && choco install python -y && echo. && echo Python installation completed. && pause"
+    "echo Installing Python via Chocolatey... && choco install python -y --force && echo. && echo Python installation completed. && pause"
 }
 
 function Install-Dotnet {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing .NET via Chocolatey... && choco install dotnet -y && echo. && echo .NET installation completed. && pause"
+    "echo Installing .NET via Chocolatey... && choco install dotnet -y --force && echo. && echo .NET installation completed. && pause"
 }
 
 function Install-FFmpeg {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing FFmpeg via Chocolatey... && choco install ffmpeg -y && echo. && echo FFmpeg installation completed. && pause"
+    "echo Installing FFmpeg via Chocolatey... && choco install ffmpeg -y --force && echo. && echo FFmpeg installation completed. && pause"
 }
 
 function Install-7Zip {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing 7-Zip via Chocolatey... && choco install 7zip -y && echo. && echo 7-Zip installation completed. && pause"
+    "echo Installing 7-Zip via Chocolatey... && choco install 7zip -y --force && echo. && echo 7-Zip installation completed. && pause"
 }
 
 function Install-WinDirStat {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing WinDirStat via Chocolatey... && choco install windirstat -y && echo. && echo WinDirStat installation completed. && pause"
+    "echo Installing WinDirStat via Chocolatey... && choco install windirstat -y --force && echo. && echo WinDirStat installation completed. && pause"
 }
 
 function Install-YTDLP {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing yt-dlp via Chocolatey... && choco install yt-dlp -y && echo. && echo yt-dlp installation completed. && pause"
+    "echo Installing yt-dlp via Chocolatey... && choco install yt-dlp -y --force && echo. && echo yt-dlp installation completed. && pause"
 }
 
 function Install-Ngrok {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing ngrok via Chocolatey... && choco install ngrok -y && echo. && echo ngrok installation completed. && pause"
+    "echo Installing ngrok via Chocolatey... && choco install ngrok -y --force && echo. && echo ngrok installation completed. && pause"
 }
 
 # ============================================================
@@ -180,37 +187,37 @@ function Install-Ngrok {
 
 function Install-FastStone {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing FastStone Image Viewer via Chocolatey... && choco install faststone-image-viewer -y && echo. && echo FastStone Image Viewer installation completed. && pause"
+    "echo Installing FastStone Image Viewer via Chocolatey... && choco install faststone-image-viewer -y --force && echo. && echo FastStone Image Viewer installation completed. && pause"
 }
 
 function Install-VLC {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing VLC Media Player via Chocolatey... && choco install vlc.install -y && echo. && echo VLC Media Player installation completed. && pause"
+    "echo Installing VLC Media Player via Chocolatey... && choco install vlc.install -y --force && echo. && echo VLC Media Player installation completed. && pause"
 }
 
 function Install-MPC-HC {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing MPC-HC via Chocolatey... && choco install mpc-hc-clsid2 -y && echo. && echo MPC-HC installation completed. && pause"
+    "echo Installing MPC-HC via Chocolatey... && choco install mpc-hc-clsid2 -y --force && echo. && echo MPC-HC installation completed. && pause"
 }
 
 function Install-AntiGravity-ide {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing AntiGravity IDE via Chocolatey... && choco install antigravity-ide -y && echo. && echo AntiGravity IDE installation completed. && pause"
+    "echo Installing AntiGravity IDE via Chocolatey... && choco install antigravity-ide -y --force && echo. && echo AntiGravity IDE installation completed. && pause"
 }
 
 function Install-VSCode {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing Visual Studio Code via Chocolatey... && choco install vscode -y && echo. && echo Visual Studio Code installation completed. && pause"
+    "echo Installing Visual Studio Code via Chocolatey... && choco install vscode -y --force && echo. && echo Visual Studio Code installation completed. && pause"
 }
 
 function Install-IDM {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing Internet Download Manager via Chocolatey... && choco install internet-download-manager -y && echo. && echo Internet Download Manager installation completed. && pause"
+    "echo Installing Internet Download Manager via Chocolatey... && choco install internet-download-manager -y --force && echo. && echo Internet Download Manager installation completed. && pause"
 }
 
 function Install-VirtualBox {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing VirtualBox via Chocolatey... && choco install virtualbox -y && echo. && echo VirtualBox installation completed. && pause"
+    "echo Installing VirtualBox via Chocolatey... && choco install virtualbox -y --force && echo. && echo VirtualBox installation completed. && pause"
 }
 # ============================================================
 #  Automation
@@ -288,7 +295,7 @@ Read-Host "Press Enter to close"
 
 function Install-Everything {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing Everything via Chocolatey... && choco install everything -y && echo. && echo Everything installation completed. && pause"
+    "echo Installing Everything via Chocolatey... && choco install everything -y --force && echo. && echo Everything installation completed. && pause"
 }
 
 function Set-CMD0A {
@@ -310,7 +317,7 @@ Read-Host "Press Enter to close"
 
 function Install-RustDesk {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing RustDesk via Chocolatey... && choco install rustdesk -y && echo. && echo RustDesk installation completed. && pause"
+    "echo Installing RustDesk via Chocolatey... && choco install rustdesk -y --force && echo. && echo RustDesk installation completed. && pause"
 }
 
 function Install-HiBit {
@@ -435,17 +442,17 @@ function Install-Office365 {
 
 function Install-Chrome {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing Google Chrome via Chocolatey... && choco install googlechrome -y && echo. && echo Chrome installation completed. && pause"
+    "echo Installing Google Chrome via Chocolatey... && choco install googlechrome -y --force && echo. && echo Chrome installation completed. && pause"
 }
 
 function Install-Zen {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing Zen Browser via Chocolatey... && choco install zen-browser --prerelease -y && echo. && echo Zen Browser installation completed. && pause"
+    "echo Installing Zen Browser via Chocolatey... && choco install zen-browser --prerelease -y --force && echo. && echo Zen Browser installation completed. && pause"
 }
 
 function Install-OBS {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing OBS Studio via Chocolatey... && choco install obs-studio -y && echo. && echo OBS Studio installation completed. && pause"
+    "echo Installing OBS Studio via Chocolatey... && choco install obs-studio -y --force && echo. && echo OBS Studio installation completed. && pause"
 }
 
 
@@ -461,17 +468,17 @@ function Install-LocalSend {
 
 function Install-NotepadPP {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing Notepad++ via Chocolatey... && choco install notepadplusplus -y && echo. && echo Notepad++ installation completed. && pause"
+    "echo Installing Notepad++ via Chocolatey... && choco install notepadplusplus -y --force && echo. && echo Notepad++ installation completed. && pause"
 }
 
 function Install-ShareX {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing ShareX via Chocolatey... && choco install sharex -y && echo. && echo ShareX installation completed. && pause"
+    "echo Installing ShareX via Chocolatey... && choco install sharex -y --force && echo. && echo ShareX installation completed. && pause"
 }
 
 function Install-QBit {
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing qBittorrent via Chocolatey... && choco install qbittorrent -y && echo. && echo qBittorrent installation completed. && pause"
+    "echo Installing qBittorrent via Chocolatey... && choco install qbittorrent -y --force && echo. && echo qBittorrent installation completed. && pause"
 }
 
 # ============================================================
@@ -1158,11 +1165,11 @@ function Unrestrict-Policy {
 # ============================================================
 
 function Install-Choco {
-    $chocoCmd = ('echo Installing Chocolatey... && powershell -NoProfile -ExecutionPolicy Bypass -Command ' +
-        '"Set-ExecutionPolicy Bypass -Scope Process -Force; ' +
-        '[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; ' +
-        "iex ((New-Object System.Net.WebClient).DownloadString(''https://community.chocolatey.org/install.ps1''))" + '" ' +
-        '&& echo. && echo Chocolatey installation completed. && pause')
+    $chocoCmd = "echo Installing Chocolatey... && powershell -NoProfile -ExecutionPolicy Bypass -Command " +
+        "`"Set-ExecutionPolicy Bypass -Scope Process -Force; " +
+        "[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; " +
+        "iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))`" " +
+        "&& echo. && echo Chocolatey installation completed. && pause"
     Start-Process cmd -ArgumentList "/k", $chocoCmd
 }
 
@@ -2186,6 +2193,12 @@ $form.Add_Shown({
         Write-Log "Tool Installer GUI ready - running as Administrator." -Level Success
         Write-Log "Tip: Check boxes next to items and press [Run Selected] for batch install." -Level Info
         Write-Log "Tip: Click any tool button to launch it immediately without queuing." -Level Info
+    })
+
+# -- Force-kill the process when the window is closed so the hidden
+#    console never reappears and no background runspace keeps PS alive.
+$form.Add_FormClosing({
+        [System.Environment]::Exit(0)
     })
 
 [System.Windows.Forms.Application]::Run($form)
