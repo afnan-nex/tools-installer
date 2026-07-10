@@ -62,11 +62,11 @@ function Unrestrict-Policy {
 # ============================================================
 
 function Install-Choco {
-    $chocoCmd = ('echo Installing Chocolatey... && powershell -NoProfile -ExecutionPolicy Bypass -Command ' +
+    $chocoCmd = 'echo Installing Chocolatey... && powershell -NoProfile -ExecutionPolicy Bypass -Command ' +
         '"Set-ExecutionPolicy Bypass -Scope Process -Force; ' +
         '[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; ' +
-        "iex ((New-Object System.Net.WebClient).DownloadString(''https://community.chocolatey.org/install.ps1''))" + '" ' +
-        '&& echo. && echo Chocolatey installation completed. && pause')
+        'iex ((New-Object System.Net.WebClient).DownloadString(\'https://community.chocolatey.org/install.ps1\'))" ' +
+        '&& echo. && echo Chocolatey installation completed. && pause'
     Start-Process cmd -ArgumentList "/k", $chocoCmd
 }
 
