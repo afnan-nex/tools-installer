@@ -63,10 +63,10 @@ function Unrestrict-Policy {
 
 function Install-Choco {
     $chocoCmd = "echo Installing Chocolatey... && powershell -NoProfile -ExecutionPolicy Bypass -Command " +
-        "`"Set-ExecutionPolicy Bypass -Scope Process -Force; " +
-        "[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; " +
-        "iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))`" " +
-        "&& echo. && echo Chocolatey installation completed. && pause"
+    "`"Set-ExecutionPolicy Bypass -Scope Process -Force; " +
+    "[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; " +
+    "iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))`" " +
+    "&& echo. && echo Chocolatey installation completed. && pause"
     Start-Process cmd -ArgumentList "/k", $chocoCmd
 }
 
@@ -1094,6 +1094,7 @@ $form.Add_Shown({
     })
 
 [System.Windows.Forms.Application]::Run($form)
+exit
 # ============================================================
 #  Tool Installer GUI  -  by AFNAN
 #  Windows Forms GUI wrapper for tools-installer-beta.ps1
