@@ -263,8 +263,20 @@ function Install-Ollama {
 }
 
 function Install-ClaudeCode {
-    Start-Process cmd -ArgumentList "/k",
-    "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm 'https://claude.ai/install.ps1' | iex; `$claudePath = [System.IO.Path]::Combine(`$env:LOCALAPPDATA, 'Programs', 'claude'); `$oldPath = [System.Environment]::GetEnvironmentVariable('PATH', 'User'); if (`$oldPath -notlike '*Programs\claude*') { [System.Environment]::SetEnvironmentVariable('PATH', `$oldPath + ';' + `$claudePath, 'User'); Write-Host 'Claude Code added to User PATH environment variable successfully.' -ForegroundColor Green; } else { Write-Host 'Claude Code path already exists in PATH.' -ForegroundColor Yellow; }`""
+    $Command = @'
+powershell -NoProfile -ExecutionPolicy Bypass -Command "
+irm 'https://claude.ai/install.ps1' | iex
+$claudePath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Programs', 'claude')
+$oldPath = [System.Environment]::GetEnvironmentVariable('PATH', 'User')
+if ($oldPath -notlike '*Programs\claude*') {
+    [System.Environment]::SetEnvironmentVariable('PATH', $oldPath + ';' + $claudePath, 'User')
+    Write-Host 'Claude Code added to User PATH environment variable successfully.' -ForegroundColor Green
+} else {
+    Write-Host 'Claude Code path already exists in PATH.' -ForegroundColor Yellow
+}"
+'@
+
+    Start-Process cmd -ArgumentList "/k", $Command
 }
 
 # ============================================================
