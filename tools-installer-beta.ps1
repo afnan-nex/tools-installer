@@ -262,9 +262,25 @@ function Install-Ollama {
     "echo Installing Ollama... && winget install Ollama.Ollama && echo. && echo Finished. Press any key to close... && pause"
 }
 
-function Install-ClaudeCode {
+function Install-Claude {
+    [CmdletBinding()]
+    param()
+
+    Write-Verbose "Opening background terminal to download and run the installer script..."
+    
     Start-Process cmd -ArgumentList "/k",
-    "echo Installing Claude Code... && powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm 'https://claude.ai/install.ps1' | iex`" && echo. && echo Finished. Press any key to close... && pause"
+    "powershell -NoProfile -ExecutionPolicy Bypass -Command `"^
+    irm 'https://claude.ai/install.ps1' | iex; ^
+    `$claudePath = [System.IO.Path]::Combine(`$env:LOCALAPPDATA, 'Programs', 'claude'); ^
+    `$oldPath = [System.Environment]::GetEnvironmentVariable('PATH', 'User'); ^
+    if (`$oldPath -notlike '*Programs\claude*') { ^
+        [System.Environment]::SetEnvironmentVariable('PATH', `$oldPath + ';' + `$claudePath, 'User'); ^
+        Write-Host 'Claude added to User PATH environment variable successfully.' -ForegroundColor Green; ^
+    } else { ^
+        Write-Host 'Claude path already exists in PATH.' -ForegroundColor Yellow; ^
+    }`""
+
+    Write-Verbose "Installer window opened. Path check and update will execute immediately after the installation script finishes."
 }
 # ============================================================
 #  System tools
