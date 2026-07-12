@@ -262,7 +262,7 @@ function Install-Ollama {
     "echo Installing Ollama... && winget install Ollama.Ollama && echo. && echo Finished. Press any key to close... && pause"
 }
 
-function Install-Claude {
+function Install-ClaudeCode {
     [CmdletBinding()]
     param()
 
