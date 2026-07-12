@@ -263,11 +263,6 @@ function Install-Ollama {
 }
 
 function Install-ClaudeCode {
-    [CmdletBinding()]
-    param()
-
-    Write-Verbose "Opening background terminal to download and run the installer script..."
-    
     Start-Process cmd -ArgumentList "/k",
     "powershell -NoProfile -ExecutionPolicy Bypass -Command `"^
     irm 'https://claude.ai/install.ps1' | iex; ^
@@ -279,8 +274,6 @@ function Install-ClaudeCode {
     } else { ^
         Write-Host 'Claude path already exists in PATH.' -ForegroundColor Yellow; ^
     }`""
-
-    Write-Verbose "Installer window opened. Path check and update will execute immediately after the installation script finishes."
 }
 # ============================================================
 #  System tools
