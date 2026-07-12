@@ -248,6 +248,11 @@ function Install-Opencode {
     "echo Installing Opencode... && npm i -g opencode-ai --verbose && echo. && echo Installation completed. Press any key to close this window. && pause"
 }
 
+function Install-Cursoride {
+    Start-Process cmd -ArgumentList "/k",
+    "echo Installing Cursor IDE via Chocolatey... && choco install cursoride -y --force && echo. && echo Cursor IDE installation completed. && pause"
+}
+
 function Open-GoogleDesktopApp {
     Start-Process "https://search.google/google-app/desktop/"
 }
@@ -263,9 +268,23 @@ function Install-Ollama {
 }
 
 function Install-ClaudeCode {
-    Start-Process cmd -ArgumentList "/k",
-    "echo Installing Claude Code... && powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm 'https://claude.ai/install.ps1' | iex`" && echo. && echo Finished. Press any key to close... && pause"
+    # Define the execution block as a clean string argument
+    $Command = "& { " +
+        "irm 'https://claude.ai/install.ps1' | iex; " +
+        "`$claudePath = [System.IO.Path]::Combine(`$env:USERPROFILE, '.local', 'bin'); " +
+        "`$oldPath = [System.Environment]::GetEnvironmentVariable('PATH', 'User'); " +
+        "if (`$oldPath -notlike '*\.local\bin*') { " +
+            "[System.Environment]::SetEnvironmentVariable('PATH', `$oldPath + ';' + `$claudePath, 'User'); " +
+            "Write-Host 'Claude Code added to User PATH environment variable successfully.' -ForegroundColor Green; " +
+        "} else { " +
+            "Write-Host 'Claude Code path already exists in PATH.' -ForegroundColor Yellow; " +
+        "}" +
+    " }"
+
+    # Pop open a native PowerShell window, stream live output, and keep it open (-NoExit)
+    Start-Process powershell -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-NoExit", "-Command", $Command
 }
+
 # ============================================================
 #  System tools
 # ============================================================
@@ -911,6 +930,7 @@ Add-Category -Col 2 -Title "Run Scripts" -Items @(
 Add-Category -Col 2 -Title "AI in PC" -Items @(
     @{ Name = "Agy"; Func = { Install-Agy } },
     @{ Name = "Opencode"; Func = { Install-Opencode } },
+    @{ Name = "Cursor IDE"; Func = { Install-Cursoride } },
     @{ Name = "Google Desktop App"; Func = { Open-GoogleDesktopApp } },
     @{ Name = "LLM-Checker"; Func = { Run-LLMChecker } },
     @{ Name = "Ollama"; Func = { Install-Ollama } },
