@@ -262,6 +262,10 @@ function Install-Ollama {
     "echo Installing Ollama... && winget install Ollama.Ollama && echo. && echo Finished. Press any key to close... && pause"
 }
 
+function Install-ClaudeCode {
+    Start-Process cmd -ArgumentList "/k",
+    "echo Installing Claude Code... && powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm 'https://claude.ai/install.ps1' | iex`" && echo. && echo Finished. Press any key to close... && pause"
+}
 # ============================================================
 #  System tools
 # ============================================================
@@ -909,7 +913,8 @@ Add-Category -Col 2 -Title "AI in PC" -Items @(
     @{ Name = "Opencode"; Func = { Install-Opencode } },
     @{ Name = "Google Desktop App"; Func = { Open-GoogleDesktopApp } },
     @{ Name = "LLM-Checker"; Func = { Run-LLMChecker } },
-    @{ Name = "Ollama"; Func = { Install-Ollama } }
+    @{ Name = "Ollama"; Func = { Install-Ollama } },
+    @{ Name = "Claude Code"; Func = { Install-ClaudeCode } }
 )
 
 # Column 3 ---------------------------------------------------------------------
