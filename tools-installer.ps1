@@ -18,6 +18,12 @@ Add-Type -Name Win32 -Namespace Native -MemberDefinition @'
     [DllImport("user32.dll")]   public static extern bool  ShowWindow(IntPtr hWnd, int nCmdShow);
 '@
 [Native.Win32]::ShowWindow([Native.Win32]::GetConsoleWindow(), 0) | Out-Null
+try {
+    Add-Type -Name DWM -Namespace Native -MemberDefinition @'
+        [DllImport("dwmapi.dll", PreserveSig = false)]
+        public static extern void DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+'@ -ErrorAction SilentlyContinue
+} catch {}
 
 # -- 3. LOAD WINFORMS ---------------------------------------------------------
 Add-Type -AssemblyName System.Windows.Forms
@@ -672,6 +678,22 @@ $btnSelAll.Cursor = [System.Windows.Forms.Cursors]::Hand
 $btnSelAll.Add_Click({ foreach ($t in $script:AllTasks) { $t.CheckBox.Checked = $true } })
 $pnlBottom.Controls.Add($btnSelAll)
 
+$btnUpgradeAll = New-Object System.Windows.Forms.Button
+$btnUpgradeAll.Text = "Choco Upgrade All"
+$btnUpgradeAll.Font = $FNT_MAIN
+$btnUpgradeAll.ForeColor = $CLR_TEXT
+$btnUpgradeAll.BackColor = $CLR_BTN
+$btnUpgradeAll.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+$btnUpgradeAll.FlatAppearance.BorderColor = $CLR_SEP
+$btnUpgradeAll.FlatAppearance.BorderSize = 1
+$btnUpgradeAll.FlatAppearance.MouseOverBackColor = $CLR_BTNHOV
+$btnUpgradeAll.Size = New-Object System.Drawing.Size(120, 28)
+$btnUpgradeAll.Location = New-Object System.Drawing.Point(865, 36)
+$btnUpgradeAll.Anchor = "Top,Right"
+$btnUpgradeAll.Cursor = [System.Windows.Forms.Cursors]::Hand
+$btnUpgradeAll.Add_Click({ Start-Process cmd -ArgumentList "/k", "choco upgrade all -y && pause" })
+$pnlBottom.Controls.Add($btnUpgradeAll)
+
 $btnDeselAll = New-Object System.Windows.Forms.Button
 $btnDeselAll.Text = "Deselect All"
 $btnDeselAll.Font = $FNT_MAIN
@@ -1109,6 +1131,15 @@ $form.Add_Shown({
         Write-Log "Tool Installer GUI ready - running as Administrator." -Level Success
         Write-Log "Tip: Check boxes next to items and press [Run Selected] for batch install." -Level Info
         Write-Log "Tip: Click any tool button to launch it immediately without queuing." -Level Info
+
+        try {
+            $darkMode = 1
+            $osVersion = [Environment]::OSVersion.Version
+            if ($osVersion.Major -ge 10) {
+                try { [Native.DWM]::DwmSetWindowAttribute($form.Handle, 20, [ref]$darkMode, 4) }
+                catch { try { [Native.DWM]::DwmSetWindowAttribute($form.Handle, 19, [ref]$darkMode, 4) } catch {} }
+            }
+        } catch {}
     })
 
 [System.Windows.Forms.Application]::Run($form)
@@ -1133,6 +1164,12 @@ Add-Type -Name Win32 -Namespace Native -MemberDefinition @'
     [DllImport("user32.dll")]   public static extern bool  ShowWindow(IntPtr hWnd, int nCmdShow);
 '@
 [Native.Win32]::ShowWindow([Native.Win32]::GetConsoleWindow(), 0) | Out-Null
+try {
+    Add-Type -Name DWM -Namespace Native -MemberDefinition @'
+        [DllImport("dwmapi.dll", PreserveSig = false)]
+        public static extern void DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+'@ -ErrorAction SilentlyContinue
+} catch {}
 
 # -- 3. LOAD WINFORMS ---------------------------------------------------------
 Add-Type -AssemblyName System.Windows.Forms
@@ -1772,6 +1809,22 @@ $btnSelAll.Cursor = [System.Windows.Forms.Cursors]::Hand
 $btnSelAll.Add_Click({ foreach ($t in $script:AllTasks) { $t.CheckBox.Checked = $true } })
 $pnlBottom.Controls.Add($btnSelAll)
 
+$btnUpgradeAll = New-Object System.Windows.Forms.Button
+$btnUpgradeAll.Text = "Choco Upgrade All"
+$btnUpgradeAll.Font = $FNT_MAIN
+$btnUpgradeAll.ForeColor = $CLR_TEXT
+$btnUpgradeAll.BackColor = $CLR_BTN
+$btnUpgradeAll.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+$btnUpgradeAll.FlatAppearance.BorderColor = $CLR_SEP
+$btnUpgradeAll.FlatAppearance.BorderSize = 1
+$btnUpgradeAll.FlatAppearance.MouseOverBackColor = $CLR_BTNHOV
+$btnUpgradeAll.Size = New-Object System.Drawing.Size(120, 28)
+$btnUpgradeAll.Location = New-Object System.Drawing.Point(865, 36)
+$btnUpgradeAll.Anchor = "Top,Right"
+$btnUpgradeAll.Cursor = [System.Windows.Forms.Cursors]::Hand
+$btnUpgradeAll.Add_Click({ Start-Process cmd -ArgumentList "/k", "choco upgrade all -y && pause" })
+$pnlBottom.Controls.Add($btnUpgradeAll)
+
 $btnDeselAll = New-Object System.Windows.Forms.Button
 $btnDeselAll.Text = "Deselect All"
 $btnDeselAll.Font = $FNT_MAIN
@@ -2205,6 +2258,15 @@ $form.Add_Shown({
         Write-Log "Tool Installer GUI ready - running as Administrator." -Level Success
         Write-Log "Tip: Check boxes next to items and press [Run Selected] for batch install." -Level Info
         Write-Log "Tip: Click any tool button to launch it immediately without queuing." -Level Info
+
+        try {
+            $darkMode = 1
+            $osVersion = [Environment]::OSVersion.Version
+            if ($osVersion.Major -ge 10) {
+                try { [Native.DWM]::DwmSetWindowAttribute($form.Handle, 20, [ref]$darkMode, 4) }
+                catch { try { [Native.DWM]::DwmSetWindowAttribute($form.Handle, 19, [ref]$darkMode, 4) } catch {} }
+            }
+        } catch {}
     })
 
 [System.Windows.Forms.Application]::Run($form)
