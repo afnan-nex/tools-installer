@@ -742,7 +742,7 @@ $script:LogBox.ReadOnly = $true
 $script:LogBox.BorderStyle = [System.Windows.Forms.BorderStyle]::None
 $script:LogBox.ScrollBars = "Vertical"
 $script:LogBox.WordWrap = $false
-$script:LogBox.Size = New-Object System.Drawing.Size(710, 165)
+$script:LogBox.Size = New-Object System.Drawing.Size(710, 186)
 $script:LogBox.Location = New-Object System.Drawing.Point(10, 34)
 $script:LogBox.Anchor = "Top,Left,Bottom,Right"
 $pnlBottom.Controls.Add($script:LogBox)
@@ -756,7 +756,7 @@ $script:ProgressBar.Value = 0
 $script:ProgressBar.Size = New-Object System.Drawing.Size(710, 10)
 $script:ProgressBar.Location = New-Object System.Drawing.Point(10, 204)
 $script:ProgressBar.Anchor = "Bottom,Left,Right"
-$pnlBottom.Controls.Add($script:ProgressBar)
+# $pnlBottom.Controls.Add($script:ProgressBar)
 
 # Right-side controls inside bottom panel
 $script:LblStatus = New-Object System.Windows.Forms.Label
