@@ -268,21 +268,13 @@ function Install-Ollama {
 }
 
 function Install-ClaudeCode {
-    # Define the execution block as a clean string argument
-    $Command = "& { " +
-        "irm 'https://claude.ai/install.ps1' | iex; " +
-        "`$claudePath = [System.IO.Path]::Combine(`$env:USERPROFILE, '.local', 'bin'); " +
-        "`$oldPath = [System.Environment]::GetEnvironmentVariable('PATH', 'User'); " +
-        "if (`$oldPath -notlike '*\.local\bin*') { " +
-            "[System.Environment]::SetEnvironmentVariable('PATH', `$oldPath + ';' + `$claudePath, 'User'); " +
-            "Write-Host 'Claude Code added to User PATH environment variable successfully.' -ForegroundColor Green; " +
-        "} else { " +
-            "Write-Host 'Claude Code path already exists in PATH.' -ForegroundColor Yellow; " +
-        "}" +
-    " }"
+    Start-Process cmd -ArgumentList "/k",
+    "echo Installing Claude Code... && npm install -g @anthropic-ai/claude-code && echo. && echo Claude Code installation completed. && pause"
+}
 
-    # Pop open a native PowerShell window, stream live output, and keep it open (-NoExit)
-    Start-Process powershell -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-NoExit", "-Command", $Command
+function Install-ClaudeCodeRouter {
+    Start-Process cmd -ArgumentList "/k",
+    "echo Installing Claude Code Router... && npm install -g @musistudio/claude-code-router && echo. && echo Installation completed. Press any key to close this window. && pause"
 }
 
 # ============================================================
@@ -934,7 +926,8 @@ Add-Category -Col 2 -Title "AI in PC" -Items @(
     @{ Name = "Google Desktop App"; Func = { Open-GoogleDesktopApp } },
     @{ Name = "LLM-Checker"; Func = { Run-LLMChecker } },
     @{ Name = "Ollama"; Func = { Install-Ollama } },
-    @{ Name = "Claude Code"; Func = { Install-ClaudeCode } }
+    @{ Name = "Claude Code"; Func = { Install-ClaudeCode } },
+    @{ Name = "Claude Code Router"; Func = { Install-ClaudeCodeRouter } }
 )
 
 # Column 3 ---------------------------------------------------------------------
