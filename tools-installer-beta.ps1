@@ -8,7 +8,7 @@
 $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if (-not $isAdmin) {
     $relaunch = "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`""
-    Start-Process powershell -ArgumentList $relaunch -Verb RunAs
+    Start-Process powershell -WindowStyle Minimized -ArgumentList $relaunch -Verb RunAs
     exit
 }
 
@@ -50,13 +50,13 @@ function Open-Portfolio {
 # ============================================================
 
 function See-Policy {
-    Start-Process cmd -ArgumentList "/k", ("echo Current Execution Policy: && " +
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", ("echo Current Execution Policy: && " +
         "powershell -NoProfile -ExecutionPolicy Bypass -Command " +
         """Get-ExecutionPolicy -List"" && echo. && echo Press any key to close... && pause")
 }
 
 function Unrestrict-Policy {
-    Start-Process cmd -ArgumentList "/k", ("echo Setting PowerShell Execution Policy to Unrestricted... && " +
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", ("echo Setting PowerShell Execution Policy to Unrestricted... && " +
         "powershell -NoProfile -ExecutionPolicy Bypass -Command " +
         """Set-ExecutionPolicy Unrestricted -Force -Scope CurrentUser; " +
         "Set-ExecutionPolicy Unrestricted -Force -Scope LocalMachine; " +
@@ -73,11 +73,11 @@ function Install-Choco {
     "[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; " +
     "iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))`" " +
     "&& echo. && echo Chocolatey installation completed. && pause"
-    Start-Process cmd -ArgumentList "/k", $chocoCmd
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $chocoCmd
 }
 
 function Install-NodeLTS {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Node.js LTS via Chocolatey... && choco upgrade nodejs-lts -y --install-if-not-installed && echo. && echo Node.js installation completed. && pause"
 }
 
@@ -86,32 +86,32 @@ function Install-NodeLTS {
 # ============================================================
 
 function Run-Titus {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm 'https://christitus.com/win' | iex`""
 }
 
 function Run-MassGrave {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://get.activated.win | iex`""
 }
 
 function Run-Coporton {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://coporton.com/ias | iex`""
 }
 
 function Run-IDM {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "curl.exe -L -O https://github.com/planetshine0000/vc-redist-latest/releases/download/v1.0.1/Download.exe && Download.exe"
 }
 
 function Run-Sparkle {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://raw.githubusercontent.com/Parcoil/Sparkle/v2/get.ps1 | iex`""
 }
 
 function Run-GHGrab {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo === GHGrab === && npx --yes @ghgrab/ghgrab && echo. && echo Press any key to close... && pause"
 }
 
@@ -120,11 +120,11 @@ function Run-Setup {
         '"https://github.com/afnan-nex/tools-installer/raw/main/Setup/Tools-Installer.exe" && ' +
         'if exist "%TEMP%\Tools-Installer.exe" ( "%TEMP%\Tools-Installer.exe" ) ' +
         'else ( echo Download failed! ) && pause')
-    Start-Process cmd -ArgumentList "/k", $setupCmd
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $setupCmd
 }
 
 function Run-TorLink {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo === TorLink === && npx --yes torlnk && echo. && echo Press any key to close... && pause"
 }
 
@@ -133,7 +133,7 @@ function Run-YTDLPFrontend {
         'curl -L -o "%TEMP%\YTDLP-Frontend.ps1" https://raw.githubusercontent.com/afnan-nex/YTDLP-Frontend/main/YTDLP-Frontend.ps1 && ' +
         'powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\YTDLP-Frontend.ps1" && ' +
         'echo. && echo Process finished. Press any key to close this window. && pause')
-    Start-Process cmd -ArgumentList "/k", $ytdlpCmd
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $ytdlpCmd
 }
 
 # ============================================================
@@ -141,42 +141,42 @@ function Run-YTDLPFrontend {
 # ============================================================
 
 function Install-Git {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Git via Chocolatey... && choco upgrade git -y --install-if-not-installed && echo. && echo Git installation completed. && pause"
 }
 
 function Install-Python {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Python via Chocolatey... && choco upgrade python -y --install-if-not-installed && echo. && echo Python installation completed. && pause"
 }
 
 function Install-Dotnet {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing .NET via Chocolatey... && choco upgrade dotnet -y --install-if-not-installed && echo. && echo .NET installation completed. && pause"
 }
 
 function Install-FFmpeg {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing FFmpeg via Chocolatey... && choco upgrade ffmpeg -y --install-if-not-installed && echo. && echo FFmpeg installation completed. && pause"
 }
 
 function Install-7Zip {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing 7-Zip via Chocolatey... && choco upgrade 7zip -y --install-if-not-installed && echo. && echo 7-Zip installation completed. && pause"
 }
 
 function Install-WinDirStat {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing WinDirStat via Chocolatey... && choco upgrade windirstat -y --install-if-not-installed && echo. && echo WinDirStat installation completed. && pause"
 }
 
 function Install-YTDLP {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing yt-dlp via Chocolatey... && choco upgrade yt-dlp -y --install-if-not-installed && echo. && echo yt-dlp installation completed. && pause"
 }
 
 function Install-Ngrok {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing ngrok via Chocolatey... && choco upgrade ngrok -y --install-if-not-installed && echo. && echo ngrok installation completed. && pause"
 }
 
@@ -185,37 +185,37 @@ function Install-Ngrok {
 # ============================================================
 
 function Install-FastStone {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing FastStone Image Viewer via Chocolatey... && choco upgrade faststone-image-viewer -y --install-if-not-installed && echo. && echo FastStone Image Viewer installation completed. && pause"
 }
 
 function Install-VLC {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing VLC Media Player via Chocolatey... && choco upgrade vlc.install -y --install-if-not-installed && echo. && echo VLC Media Player installation completed. && pause"
 }
 
 function Install-MPC-HC {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing MPC-HC via Chocolatey... && choco upgrade mpc-hc-clsid2 -y --install-if-not-installed && echo. && echo MPC-HC installation completed. && pause"
 }
 
 function Install-AntiGravity-ide {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing AntiGravity IDE via Chocolatey... && choco upgrade antigravity-ide -y --install-if-not-installed && echo. && echo AntiGravity IDE installation completed. && pause"
 }
 
 function Install-VSCode {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Visual Studio Code via Chocolatey... && choco upgrade vscode -y --install-if-not-installed && echo. && echo Visual Studio Code installation completed. && pause"
 }
 
 function Install-IDM {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Internet Download Manager via Chocolatey... && choco upgrade internet-download-manager -y --install-if-not-installed && echo. && echo Internet Download Manager installation completed. && pause"
 }
 
 function Install-VirtualBox {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing VirtualBox via Chocolatey... && choco upgrade virtualbox -y --install-if-not-installed && echo. && echo VirtualBox installation completed. && pause"
 }
 # ============================================================
@@ -229,11 +229,11 @@ function Install-N8N {
         'setx NODES_EXCLUDE "[]" && setx NODES_EXCLUDE "[]" /M && ' +
         'echo Environment variables set successfully. && echo. && ' +
         'echo Press any key to close this window. && pause')
-    Start-Process cmd -ArgumentList "/k", $n8nCmd
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $n8nCmd
 }
 
 function Install-GWS {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Google Workspace CLI... && npm install -g @googleworkspace/cli && echo. && echo Installation completed. Press any key to close this window. && pause"
 }
 
@@ -246,16 +246,16 @@ function Install-Agy {
         'curl -fsSL https://antigravity.google/cli/install.cmd -o install.cmd && ' +
         'install.cmd --verbose && del install.cmd && echo. && ' +
         'echo Installation completed. Press any key to close this window. && pause')
-    Start-Process cmd -ArgumentList "/k", $agyCmd
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $agyCmd
 }
 
 function Install-Opencode {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Opencode... && npm i -g opencode-ai --verbose && echo. && echo Installation completed. Press any key to close this window. && pause"
 }
 
 function Install-Cursoride {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Cursor IDE via Chocolatey... && choco upgrade cursoride -y --install-if-not-installed && echo. && echo Cursor IDE installation completed. && pause"
 }
 
@@ -264,22 +264,22 @@ function Open-GoogleDesktopApp {
 }
 
 function Run-LLMChecker {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Running LLM-Checker Recommendation... && npx --yes llm-checker Recommendation && echo. && echo Finished. Press any key to close... && pause"
 }
 
 function Install-Ollama {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Ollama... && winget install Ollama.Ollama && echo. && echo Finished. Press any key to close... && pause"
 }
 
 function Install-ClaudeCode {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Claude Code... && npm install -g @anthropic-ai/claude-code && echo. && echo Claude Code installation completed. && pause"
 }
 
 function Install-ClaudeCodeRouter {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Claude Code Router... && npm install -g @musistudio/claude-code-router && echo. && echo Installation completed. Press any key to close this window. && pause"
 }
 
@@ -304,11 +304,11 @@ Read-Host "Press Enter to close"
 '@
     $tmp = "$env:TEMP\install_winget.ps1"
     $wingetPs | Out-File -FilePath $tmp -Encoding UTF8
-    Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
 }
 
 function Install-Everything {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Everything via Chocolatey... && choco upgrade everything -y --install-if-not-installed && echo. && echo Everything installation completed. && pause"
 }
 
@@ -317,7 +317,7 @@ function Set-CMD0A {
 Write-Host "Downloading CMD color script..."
 try {
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/afnan-nex/my-fav-scripts/main/cmd-clr-to-0a.cmd' -OutFile 'cmd-clr-to-0a.cmd'
-    Start-Process 'cmd-clr-to-0a.cmd'
+    Start-Process 'cmd-clr-to-0a.cmd' -WindowStyle Minimized
     Write-Host "CMD color script downloaded and executed."
 } catch {
     Write-Host ("Error: " + $_.Exception.Message)
@@ -326,11 +326,11 @@ Read-Host "Press Enter to close"
 '@
     $tmp = "$env:TEMP\set_cmd0a.ps1"
     $cmd0aPs | Out-File -FilePath $tmp -Encoding UTF8
-    Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
 }
 
 function Install-RustDesk {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing RustDesk via Chocolatey... && choco upgrade rustdesk -y --install-if-not-installed && echo. && echo RustDesk installation completed. && pause"
 }
 
@@ -341,7 +341,7 @@ function Install-HiBit {
         'if exist "%TEMP%\HiBitSetup.exe" ' +
         '(echo Running installer... && start /wait "" "%TEMP%\HiBitSetup.exe" && del /f "%TEMP%\HiBitSetup.exe" && echo Installation complete.) ' +
         'else (echo Download failed.) && pause')
-    Start-Process cmd -ArgumentList "/k", $hibitCmd
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $hibitCmd
 }
 
 function Install-Scrcpy {
@@ -351,11 +351,11 @@ function Install-Scrcpy {
         'if exist "%TEMP%\ScrcpyGUI_Setup.exe" ' +
         '(echo Running installer... && start /wait "" "%TEMP%\ScrcpyGUI_Setup.exe" && del /f "%TEMP%\ScrcpyGUI_Setup.exe" && echo Installation complete.) ' +
         'else (echo Download failed.) && pause')
-    Start-Process cmd -ArgumentList "/k", $scrcpyCmd
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $scrcpyCmd
 }
 
 function Install-Cursor {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Cloning Elegant repository from GitHub... && git clone https://github.com/afnan-nex/Elegant && echo. && echo Repository cloned successfully to Elegant folder. && pause"
 }
 
@@ -373,7 +373,7 @@ function Install-Cursor {
 #     Write-Host "Running install_all.bat as Administrator..."
 #     Get-ChildItem -Path $EXTR_DIR -Filter "install_all.bat" -Recurse | ForEach-Object {
 #         Push-Location $_.DirectoryName
-#         Start-Process powershell -ArgumentList "-command", "Start-Process 'install_all.bat' -Verb runAs"
+#         Start-Process powershell -WindowStyle Minimized -ArgumentList "-command", "Start-Process 'install_all.bat' -Verb runAs"
 #         Pop-Location
 #     }
 #     Remove-Item $ZIP_FILE -Force
@@ -385,11 +385,11 @@ function Install-Cursor {
 # '@
 #     $tmp = "$env:TEMP\install_vcredist.ps1"
 #     $vcPs | Out-File -FilePath $tmp -Encoding UTF8
-#     Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+#     Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
 # }
 
 function Install-VCC-Runtimes {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing all Visual C++ Runtimes via winget... && winget install -e --id abbodi1406.vcredist --silent && echo. && echo Visual C++ Runtimes installation completed. && pause"
 }
 
@@ -432,11 +432,11 @@ function Install-VCC-Runtimes {
 # '@
 #     $tmp = "$env:TEMP\install_directx.ps1"
 #     $dxPs | Out-File -FilePath $tmp -Encoding UTF8
-#     Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+#     Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
 # }
 
 function Install-DirectX {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing DirectX End-User Runtime via winget... && winget install -e --id Microsoft.DirectX --silent && echo. && echo DirectX installation completed. && pause"
 }
 
@@ -451,21 +451,21 @@ function Install-Office365 {
         'if exist "%TEMP%\OfficeSetup.exe" ' +
         '(echo Launching Office Installer... && start "" "%TEMP%\OfficeSetup.exe") ' +
         'else (echo Download failed.) && pause')
-    Start-Process cmd -ArgumentList "/k", $officeCmd
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $officeCmd
 }
 
 function Install-Chrome {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Google Chrome via Chocolatey... && choco upgrade googlechrome -y --install-if-not-installed && echo. && echo Chrome installation completed. && pause"
 }
 
 function Install-Zen {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Zen Browser via Chocolatey... && choco upgrade zen-browser --prerelease -y --install-if-not-installed && echo. && echo Zen Browser installation completed. && pause"
 }
 
 function Install-OBS {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing OBS Studio via Chocolatey... && choco upgrade obs-studio -y --install-if-not-installed && echo. && echo OBS Studio installation completed. && pause"
 }
 
@@ -477,21 +477,21 @@ function Install-LocalSend {
         '(echo Installing LocalSend silently... && start /wait "" "%TEMP%\localsend.exe" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /ALLUSERS && echo LocalSend installation completed.) ' +
         'else (echo Download failed.) && pause')
     
-    Start-Process cmd -ArgumentList "/k", $localSendCmd
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $localSendCmd
 }
 
 function Install-NotepadPP {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Notepad++ via Chocolatey... && choco upgrade notepadplusplus -y --install-if-not-installed && echo. && echo Notepad++ installation completed. && pause"
 }
 
 function Install-ShareX {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing ShareX via Chocolatey... && choco upgrade sharex -y --install-if-not-installed && echo. && echo ShareX installation completed. && pause"
 }
 
 function Install-QBit {
-    Start-Process cmd -ArgumentList "/k",
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing qBittorrent via Chocolatey... && choco upgrade qbittorrent -y --install-if-not-installed && echo. && echo qBittorrent installation completed. && pause"
 }
 
@@ -695,6 +695,25 @@ $txtSearch.Add_TextChanged({
         }
     }
 })
+
+$txtSearch.Add_KeyDown({
+    param($s, $e)
+    if ($e.KeyCode -eq [System.Windows.Forms.Keys]::Enter) {
+        $e.SuppressKeyPress = $true
+        $e.Handled = $true
+        
+        $visibleTasks = @()
+        foreach ($t in $script:AllTasks) {
+            if ($t.Button.Visible) {
+                $visibleTasks += $t
+            }
+        }
+        
+        if ($visibleTasks.Count -eq 1) {
+            $visibleTasks[0].Button.PerformClick()
+        }
+    }
+})
 $pnlHeader.Controls.Add($txtSearch)
 
 # -- BOTTOM PANEL (Log + Controls) --------------------------------------------
@@ -797,7 +816,7 @@ $btnUpgradeAll.Size = New-Object System.Drawing.Size(120, 28)
 $btnUpgradeAll.Location = New-Object System.Drawing.Point(865, 36)
 $btnUpgradeAll.Anchor = "Top,Right"
 $btnUpgradeAll.Cursor = [System.Windows.Forms.Cursors]::Hand
-$btnUpgradeAll.Add_Click({ Start-Process cmd -ArgumentList "/k", "choco upgrade all -y && pause" })
+$btnUpgradeAll.Add_Click({ Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", "choco upgrade all -y && pause" })
 $pnlBottom.Controls.Add($btnUpgradeAll)
 
 $btnDeselAll = New-Object System.Windows.Forms.Button
@@ -829,7 +848,7 @@ $btnWingetUpgradeAll.Size = New-Object System.Drawing.Size(120, 28)
 $btnWingetUpgradeAll.Location = New-Object System.Drawing.Point(865, 70)
 $btnWingetUpgradeAll.Anchor = "Top,Right"
 $btnWingetUpgradeAll.Cursor = [System.Windows.Forms.Cursors]::Hand
-$btnWingetUpgradeAll.Add_Click({ Start-Process cmd -ArgumentList "/k", "winget upgrade --all --accept-source-agreements --accept-package-agreements && pause" })
+$btnWingetUpgradeAll.Add_Click({ Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", "winget upgrade --all --accept-source-agreements --accept-package-agreements && pause" })
 $pnlBottom.Controls.Add($btnWingetUpgradeAll)
 
 $script:BtnRun = New-Object System.Windows.Forms.Button
@@ -1251,6 +1270,7 @@ $form.Add_Resize({
 #  SECTION I: STARTUP MESSAGE AND LAUNCH
 # ============================================================
 $form.Add_Shown({
+        $txtSearch.Focus()
         Write-Log "Tool Installer GUI ready - running as Administrator." -Level Success
         Write-Log "Tip: Check boxes next to items and press [Run Selected] for batch install." -Level Info
         Write-Log "Tip: Click any tool button to launch it immediately without queuing." -Level Info
