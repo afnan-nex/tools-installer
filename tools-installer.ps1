@@ -182,7 +182,7 @@ function Install-Ngrok {
 
 function Install-Miniserve {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Miniserve via Winget... && winget install svenstaro.miniserve && echo. && echo Miniserve installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Miniserve via Winget... use miniserve --qrcode to run && winget install svenstaro.miniserve && echo. && echo Miniserve installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 # ============================================================
@@ -1062,7 +1062,7 @@ Add-Category -Col 1 -Title "Recommended Tools" -Items @(
     @{ Name = "WinDirStat"; Func = { Install-WinDirStat } },
     @{ Name = "yt-dlp"; Func = { Install-YTDLP } },
     @{ Name = "ngrok"; Func = { Install-Ngrok } },
-    @{ Name = "Miniserve"; Func = { Install-Miniserve } }
+    @{ Name = "miniserve"; Func = { Install-Miniserve } }
 )
 
 Add-Category -Col 1 -Title "Other Apps" -Items @(
