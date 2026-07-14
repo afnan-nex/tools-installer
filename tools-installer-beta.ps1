@@ -180,6 +180,11 @@ function Install-Ngrok {
     "echo Installing ngrok via Chocolatey... && choco upgrade ngrok -y --install-if-not-installed && echo. && echo ngrok installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
+function Install-Miniserve {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing Miniserve via Winget... && winget install svenstaro.miniserve && echo. && echo Miniserve installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
 # ============================================================
 #  Other Apps
 # ============================================================
@@ -1056,7 +1061,8 @@ Add-Category -Col 1 -Title "Recommended Tools" -Items @(
     @{ Name = "7-Zip"; Func = { Install-7Zip } },
     @{ Name = "WinDirStat"; Func = { Install-WinDirStat } },
     @{ Name = "yt-dlp"; Func = { Install-YTDLP } },
-    @{ Name = "ngrok"; Func = { Install-Ngrok } }
+    @{ Name = "ngrok"; Func = { Install-Ngrok } },
+    @{ Name = "Miniserve"; Func = { Install-Miniserve } }
 )
 
 Add-Category -Col 1 -Title "Other Apps" -Items @(
