@@ -1134,9 +1134,9 @@ Add-Category -Col 3 -Title "Productivity Apps" -Items @(
 $script:BtnRun.Add_Click({
 
         # Gather checked items in their current visual order
-        $selected = $script:AllTasks | Where-Object { $_.CheckBox.Checked }
+        $selected = @($script:AllTasks | Where-Object { $_.CheckBox.Checked })
 
-        if (-not $selected) {
+        if (-not $selected -or $selected.Count -eq 0) {
             [System.Windows.Forms.MessageBox]::Show(
                 "No items are checked.`nPlease check at least one item before clicking Run Selected.",
                 "Nothing Selected",
@@ -1204,6 +1204,21 @@ $script:BtnRun.Add_Click({
                         })
 
                     Ui-Log -Msg "Running: $($task.Name) ..." -Clr $CLR_YELLOW
+
+                    if ($null -eq $task -or $null -eq $task.Function) {
+                        Ui-Log -Msg "FAILED:  $($task.Name) | Invalid action object." -Clr $CLR_RED
+                        $fail++
+                        continue
+                    }
+                    if ($task.Function -isnot [scriptblock] -and $task.Function -isnot [System.Management.Automation.ScriptBlock]) {
+                        Ui-Log -Msg "FAILED:  $($task.Name) | Action is not executable." -Clr $CLR_RED
+                        $fail++
+                        continue
+                    }
+                    if ($task.Name -match "(?i)Portfolio") {
+                        Ui-Log -Msg "Skipped: $($task.Name) (Not an installer)" -Clr $CLR_YELLOW
+                        continue
+                    }
 
                     try {
                         & $task.Function
