@@ -151,6 +151,11 @@ function Run-YTDLPFrontend {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $ytdlpCmd
 }
 
+function Run-Yoinks {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Opening Yoinks... && npm i -g yoinks --verbose && echo. && yoinks"
+}
+
 # ============================================================
 #  Recommended Tools
 # ============================================================
@@ -1120,7 +1125,8 @@ Add-Category -Col 2 -Title "Run Scripts" -Items @(
     @{ Name = "GHGrab (GitHub Grabber)"; Func = { Run-GHGrab } },
     @{ Name = "Tools Installer Setup"; Func = { Run-Setup } },
     @{ Name = "Tor Link"; Func = { Run-TorLink } },
-    @{ Name = "YTDLP Frontend"; Func = { Run-YTDLPFrontend } }
+    @{ Name = "YTDLP Frontend"; Func = { Run-YTDLPFrontend } },
+    @{ Name = "Yoinks"; Func = { Run-Yoinks } }
 )
 
 Add-Category -Col 2 -Title "AI in PC" -Items @(
