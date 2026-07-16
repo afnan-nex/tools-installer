@@ -30,6 +30,21 @@ Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
+try {
+    Add-Type -ReferencedAssemblies System.Windows.Forms, System.Drawing -TypeDefinition @"
+    using System.Windows.Forms;
+    using System.Drawing;
+    public class ti_NoJumpPanel : Panel {
+        protected override Point ScrollToControl(Control activeControl) {
+            return this.DisplayRectangle.Location;
+        }
+    }
+"@
+} catch {
+    Write-Host "[WARN] Add-Type for ti_NoJumpPanel failed: $_" -ForegroundColor Yellow
+    Write-Host "[INFO] Falling back to default Panel (scroll-jump may occur)" -ForegroundColor Yellow
+}
+
 # ============================================================
 #  SECTION A: ALL BACKEND FUNCTIONS (preserved from original)
 # ============================================================
@@ -286,6 +301,11 @@ function Install-ClaudeCode {
 function Install-ClaudeCodeRouter {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Claude Code Router... && npm install -g @musistudio/claude-code-router && echo. && echo Installation completed. Press any key to close this window. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
+function Install-Codebuff {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing Codebuff... && npm install -g codebuff && echo. && echo Installation completed. Press any key to close this window. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 # ============================================================
@@ -607,17 +627,22 @@ $txtSearch.Location = New-Object System.Drawing.Point(884, 21)
 $txtSearch.Anchor = "Top,Right"
 $txtSearch.Add_GotFocus({
     if ($txtSearch.Text -eq "Search...") {
+        $script:SkipSearchUpdate = $true
         $txtSearch.Text = ""
         $txtSearch.ForeColor = $CLR_TEXT
+        $script:SkipSearchUpdate = $false
     }
 })
 $txtSearch.Add_LostFocus({
     if ([string]::IsNullOrWhiteSpace($txtSearch.Text)) {
+        $script:SkipSearchUpdate = $true
         $txtSearch.Text = "Search..."
         $txtSearch.ForeColor = $CLR_MUTED
+        $script:SkipSearchUpdate = $false
     }
 })
 $txtSearch.Add_TextChanged({
+    if ($script:SkipSearchUpdate) { return }
     $query = $txtSearch.Text.Trim()
     $isQueryEmpty = ($query -eq "") -or ($query -eq "Search...")
 
@@ -872,7 +897,12 @@ $script:BtnRun.Cursor = [System.Windows.Forms.Cursors]::Hand
 $pnlBottom.Controls.Add($script:BtnRun)
 
 # -- SCROLLABLE MAIN CONTENT PANEL --------------------------------------------
-$pnlScroll = New-Object System.Windows.Forms.Panel
+try {
+    $pnlScroll = New-Object ti_NoJumpPanel
+} catch {
+    Write-Host "[WARN] Could not create ti_NoJumpPanel, using default Panel" -ForegroundColor Yellow
+    $pnlScroll = New-Object System.Windows.Forms.Panel
+}
 $pnlScroll.Dock = "Fill"
 $pnlScroll.AutoScroll = $true
 $pnlScroll.BackColor = $CLR_BG
@@ -1096,7 +1126,8 @@ Add-Category -Col 2 -Title "AI in PC" -Items @(
     @{ Name = "LLM-Checker"; Func = { Run-LLMChecker } },
     @{ Name = "Ollama"; Func = { Install-Ollama } },
     @{ Name = "Claude Code"; Func = { Install-ClaudeCode } },
-    @{ Name = "Claude Code Router"; Func = { Install-ClaudeCodeRouter } }
+    @{ Name = "Claude Code Router"; Func = { Install-ClaudeCodeRouter } },
+    @{ Name = "Codebuff"; Func = { Install-Codebuff } }
 )
 
 # Column 3 ---------------------------------------------------------------------
