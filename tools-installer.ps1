@@ -1113,7 +1113,7 @@ Add-Category -Col 1 -Title "Other Apps" -Items @(
 # Column 2 ---------------------------------------------------------------------
 Add-Category -Col 2 -Title "Run Scripts" -Items @(
     @{ Name = "Chris Titus Tool"; Func = { Run-Titus } },
-    @{ Name = "Mass Grave (Activation)"; Func = { Run-MassGrave } },
+    @{ Name = "Mass Grave"; Func = { Run-MassGrave } },
     @{ Name = "Coporton"; Func = { Run-Coporton } },
     @{ Name = "IDM Fixer"; Func = { Run-IDM } },
     @{ Name = "Sparkle"; Func = { Run-Sparkle } },
