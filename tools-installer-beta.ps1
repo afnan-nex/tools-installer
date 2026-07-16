@@ -153,7 +153,7 @@ function Run-YTDLPFrontend {
 
 function Run-Yoinks {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Opening Yoinks... && npm i -g yoinks && echo. && yoinks"
+    "echo === Yoinks === && npx --yes yoinks && echo. && echo Press any key to close... && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 # ============================================================
