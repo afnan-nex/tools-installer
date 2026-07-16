@@ -153,7 +153,7 @@ function Run-YTDLPFrontend {
 
 function Run-Yoinks {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Opening Yoinks... && npm i -g yoinks --verbose && echo. && yoinks"
+    "echo Opening Yoinks... && npm i -g yoinks && echo. && yoinks"
 }
 
 # ============================================================
@@ -300,7 +300,7 @@ function Install-Ollama {
 
 function Install-ClaudeCode {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Claude Code... && npm install -g @anthropic-ai/claude-code && echo. && echo Claude Code installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Claude Code... && npm install -g @anthropic-ai/claude-code --verbose && echo. && echo Claude Code installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-ClaudeCodeRouter {
