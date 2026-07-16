@@ -308,6 +308,11 @@ function Install-Codebuff {
     "echo Installing Codebuff... && npm install -g codebuff && echo. && echo Installation completed. Press any key to close this window. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
+function Install-Omniroute {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing Omniroute... && npm install -g omniroute && echo. && echo Installation completed. Press any key to close this window. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
 # ============================================================
 #  System tools
 # ============================================================
@@ -1127,7 +1132,8 @@ Add-Category -Col 2 -Title "AI in PC" -Items @(
     @{ Name = "Ollama"; Func = { Install-Ollama } },
     @{ Name = "Claude Code"; Func = { Install-ClaudeCode } },
     @{ Name = "Claude Code Router"; Func = { Install-ClaudeCodeRouter } },
-    @{ Name = "Codebuff"; Func = { Install-Codebuff } }
+    @{ Name = "Codebuff"; Func = { Install-Codebuff } },
+    @{ Name = "Omniroute"; Func = { Install-Omniroute } }
 )
 
 # Column 3 ---------------------------------------------------------------------
