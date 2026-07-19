@@ -96,6 +96,11 @@ function Install-NodeLTS {
     "echo Installing Node.js LTS via Chocolatey... && choco upgrade nodejs-lts -y --install-if-not-installed && echo. && echo Node.js installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
+function Install-Scoop {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing Scoop... && powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://get.scoop.sh > install.ps1; .\install.ps1 -RunAsAdmin; Remove-Item install.ps1`" && echo. && echo Scoop installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
 # ============================================================
 #  Run Scripts
 # ============================================================
@@ -1084,7 +1089,8 @@ Add-Category -Col 0 -Title "PowerShell Tweaks" -Items @(
 
 Add-Category -Col 0 -Title "Essential" -Items @(
     @{ Name = "Chocolatey"; Func = { Install-Choco } },
-    @{ Name = "Node.js LTS"; Func = { Install-NodeLTS } }
+    @{ Name = "Node.js LTS"; Func = { Install-NodeLTS } },
+    @{ Name = "Scoop"; Func = { Install-Scoop } }
 )
 
 Add-Category -Col 0 -Title "Automation" -Items @(
