@@ -310,7 +310,7 @@ function Open-GoogleDesktopApp {
 
 function Run-LLMChecker {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Running LLM-Checker Recommendation... && npx --yes llm-checker Recommendation && echo. && echo Finished. Press any key to close... && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Running LLM-Checker Recommendation... && npx --yes llm-checker && echo. && echo Finished. Press any key to close... && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-LLMFit {
