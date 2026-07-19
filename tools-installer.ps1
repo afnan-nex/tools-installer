@@ -101,6 +101,21 @@ function Install-Scoop {
     "echo Installing Scoop... && powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://get.scoop.sh > install.ps1; .\install.ps1 -RunAsAdmin; Remove-Item install.ps1`" && echo. && echo Scoop installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
+function Install-Pnpm {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing pnpm via Chocolatey... && choco install pnpm -y && echo. && echo pnpm installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
+function Install-Yarn {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing Yarn via npm... && npm install -g yarn && echo. && echo Yarn installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
+function Install-Bun {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing Bun via Chocolatey... && choco install bun -y && echo. && echo Bun installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
 # ============================================================
 #  Run Scripts
 # ============================================================
@@ -296,6 +311,11 @@ function Open-GoogleDesktopApp {
 function Run-LLMChecker {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Running LLM-Checker Recommendation... && npx --yes llm-checker Recommendation && echo. && echo Finished. Press any key to close... && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
+function Install-LLMFit {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing LLMFit via Scoop... && scoop install llmfit -a && echo. && echo LLMFit installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Ollama {
@@ -1090,7 +1110,10 @@ Add-Category -Col 0 -Title "PowerShell Tweaks" -Items @(
 Add-Category -Col 0 -Title "Essential" -Items @(
     @{ Name = "Chocolatey"; Func = { Install-Choco } },
     @{ Name = "Node.js LTS"; Func = { Install-NodeLTS } },
-    @{ Name = "Scoop"; Func = { Install-Scoop } }
+    @{ Name = "Scoop"; Func = { Install-Scoop } },
+    @{ Name = "pnpm"; Func = { Install-Pnpm } },
+    @{ Name = "Yarn"; Func = { Install-Yarn } },
+    @{ Name = "Bun"; Func = { Install-Bun } }
 )
 
 Add-Category -Col 0 -Title "Automation" -Items @(
@@ -1141,6 +1164,7 @@ Add-Category -Col 2 -Title "AI in PC" -Items @(
     @{ Name = "Cursor IDE"; Func = { Install-Cursoride } },
     @{ Name = "Google Desktop App"; Func = { Open-GoogleDesktopApp } },
     @{ Name = "LLM-Checker"; Func = { Run-LLMChecker } },
+    @{ Name = "LLMFit"; Func = { Install-LLMFit } },
     @{ Name = "Ollama"; Func = { Install-Ollama } },
     @{ Name = "Claude Code"; Func = { Install-ClaudeCode } },
     @{ Name = "Claude Code Router"; Func = { Install-ClaudeCodeRouter } },
