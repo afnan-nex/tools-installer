@@ -116,6 +116,11 @@ function Install-Bun {
     "echo Installing Bun via Chocolatey... && choco install bun -y && echo. && echo Bun installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
+function Install-Deno {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing Deno via Chocolatey... && choco install deno -y && echo. && echo Deno installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
 # ============================================================
 #  Run Scripts
 # ============================================================
@@ -1113,7 +1118,8 @@ Add-Category -Col 0 -Title "Essential" -Items @(
     @{ Name = "Scoop"; Func = { Install-Scoop } },
     @{ Name = "pnpm"; Func = { Install-Pnpm } },
     @{ Name = "Yarn"; Func = { Install-Yarn } },
-    @{ Name = "Bun"; Func = { Install-Bun } }
+    @{ Name = "Bun"; Func = { Install-Bun } },
+    @{ Name = "Deno"; Func = { Install-Deno } }
 )
 
 Add-Category -Col 0 -Title "Automation" -Items @(
