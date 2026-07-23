@@ -293,6 +293,15 @@ function Install-GWS {
 }
 
 # ============================================================
+#  Win Tools
+# ============================================================
+
+function Install-TestDisk {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Downloading TestDisk... && curl.exe -L -o `"%USERPROFILE%\Downloads\testdisk-7.3-WIP.win64.zip`" `"https://www.cgsecurity.org/Download_and_donate.php/testdisk-7.3-WIP.win64.zip`" && echo. && echo Downloaded to Downloads folder. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
+# ============================================================
 #  AI in PC
 # ============================================================
 
@@ -1130,6 +1139,10 @@ Add-Category -Col 0 -Title "Essential" -Items @(
 Add-Category -Col 0 -Title "Automation" -Items @(
     @{ Name = "n8n Workflow Automation"; Func = { Install-N8N } },
     @{ Name = "Google Workspace CLI (GWS)"; Func = { Install-GWS } }
+)
+
+Add-Category -Col 0 -Title "Win Tools" -Items @(
+    @{ Name = "TestDisk"; Func = { Install-TestDisk } }
 )
 
 # Column 1 ---------------------------------------------------------------------
