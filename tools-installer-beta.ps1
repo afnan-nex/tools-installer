@@ -298,7 +298,7 @@ function Install-GWS {
 
 function Install-TestDisk {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Downloading TestDisk... && curl.exe -L -o `"%USERPROFILE%\Downloads\testdisk-7.3-WIP.win64.zip`" `"https://www.cgsecurity.org/Download_and_donate.php/testdisk-7.3-WIP.win64.zip`" && echo. && echo Downloaded to Downloads folder. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Downloading TestDisk... && curl.exe -L -o `"%USERPROFILE%\Downloads\testdisk-7.3-WIP.win64.zip`" `"https://www.cgsecurity.org/testdisk-7.3-WIP.win64.zip`" && echo. && echo Downloaded to Downloads folder. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 # ============================================================
