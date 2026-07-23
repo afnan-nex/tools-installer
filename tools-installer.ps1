@@ -135,6 +135,11 @@ function Run-MassGrave {
     "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://get.activated.win | iex`""
 }
 
+function Run-Win11Debloat {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "powershell -NoProfile -ExecutionPolicy Bypass -Command `"& ([scriptblock]::Create((irm 'https://debloat.raphi.re/')))`""
+}
+
 function Run-Coporton {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://coporton.com/ias | iex`""
@@ -1154,6 +1159,7 @@ Add-Category -Col 1 -Title "Other Apps" -Items @(
 Add-Category -Col 2 -Title "Run Scripts" -Items @(
     @{ Name = "Chris Titus Tool"; Func = { Run-Titus } },
     @{ Name = "Mass Grave"; Func = { Run-MassGrave } },
+    @{ Name = "Win11 Debloat"; Func = { Run-Win11Debloat } },
     @{ Name = "Coporton"; Func = { Run-Coporton } },
     @{ Name = "IDM Fixer"; Func = { Run-IDM } },
     @{ Name = "Sparkle"; Func = { Run-Sparkle } },
