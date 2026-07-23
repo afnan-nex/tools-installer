@@ -1142,7 +1142,7 @@ Add-Category -Col 0 -Title "Automation" -Items @(
 )
 
 Add-Category -Col 0 -Title "Win Tools" -Items @(
-    @{ Name = "TestDisk"; Func = { Install-TestDisk } }
+    @{ Name = "Test Disk"; Func = { Install-TestDisk } }
 )
 
 # Column 1 ---------------------------------------------------------------------
