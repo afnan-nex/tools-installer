@@ -161,7 +161,7 @@ function Run-GHGrab {
 }
 
 function Run-Setup {
-    $setupCmd = ('echo Downloading Setup... && curl.exe -L -o "%TEMP%\Tools-Installer.exe" ' +
+    $setupCmd = ('echo Downloading Setup... && curl.exe -L --retry 3 --retry-delay 2 -o "%TEMP%\Tools-Installer.exe" ' +
         '"https://github.com/afnan-nex/tools-installer/raw/main/Setup/Tools-Installer.exe" && ' +
         'if exist "%TEMP%\Tools-Installer.exe" ( "%TEMP%\Tools-Installer.exe" ) ' +
         'else ( echo Download failed! ) && echo. && echo Press any key to exit . . . && pause >nul && exit')
@@ -298,7 +298,17 @@ function Install-GWS {
 
 function Install-TestDisk {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Downloading TestDisk... && curl.exe -L -o `"%USERPROFILE%\Downloads\testdisk-7.3-WIP.win64.zip`" `"https://www.cgsecurity.org/testdisk-7.3-WIP.win64.zip`" && echo. && echo Downloaded to Downloads folder. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Downloading TestDisk... && curl.exe -L --retry 3 --retry-delay 2 -o `"%USERPROFILE%\Downloads\testdisk-7.3-WIP.win64.zip`" `"https://www.cgsecurity.org/Download_and_donate.php/testdisk-7.3-WIP.win64.zip`" && echo. && echo Downloaded to Downloads folder. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
+function Install-FreeRecover {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Downloading FreeRecover... && curl.exe -L --retry 3 --retry-delay 2 -o `"%TEMP%\FreeRecover.exe`" `"https://sourceforge.net/projects/freerecover/files/FreeRecover.exe`" && echo Running... && `"%TEMP%\FreeRecover.exe`" && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
+function Install-KickassUndelete {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Downloading Kickass Undelete... && curl.exe -L --retry 3 --retry-delay 2 -o `"%TEMP%\KickassUndelete.exe`" `"https://sourceforge.net/projects/kickassundelete/files/Kickass%20Undelete%201.5.5/KickassUndelete_1.5.5.exe/download`" && echo Running... && `"%TEMP%\KickassUndelete.exe`" && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 # ============================================================
@@ -415,7 +425,7 @@ function Install-RustDesk {
 
 function Install-HiBit {
     $hibitCmd = ('echo Downloading HiBit Uninstaller... && ' +
-        'curl.exe -L -o "%TEMP%\HiBitSetup.exe" ' +
+        'curl.exe -L --retry 3 --retry-delay 2 -o "%TEMP%\HiBitSetup.exe" ' +
         '"https://www.hibitsoft.ir/HiBitUninstaller/HiBitUninstaller-setup-4.0.10.exe" && ' +
         'if exist "%TEMP%\HiBitSetup.exe" ' +
         '(echo Running installer... && start /wait "" "%TEMP%\HiBitSetup.exe" && del /f "%TEMP%\HiBitSetup.exe" && echo Installation complete.) ' +
@@ -425,7 +435,7 @@ function Install-HiBit {
 
 function Install-Scrcpy {
     $scrcpyCmd = ('echo Downloading Scrcpy GUI... && ' +
-        'curl.exe -L -o "%TEMP%\ScrcpyGUI_Setup.exe" ' +
+        'curl.exe -L --retry 3 --retry-delay 2 -o "%TEMP%\ScrcpyGUI_Setup.exe" ' +
         '"https://github.com/pizi-0/flutter-scrcpygui/releases/download/1.4.18/scrcpygui-1.4.18-win.exe" && ' +
         'if exist "%TEMP%\ScrcpyGUI_Setup.exe" ' +
         '(echo Running installer... && start /wait "" "%TEMP%\ScrcpyGUI_Setup.exe" && del /f "%TEMP%\ScrcpyGUI_Setup.exe" && echo Installation complete.) ' +
@@ -444,7 +454,7 @@ function Install-Cursor {
 # $ZIP_URL  = "https://github.com/planetshine0000/vc-redist-latest/releases/download/v1.0.0/Visual-C-Runtimes-All-in-One-Dec-2025.zip"
 # $ZIP_FILE = "$env:TEMP\VC_Runtimes.zip"
 # $EXTR_DIR = "$env:TEMP\VC_Runtimes_Temp"
-# curl.exe -L -o $ZIP_FILE $ZIP_URL
+# curl.exe -L --retry 3 --retry-delay 2 -o $ZIP_FILE $ZIP_URL
 # if (Test-Path $ZIP_FILE) {
 #     Write-Host "Extracting files..."
 #     if (-not (Test-Path $EXTR_DIR)) { New-Item -ItemType Directory -Path $EXTR_DIR | Out-Null }
@@ -481,7 +491,7 @@ function Install-VCC-Runtimes {
 # $DX_ZIP = "$TEMP_DIR\DirectX.zip"
 # if (-not (Test-Path $DX_ZIP)) {
 #     Write-Host "Downloading DirectX..."
-#     curl.exe -L -o $DX_ZIP $DX_URL
+#     curl.exe -L --retry 3 --retry-delay 2 -o $DX_ZIP $DX_URL
 # } else {
 #     Write-Host "DirectX zip already exists, skipping download."
 # }
@@ -525,7 +535,7 @@ function Install-DirectX {
 
 function Install-Office365 {
     $officeCmd = ('echo Downloading Office 365 Setup... && ' +
-        'curl.exe -L -o "%TEMP%\OfficeSetup.exe" ' +
+        'curl.exe -L --retry 3 --retry-delay 2 -o "%TEMP%\OfficeSetup.exe" ' +
         '"https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365ProPlusRetail&platform=x64&language=en-us&version=O16GA" && ' +
         'if exist "%TEMP%\OfficeSetup.exe" ' +
         '(echo Launching Office Installer... && start "" "%TEMP%\OfficeSetup.exe") ' +
@@ -551,7 +561,7 @@ function Install-OBS {
 
 function Install-LocalSend {
     $localSendCmd = ('echo Downloading LocalSend v1.17.0... && ' +
-        'curl.exe -L -o "%TEMP%\localsend.exe" "https://github.com/localsend/localsend/releases/download/v1.17.0/LocalSend-1.17.0-windows-x86-64.exe" && ' +
+        'curl.exe -L --retry 3 --retry-delay 2 -o "%TEMP%\localsend.exe" "https://github.com/localsend/localsend/releases/download/v1.17.0/LocalSend-1.17.0-windows-x86-64.exe" && ' +
         'if exist "%TEMP%\localsend.exe" ' +
         '(echo Installing LocalSend silently... && start /wait "" "%TEMP%\localsend.exe" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /ALLUSERS && echo LocalSend installation completed.) ' +
         'else (echo Download failed.) && echo. && echo Press any key to exit . . . && pause >nul && exit')
@@ -1142,7 +1152,9 @@ Add-Category -Col 0 -Title "Automation" -Items @(
 )
 
 Add-Category -Col 0 -Title "Win Tools" -Items @(
-    @{ Name = "Test Disk"; Func = { Install-TestDisk } }
+    @{ Name = "TestDisk"; Func = { Install-TestDisk } },
+    @{ Name = "FreeRecover"; Func = { Install-FreeRecover } },
+    @{ Name = "Kickass Undelete"; Func = { Install-KickassUndelete } }
 )
 
 # Column 1 ---------------------------------------------------------------------
