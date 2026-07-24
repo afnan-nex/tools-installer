@@ -103,7 +103,7 @@ function Install-Scoop {
 
 function Install-Pnpm {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing pnpm via Chocolatey... && choco install pnpm -y && echo. && echo pnpm installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing pnpm via Chocolatey... && choco install pnpm -y --install-if-not-installed && echo. && echo pnpm installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Yarn {
@@ -113,12 +113,17 @@ function Install-Yarn {
 
 function Install-Bun {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Bun via Chocolatey... && choco install bun -y && echo. && echo Bun installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Bun via Chocolatey... && choco install bun -y --install-if-not-installed && echo. && echo Bun installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
+function Install-Go {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing Go via Chocolatey... && choco upgrade golang -y --install-if-not-installed && echo. && echo Go installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Deno {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Deno via Chocolatey... && choco install deno -y && echo. && echo Deno installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Deno via Chocolatey... && choco install deno -y --install-if-not-installed && echo. && echo Deno installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 # ============================================================
@@ -138,6 +143,11 @@ function Run-MassGrave {
 function Run-Win11Debloat {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "powershell -NoProfile -ExecutionPolicy Bypass -Command `"& ([scriptblock]::Create((irm 'https://debloat.raphi.re/')))`""
+}
+
+function Run-WinScript {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm 'https://winscript.cc/irm' | iex`""
 }
 
 function Run-Coporton {
@@ -1143,6 +1153,7 @@ Add-Category -Col 0 -Title "Essential" -Items @(
     @{ Name = "pnpm"; Func = { Install-Pnpm } },
     @{ Name = "Yarn"; Func = { Install-Yarn } },
     @{ Name = "Bun"; Func = { Install-Bun } },
+    @{ Name = "Go"; Func = { Install-Go } },
     @{ Name = "Deno"; Func = { Install-Deno } }
 )
 
@@ -1185,6 +1196,7 @@ Add-Category -Col 2 -Title "Run Scripts" -Items @(
     @{ Name = "Chris Titus Tool"; Func = { Run-Titus } },
     @{ Name = "Mass Grave"; Func = { Run-MassGrave } },
     @{ Name = "Win11 Debloat"; Func = { Run-Win11Debloat } },
+    @{ Name = "WinScript"; Func = { Run-WinScript } },
     @{ Name = "Coporton"; Func = { Run-Coporton } },
     @{ Name = "IDM Fixer"; Func = { Run-IDM } },
     @{ Name = "Sparkle"; Func = { Run-Sparkle } },
