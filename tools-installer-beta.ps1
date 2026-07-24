@@ -264,6 +264,16 @@ function Install-MPC-HC {
     "echo Installing MPC-HC via Chocolatey... && choco upgrade mpc-hc-clsid2 -y --install-if-not-installed && echo. && echo MPC-HC installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
+function Install-OnlyOffice {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing Only Office via Chocolatey... && choco install onlyoffice-desktopeditors -y --install-if-not-installed && echo. && echo Only Office installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
+function Install-Kdenlive {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing Kdenlive via Chocolatey... && choco install kdenlive -y --install-if-not-installed && echo. && echo Kdenlive installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
 function Install-AntiGravity-ide {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing AntiGravity IDE via Chocolatey... && choco upgrade antigravity-ide -y --install-if-not-installed && echo. && echo AntiGravity IDE installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
@@ -319,6 +329,11 @@ function Install-FreeRecover {
 function Install-KickassUndelete {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Downloading Kickass Undelete... && curl.exe -L --retry 3 --retry-delay 2 -o `"%TEMP%\KickassUndelete.exe`" `"https://sourceforge.net/projects/kickassundelete/files/Kickass%20Undelete%201.5.5/KickassUndelete_1.5.5.exe/download`" && echo Running... && `"%TEMP%\KickassUndelete.exe`" && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
+function Install-CPUZ {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing CPU-Z (portable) via Chocolatey... run cpuz in cmd to run && choco upgrade cpuz -y --install-if-not-installed && echo. && echo CPU-Z installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 # ============================================================
@@ -1165,7 +1180,8 @@ Add-Category -Col 0 -Title "Automation" -Items @(
 Add-Category -Col 0 -Title "Win Tools" -Items @(
     @{ Name = "TestDisk"; Func = { Install-TestDisk } },
     @{ Name = "FreeRecover"; Func = { Install-FreeRecover } },
-    @{ Name = "Kickass Undelete"; Func = { Install-KickassUndelete } }
+    @{ Name = "Kickass Undelete"; Func = { Install-KickassUndelete } },
+    @{ Name = "CPU-Z"; Func = { Install-CPUZ } }
 )
 
 # Column 1 ---------------------------------------------------------------------
@@ -1185,6 +1201,8 @@ Add-Category -Col 1 -Title "Other Apps" -Items @(
     @{ Name = "Fast Stone Image"; Func = { Install-FastStone } },
     @{ Name = "Vlc"; Func = { Install-VLC } },
     @{ Name = "MPC HC"; Func = { Install-MPC-HC } },
+    @{ Name = "Only Office"; Func = { Install-OnlyOffice } },
+    @{ Name = "Kdenlive"; Func = { Install-Kdenlive } },
     @{ Name = "AntiGravity IDE"; Func = { Install-AntiGravity-ide } },
     @{ Name = "VS Code"; Func = { Install-VSCode } },
     @{ Name = "IDM"; Func = { Install-IDM } },
