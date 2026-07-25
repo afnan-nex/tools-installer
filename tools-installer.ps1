@@ -225,6 +225,11 @@ function Install-7Zip {
     "echo Installing 7-Zip via Chocolatey... && choco upgrade 7zip -y --install-if-not-installed && echo. && echo 7-Zip installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
+function Install-PeaZip {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing PeaZip via Chocolatey... && choco upgrade peazip -y --install-if-not-installed && echo. && echo PeaZip installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
 function Install-WinDirStat {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing WinDirStat via Chocolatey... && choco upgrade windirstat -y --install-if-not-installed && echo. && echo WinDirStat installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
@@ -242,7 +247,7 @@ function Install-Ngrok {
 
 function Install-Miniserve {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Miniserve via Winget... use miniserve --qrcode to run && winget install svenstaro.miniserve && echo. && echo Miniserve installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Miniserve via Winget... use miniserve --qrcode to run && winget install svenstaro.miniserve --accept-package-agreements --accept-source-agreements --silent && echo. && echo Miniserve installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 # ============================================================
@@ -272,6 +277,11 @@ function Install-OnlyOffice {
 function Install-Kdenlive {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Kdenlive via Chocolatey... && choco install upgrade kdenlive -y --install-if-not-installed && echo. && echo Kdenlive installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
+function Install-HandBrake {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing HandBrake via Chocolatey... && choco upgrade handbrake -y --install-if-not-installed && echo. && echo HandBrake installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-AntiGravity-ide {
@@ -346,6 +356,21 @@ function Install-GPUZ {
     "echo Installing GPU-Z (portable) via Chocolatey... && choco upgrade gpu-z -y --install-if-not-installed && echo. && echo GPU-Z installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
+function Install-CrystalDiskInfo {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing CrystalDiskInfo via Chocolatey... && choco upgrade crystaldiskinfo -y --install-if-not-installed && echo. && echo CrystalDiskInfo installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
+function Install-CrystalDiskMark {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing CrystalDiskMark via Chocolatey... && choco upgrade crystaldiskmark -y --install-if-not-installed && echo. && echo CrystalDiskMark installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
+function Install-DriverStoreExplorer {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Checking/Installing DriverStore Explorer via Winget... & winget install lostindark.DriverStoreExplorer --accept-package-agreements --accept-source-agreements --silent & echo. & echo Launching DriverStore Explorer... & start /b rapr & echo. & echo Press any key to exit . . . & pause >nul & exit"
+}
+
 # ============================================================
 #  AI in PC
 # ============================================================
@@ -384,7 +409,7 @@ function Install-LLMFit {
 
 function Install-Ollama {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Ollama... && winget install Ollama.Ollama && echo. && echo Finished. Press any key to close... && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Ollama... && winget install Ollama.Ollama --accept-package-agreements --accept-source-agreements --silent && echo. && echo Finished. Press any key to close... && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-ClaudeCode {
@@ -514,7 +539,7 @@ function Install-Cursor {
 
 function Install-VCC-Runtimes {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing all Visual C++ Runtimes via winget... && winget install -e --id abbodi1406.vcredist --silent && echo. && echo Visual C++ Runtimes installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing all Visual C++ Runtimes via winget... && winget install -e --id abbodi1406.vcredist --accept-package-agreements --accept-source-agreements --silent && echo. && echo Visual C++ Runtimes installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 # function Install-DirectX {
@@ -561,7 +586,7 @@ function Install-VCC-Runtimes {
 
 function Install-DirectX {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing DirectX End-User Runtime via winget... && winget install -e --id Microsoft.DirectX --silent && echo. && echo DirectX installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing DirectX End-User Runtime via winget... && winget install -e --id Microsoft.DirectX --accept-package-agreements --accept-source-agreements --silent && echo. && echo DirectX installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 # ============================================================
@@ -1193,7 +1218,10 @@ Add-Category -Col 0 -Title "Win Tools" -Items @(
     @{ Name = "Kickass Undelete"; Func = { Install-KickassUndelete } },
     @{ Name = "CPU-Z"; Func = { Install-CPUZ } },
     @{ Name = "HWiNFO"; Func = { Install-HWiNFO } },
-    @{ Name = "GPU-Z"; Func = { Install-GPUZ } }
+    @{ Name = "GPU-Z"; Func = { Install-GPUZ } },
+    @{ Name = "CrystalDiskInfo"; Func = { Install-CrystalDiskInfo } },
+    @{ Name = "CrystalDiskMark"; Func = { Install-CrystalDiskMark } },
+    @{ Name = "DriverStore Explorer"; Func = { Install-DriverStoreExplorer } }
 )
 
 # Column 1 ---------------------------------------------------------------------
@@ -1203,6 +1231,7 @@ Add-Category -Col 1 -Title "Recommended Tools" -Items @(
     @{ Name = ".NET Runtime"; Func = { Install-Dotnet } },
     @{ Name = "FFmpeg"; Func = { Install-FFmpeg } },
     @{ Name = "7-Zip"; Func = { Install-7Zip } },
+    @{ Name = "PeaZip"; Func = { Install-PeaZip } },
     @{ Name = "WinDirStat"; Func = { Install-WinDirStat } },
     @{ Name = "yt-dlp"; Func = { Install-YTDLP } },
     @{ Name = "ngrok"; Func = { Install-Ngrok } },
@@ -1215,6 +1244,7 @@ Add-Category -Col 1 -Title "Other Apps" -Items @(
     @{ Name = "MPC HC"; Func = { Install-MPC-HC } },
     @{ Name = "Only Office"; Func = { Install-OnlyOffice } },
     @{ Name = "Kdenlive"; Func = { Install-Kdenlive } },
+    @{ Name = "HandBrake"; Func = { Install-HandBrake } },
     @{ Name = "AntiGravity IDE"; Func = { Install-AntiGravity-ide } },
     @{ Name = "VS Code"; Func = { Install-VSCode } },
     @{ Name = "IDM"; Func = { Install-IDM } },
