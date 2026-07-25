@@ -336,6 +336,16 @@ function Install-CPUZ {
     "echo Installing CPU-Z (portable) via Chocolatey... run cpuz in cmd to run && choco upgrade cpuz -y --install-if-not-installed && echo. && echo CPU-Z installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
+function Install-HWiNFO {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing HWiNFO via Chocolatey... && choco upgrade hwinfo -y --install-if-not-installed && echo. && echo HWiNFO installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
+function Install-GPUZ {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing GPU-Z (portable) via Chocolatey... && choco upgrade gpu-z -y --install-if-not-installed && echo. && echo GPU-Z installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
 # ============================================================
 #  AI in PC
 # ============================================================
@@ -1181,7 +1191,9 @@ Add-Category -Col 0 -Title "Win Tools" -Items @(
     @{ Name = "TestDisk"; Func = { Install-TestDisk } },
     @{ Name = "FreeRecover"; Func = { Install-FreeRecover } },
     @{ Name = "Kickass Undelete"; Func = { Install-KickassUndelete } },
-    @{ Name = "CPU-Z"; Func = { Install-CPUZ } }
+    @{ Name = "CPU-Z"; Func = { Install-CPUZ } },
+    @{ Name = "HWiNFO"; Func = { Install-HWiNFO } },
+    @{ Name = "GPU-Z"; Func = { Install-GPUZ } }
 )
 
 # Column 1 ---------------------------------------------------------------------
