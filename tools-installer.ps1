@@ -494,13 +494,8 @@ function Install-HiBit {
 }
 
 function Install-Scrcpy {
-    $scrcpyCmd = ('echo Downloading Scrcpy GUI... && ' +
-        'curl.exe -L --retry 3 --retry-delay 2 -o "%TEMP%\ScrcpyGUI_Setup.exe" ' +
-        '"https://github.com/pizi-0/flutter-scrcpygui/releases/download/1.4.18/scrcpygui-1.4.18-win.exe" && ' +
-        'if exist "%TEMP%\ScrcpyGUI_Setup.exe" ' +
-        '(echo Running installer... && start /wait "" "%TEMP%\ScrcpyGUI_Setup.exe" && del /f "%TEMP%\ScrcpyGUI_Setup.exe" && echo Installation complete.) ' +
-        'else (echo Download failed.) && echo. && echo Press any key to exit . . . && pause >nul && exit')
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $scrcpyCmd
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing Scrcpy GUI via Winget... && winget install pizi.scrcpygui --accept-package-agreements --accept-source-agreements --silent && echo. && echo Scrcpy GUI installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Cursor {
