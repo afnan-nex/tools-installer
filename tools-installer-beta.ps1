@@ -310,9 +310,14 @@ function Install-VirtualBox {
 function Install-N8N {
     $n8nCmd = ('echo Installing n8n Workflow Automation... && ' +
         'npm install -g n8n@latest --verbose && echo n8n installation completed. && ' +
-        'echo Setting NODES_EXCLUDE environment variable... && ' +
+        'echo Setting n8n environment variables... && ' +
         'setx NODES_EXCLUDE "[]" && setx NODES_EXCLUDE "[]" /M && ' +
+        'setx N8N_UNVERIFIED_PACKAGES_ENABLED "true" && setx N8N_UNVERIFIED_PACKAGES_ENABLED "true" /M && ' +
+        'setx N8N_RUNNERS_TASK_TIMEOUT "300" && setx N8N_RUNNERS_TASK_TIMEOUT "300" /M && ' +
+        'setx N8N_COMPRESSION_NODE_MAX_DECOMPRESSED_SIZE_BYTES "2147483648" && setx N8N_COMPRESSION_NODE_MAX_DECOMPRESSED_SIZE_BYTES "2147483648" /M && ' +
+        'setx N8N_COMPRESSION_NODE_MAX_ZIP_ENTRIES "5000" && setx N8N_COMPRESSION_NODE_MAX_ZIP_ENTRIES "5000" /M && ' +
         'echo Environment variables set successfully. && echo. && ' +
+        'echo NOTE: Running n8n outside Docker is deprecated. Consider migrating to the official Docker image. && echo. && ' +
         'echo Press any key to close this window. && echo. && echo Press any key to exit . . . && pause >nul && exit')
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $n8nCmd
 }
