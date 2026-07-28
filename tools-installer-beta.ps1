@@ -271,12 +271,12 @@ function Install-MPC-HC {
 
 function Install-OnlyOffice {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Only Office via Chocolatey... && choco install upgrade onlyoffice-desktopeditors -y --install-if-not-installed && echo. && echo Only Office installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Only Office via Chocolatey... && choco upgrade onlyoffice-desktopeditors -y --install-if-not-installed && echo. && echo Only Office installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Kdenlive {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Kdenlive via Chocolatey... && choco install upgrade kdenlive -y --install-if-not-installed && echo. && echo Kdenlive installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Kdenlive via Chocolatey... && choco upgrade kdenlive -y --install-if-not-installed && echo. && echo Kdenlive installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-HandBrake {
