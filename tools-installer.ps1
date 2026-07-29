@@ -245,6 +245,11 @@ function Install-Ngrok {
     "echo Installing ngrok via Chocolatey... && choco upgrade ngrok -y --install-if-not-installed && echo. && echo ngrok installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
+function Install-Localtunnel {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing localtunnel via npm... use lt --port 3000 to run && npm install -g localtunnel && echo. && echo localtunnel installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
 function Install-Miniserve {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Miniserve via Winget... use miniserve --qrcode to run && winget install svenstaro.miniserve --accept-package-agreements --accept-source-agreements --silent && echo. && echo Miniserve installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
@@ -1235,6 +1240,7 @@ Add-Category -Col 1 -Title "Recommended Tools" -Items @(
     @{ Name = "WinDirStat"; Func = { Install-WinDirStat } },
     @{ Name = "yt-dlp"; Func = { Install-YTDLP } },
     @{ Name = "ngrok"; Func = { Install-Ngrok } },
+    @{ Name = "localtunnel"; Func = { Install-Localtunnel } },
     @{ Name = "miniserve"; Func = { Install-Miniserve } }
 )
 
