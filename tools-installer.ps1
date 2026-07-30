@@ -1012,7 +1012,7 @@ $btnWingetUpgradeAll.Size = New-Object System.Drawing.Size(120, 28)
 $btnWingetUpgradeAll.Location = New-Object System.Drawing.Point(865, 70)
 $btnWingetUpgradeAll.Anchor = "Top,Right"
 $btnWingetUpgradeAll.Cursor = [System.Windows.Forms.Cursors]::Hand
-$btnWingetUpgradeAll.Add_Click({ Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", "winget upgrade --all --accept-source-agreements --accept-package-agreements && echo. && echo Press any key to exit . . . && pause >nul && exit" })
+$btnWingetUpgradeAll.Add_Click({ Start-Process winget -WindowStyle Minimized -ArgumentList "upgrade", "--all", "--silent", "--accept-source-agreements", "--accept-package-agreements" })
 $pnlBottom.Controls.Add($btnWingetUpgradeAll)
 
 $script:BtnRun = New-Object System.Windows.Forms.Button
