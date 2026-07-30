@@ -304,6 +304,11 @@ function Install-IDM {
     "echo Installing Internet Download Manager via Chocolatey... && choco upgrade internet-download-manager -y --install-if-not-installed && echo. && echo Internet Download Manager installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
+function Install-GhostDownloader {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing Ghost Downloader via Winget... && winget install -e --id XiaoYouChR.GhostDownloader --silent --accept-source-agreements --accept-package-agreements && echo. && echo Ghost Downloader installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
 function Install-VirtualBox {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing VirtualBox via Chocolatey... && choco upgrade virtualbox -y --install-if-not-installed && echo. && echo VirtualBox installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
@@ -1254,6 +1259,7 @@ Add-Category -Col 1 -Title "Other Apps" -Items @(
     @{ Name = "AntiGravity IDE"; Func = { Install-AntiGravity-ide } },
     @{ Name = "VS Code"; Func = { Install-VSCode } },
     @{ Name = "IDM"; Func = { Install-IDM } },
+    @{ Name = "Ghost Downloader"; Func = { Install-GhostDownloader } },
     @{ Name = "Virtual Box"; Func = { Install-VirtualBox } }
 )
 
