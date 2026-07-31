@@ -183,6 +183,11 @@ function Run-TorLink {
     "echo === TorLink === && npx --yes torlnk && echo. && echo Press any key to close... && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
+function Install-Tork {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing Tork...use tork to run && go install github.com/melqtx/tork/cmd/tork@latest && echo. && echo Tork installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
 function Run-YTDLPFrontend {
     $ytdlpCmd = ('echo Downloading and running YTDLP-Frontend... && ' +
         'curl -L -o "%TEMP%\YTDLP-Frontend.ps1" https://raw.githubusercontent.com/afnan-nex/YTDLP-Frontend/main/YTDLP-Frontend.ps1 && ' +
@@ -505,7 +510,7 @@ function Install-HiBit {
 
 function Install-Superfile {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Superfile... && powershell -ExecutionPolicy Bypass -Command `"Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://superfile.dev/install.ps1'))`" && echo. && echo Superfile installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Superfile... use spf to run && echo visit https://superfile.dev/getting-started/tutorial/ for tutorial && powershell -ExecutionPolicy Bypass -Command `"Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://superfile.dev/install.ps1'))`" && echo. && echo Superfile installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Scrcpy {
