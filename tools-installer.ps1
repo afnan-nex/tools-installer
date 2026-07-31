@@ -515,7 +515,7 @@ function Install-Superfile {
 
 function Install-WindowsTerminal {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Windows Terminal via Chocolatey... && choco install microsoft-windows-terminal -y --install-if-not-installed && echo. && echo Windows Terminal installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Windows Terminal via Chocolatey... && choco upgrade microsoft-windows-terminal -y --install-if-not-installed && echo. && echo Windows Terminal installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Scrcpy {
