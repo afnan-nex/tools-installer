@@ -503,6 +503,11 @@ function Install-HiBit {
     "echo Installing HiBit Uninstaller via Winget... && winget install HiBitSoftware.HiBitUninstaller --accept-package-agreements --accept-source-agreements --silent && echo. && echo HiBit Uninstaller installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
+function Install-Superfile {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing Superfile... && powershell -ExecutionPolicy Bypass -Command `"Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://superfile.dev/install.ps1'))`" && echo. && echo Superfile installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
 function Install-Scrcpy {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Scrcpy GUI via Winget... && winget install pizi.scrcpygui --accept-package-agreements --accept-source-agreements --silent && echo. && echo Scrcpy GUI installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
