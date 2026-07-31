@@ -513,6 +513,11 @@ function Install-Superfile {
     "echo Installing Superfile... use spf to run && echo visit https://superfile.dev/getting-started/tutorial/ for tutorial && powershell -ExecutionPolicy Bypass -Command `"Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://superfile.dev/install.ps1'))`" && echo. && echo Superfile installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
+function Install-WindowsTerminal {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing Windows Terminal via Chocolatey... && choco install microsoft-windows-terminal -y --install-if-not-installed && echo. && echo Windows Terminal installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
 function Install-Scrcpy {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing Scrcpy GUI via Winget... && winget install pizi.scrcpygui --accept-package-agreements --accept-source-agreements --silent && echo. && echo Scrcpy GUI installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
