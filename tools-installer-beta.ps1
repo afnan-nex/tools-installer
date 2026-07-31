@@ -499,13 +499,8 @@ function Install-RustDesk {
 }
 
 function Install-HiBit {
-    $hibitCmd = ('echo Downloading HiBit Uninstaller... && ' +
-        'curl.exe -L --retry 3 --retry-delay 2 -o "%TEMP%\HiBitSetup.exe" ' +
-        '"https://www.hibitsoft.ir/HiBitUninstaller/HiBitUninstaller-setup-4.0.10.exe" && ' +
-        'if exist "%TEMP%\HiBitSetup.exe" ' +
-        '(echo Running installer... && start /wait "" "%TEMP%\HiBitSetup.exe" && del /f "%TEMP%\HiBitSetup.exe" && echo Installation complete.) ' +
-        'else (echo Download failed.) && echo. && echo Press any key to exit . . . && pause >nul && exit')
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $hibitCmd
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing HiBit Uninstaller via Winget... && winget install HiBitSoftware.HiBitUninstaller --accept-package-agreements --accept-source-agreements --silent && echo. && echo HiBit Uninstaller installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Scrcpy {
