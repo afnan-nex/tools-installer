@@ -513,9 +513,9 @@ function Install-Superfile {
     "echo Installing Superfile... use spf to run && echo visit https://superfile.dev/getting-started/tutorial/ for tutorial && powershell -ExecutionPolicy Bypass -Command `"Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://superfile.dev/install.ps1'))`" && echo. && echo Superfile installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
-function Install-WindowsTerminal {
+function Install-Alacritty {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Windows Terminal via Chocolatey... && choco upgrade microsoft-windows-terminal -y --install-if-not-installed && echo. && echo Windows Terminal installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Alacritty via Chocolatey... && choco upgrade alacritty -y --install-if-not-installed && echo. && echo Alacritty installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Scrcpy {
@@ -1312,7 +1312,7 @@ Add-Category -Col 3 -Title "System Tools" -Items @(
     @{ Name = "RustDesk"; Func = { Install-RustDesk } },
     @{ Name = "HiBit Uninstaller"; Func = { Install-HiBit } },
     @{ Name = "Superfile"; Func = { Install-Superfile } },
-    @{ Name = "Windows Terminal"; Func = { Install-WindowsTerminal } },
+    @{ Name = "Alacritty"; Func = { Install-Alacritty } },
     @{ Name = "Scrcpy GUI"; Func = { Install-Scrcpy } },
     @{ Name = "Cursor / Elegant"; Func = { Install-Cursor } },
     @{ Name = "VC++ Runtimes"; Func = { Install-VCC-Runtimes } },
