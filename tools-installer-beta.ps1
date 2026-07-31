@@ -1285,6 +1285,7 @@ Add-Category -Col 2 -Title "Run Scripts" -Items @(
     @{ Name = "GHGrab (GitHub Grabber)"; Func = { Run-GHGrab } },
     @{ Name = "Tools Installer Setup"; Func = { Run-Setup } },
     @{ Name = "Tor Link"; Func = { Run-TorLink } },
+	    @{ Name = "Tork"; Func = { Install-Tork } },
     @{ Name = "YTDLP Frontend"; Func = { Run-YTDLPFrontend } },
     @{ Name = "Yoinks"; Func = { Run-Yoinks } }
 )
@@ -1310,6 +1311,8 @@ Add-Category -Col 3 -Title "System Tools" -Items @(
     @{ Name = "CMD Color 0a"; Func = { Set-CMD0A } },
     @{ Name = "RustDesk"; Func = { Install-RustDesk } },
     @{ Name = "HiBit Uninstaller"; Func = { Install-HiBit } },
+    @{ Name = "Superfile"; Func = { Install-Superfile } },
+    @{ Name = "Windows Terminal"; Func = { Install-WindowsTerminal } },
     @{ Name = "Scrcpy GUI"; Func = { Install-Scrcpy } },
     @{ Name = "Cursor / Elegant"; Func = { Install-Cursor } },
     @{ Name = "VC++ Runtimes"; Func = { Install-VCC-Runtimes } },
