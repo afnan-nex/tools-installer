@@ -665,6 +665,42 @@ function Install-QBit {
 }
 
 # ============================================================
+#  COLUMN 4: CONTROL PANEL FUNCTIONS
+# ============================================================
+
+function Open-ControlPanel {
+    Start-Process "control.exe"
+}
+
+function Open-DevicesAndPrinters {
+    Start-Process "explorer.exe" -ArgumentList "shell:::{A8A91A66-3A7D-4424-8D24-04E180695C7A}"
+}
+
+function Open-TaskManager {
+    Start-Process "taskmgr.exe"
+}
+
+function Open-DeviceManager {
+    Start-Process "devmgmt.msc"
+}
+
+function Open-DiskManagement {
+    Start-Process "diskmgmt.msc"
+}
+
+function Open-SystemProperties {
+    Start-Process "sysdm.cpl"
+}
+
+function Open-MSConfig {
+    Start-Process "msconfig.exe"
+}
+
+function Open-PowerOptions {
+    Start-Process "powercfg.cpl"
+}
+
+# ============================================================
 #  SECTION B: GUI COLOUR AND STYLE CONSTANTS
 # ============================================================
 
@@ -702,7 +738,7 @@ $script:AllTasks = [System.Collections.Generic.List[hashtable]]::new()
 
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "Tool Installer  -  by AFNAN"
-$form.Size = New-Object System.Drawing.Size(1050, 600)
+$form.Size = New-Object System.Drawing.Size(1300, 600)
 $form.MinimumSize = New-Object System.Drawing.Size(820, 620)
 $form.StartPosition = "CenterScreen"
 $form.BackColor = $CLR_BG
@@ -937,7 +973,7 @@ $script:LogBox.ScrollBars = "Vertical"
 $script:LogBox.WordWrap = $false
 $script:LogBox.Size = New-Object System.Drawing.Size(710, 186)
 $script:LogBox.Location = New-Object System.Drawing.Point(10, 34)
-$script:LogBox.Anchor = "Top,Left,Bottom,Right"
+$script:LogBox.Anchor = "Top,Left,Bottom"
 $pnlBottom.Controls.Add($script:LogBox)
 
 # Progress bar
@@ -958,7 +994,7 @@ $script:LblStatus.Font = $FNT_SMALL
 $script:LblStatus.ForeColor = $CLR_MUTED
 $script:LblStatus.AutoSize = $true
 $script:LblStatus.Location = New-Object System.Drawing.Point(735, 12)
-$script:LblStatus.Anchor = "Top,Right"
+$script:LblStatus.Anchor = "Top,Left"
 $pnlBottom.Controls.Add($script:LblStatus)
 
 $btnSelAll = New-Object System.Windows.Forms.Button
@@ -972,7 +1008,7 @@ $btnSelAll.FlatAppearance.BorderSize = 1
 $btnSelAll.FlatAppearance.MouseOverBackColor = $CLR_BTNHOV
 $btnSelAll.Size = New-Object System.Drawing.Size(120, 28)
 $btnSelAll.Location = New-Object System.Drawing.Point(735, 36)
-$btnSelAll.Anchor = "Top,Right"
+$btnSelAll.Anchor = "Top,Left"
 $btnSelAll.Cursor = [System.Windows.Forms.Cursors]::Hand
 $btnSelAll.Add_Click({ foreach ($t in $script:AllTasks) { $t.CheckBox.Checked = $true } })
 $pnlBottom.Controls.Add($btnSelAll)
@@ -988,7 +1024,7 @@ $btnUpgradeAll.FlatAppearance.BorderSize = 1
 $btnUpgradeAll.FlatAppearance.MouseOverBackColor = $CLR_BTNHOV
 $btnUpgradeAll.Size = New-Object System.Drawing.Size(120, 28)
 $btnUpgradeAll.Location = New-Object System.Drawing.Point(865, 36)
-$btnUpgradeAll.Anchor = "Top,Right"
+$btnUpgradeAll.Anchor = "Top,Left"
 $btnUpgradeAll.Cursor = [System.Windows.Forms.Cursors]::Hand
 $btnUpgradeAll.Add_Click({ Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", "choco upgrade all -y && echo. && echo Press any key to exit . . . && pause >nul && exit" })
 $pnlBottom.Controls.Add($btnUpgradeAll)
@@ -1004,7 +1040,7 @@ $btnDeselAll.FlatAppearance.BorderSize = 1
 $btnDeselAll.FlatAppearance.MouseOverBackColor = $CLR_BTNHOV
 $btnDeselAll.Size = New-Object System.Drawing.Size(120, 28)
 $btnDeselAll.Location = New-Object System.Drawing.Point(735, 70)
-$btnDeselAll.Anchor = "Top,Right"
+$btnDeselAll.Anchor = "Top,Left"
 $btnDeselAll.Cursor = [System.Windows.Forms.Cursors]::Hand
 $btnDeselAll.Add_Click({ foreach ($t in $script:AllTasks) { $t.CheckBox.Checked = $false } })
 $pnlBottom.Controls.Add($btnDeselAll)
@@ -1020,7 +1056,7 @@ $btnWingetUpgradeAll.FlatAppearance.BorderSize = 1
 $btnWingetUpgradeAll.FlatAppearance.MouseOverBackColor = $CLR_BTNHOV
 $btnWingetUpgradeAll.Size = New-Object System.Drawing.Size(120, 28)
 $btnWingetUpgradeAll.Location = New-Object System.Drawing.Point(865, 70)
-$btnWingetUpgradeAll.Anchor = "Top,Right"
+$btnWingetUpgradeAll.Anchor = "Top,Left"
 $btnWingetUpgradeAll.Cursor = [System.Windows.Forms.Cursors]::Hand
 $btnWingetUpgradeAll.Add_Click({ Start-Process winget -WindowStyle Minimized -ArgumentList "upgrade", "--all", "--silent", "--accept-source-agreements", "--accept-package-agreements" })
 $pnlBottom.Controls.Add($btnWingetUpgradeAll)
@@ -1036,7 +1072,7 @@ $script:BtnRun.FlatAppearance.MouseOverBackColor = $CLR_RUNHOV
 $script:BtnRun.FlatAppearance.MouseDownBackColor = [System.Drawing.Color]::FromArgb(28, 82, 160)
 $script:BtnRun.Size = New-Object System.Drawing.Size(250, 52)
 $script:BtnRun.Location = New-Object System.Drawing.Point(735, 112)
-$script:BtnRun.Anchor = "Top,Right"
+$script:BtnRun.Anchor = "Top,Left"
 $script:BtnRun.Cursor = [System.Windows.Forms.Cursors]::Hand
 $pnlBottom.Controls.Add($script:BtnRun)
 
@@ -1197,7 +1233,7 @@ $COL_W = 250   # column stride (group width 236 + 14 gap)
 $GAP_Y = 14
 $START_X = 14
 $START_Y = 12
-$colY = @($START_Y, $START_Y, $START_Y, $START_Y)   # current Y per column
+$colY = @($START_Y, $START_Y, $START_Y, $START_Y, $START_Y)   # current Y per column
 
 function Add-Category {
     param([int]$Col, [string]$Title, [array]$Items)
@@ -1328,6 +1364,18 @@ Add-Category -Col 3 -Title "Productivity Apps" -Items @(
     @{ Name = "Notepad++"; Func = { Install-NotepadPP } },
     @{ Name = "ShareX"; Func = { Install-ShareX } },
     @{ Name = "qBittorrent"; Func = { Install-QBit } }
+)
+
+# Column 4 ---------------------------------------------------------------------
+Add-Category -Col 4 -Title "Control Panel" -Items @(
+    @{ Name = "Classic Control Panel"; Func = { Open-ControlPanel } },
+    @{ Name = "Devices and Printers"; Func = { Open-DevicesAndPrinters } },
+    @{ Name = "Task Manager"; Func = { Open-TaskManager } },
+    @{ Name = "Device Manager"; Func = { Open-DeviceManager } },
+    @{ Name = "Disk Management"; Func = { Open-DiskManagement } },
+    @{ Name = "System Properties"; Func = { Open-SystemProperties } },
+    @{ Name = "System Config (MSConfig)"; Func = { Open-MSConfig } },
+    @{ Name = "Power Options"; Func = { Open-PowerOptions } }
 )
 
 # Let AutoScroll automatically compute the required virtual bounds
@@ -1482,17 +1530,27 @@ $script:BtnRun.Add_Click({
 # ============================================================
 #  SECTION H: RESIZE HANDLER  (keep right-side controls tidy)
 # ============================================================
-$form.Add_Resize({
+$resizeHandler = {
         $w = $pnlHeader.Width
         $btnPortfolio.Location = New-Object System.Drawing.Point(($w - 268), 17)
         $txtSearch.Location = New-Object System.Drawing.Point(($w - 166), 21)
 
-        $logW = $pnlBottom.Width - 320
+        $rx = $pnlBottom.Width - 315
+        $script:LblStatus.Location = New-Object System.Drawing.Point($rx, 12)
+        $btnSelAll.Location = New-Object System.Drawing.Point($rx, 36)
+        $btnUpgradeAll.Location = New-Object System.Drawing.Point(($rx + 130), 36)
+        $btnDeselAll.Location = New-Object System.Drawing.Point($rx, 70)
+        $btnWingetUpgradeAll.Location = New-Object System.Drawing.Point(($rx + 130), 70)
+        $script:BtnRun.Location = New-Object System.Drawing.Point($rx, 112)
+
+        $logW = $rx - 20
         if ($logW -gt 100) {
             $script:LogBox.Width = $logW
             $script:ProgressBar.Width = $logW
         }
-    })
+    }
+$form.Add_Resize($resizeHandler)
+& $resizeHandler
 
 # ============================================================
 #  SECTION I: STARTUP MESSAGE AND LAUNCH
@@ -1516,5 +1574,4 @@ $form.Add_Shown({
 [System.Windows.Forms.Application]::Run($form)
 
 exit
-
 
