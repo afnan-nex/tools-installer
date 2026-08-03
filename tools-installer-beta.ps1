@@ -665,6 +665,42 @@ function Install-QBit {
 }
 
 # ============================================================
+#  COLUMN 4: CONTROL PANEL FUNCTIONS
+# ============================================================
+
+function Open-ControlPanel {
+    Start-Process "control.exe"
+}
+
+function Open-DevicesAndPrinters {
+    Start-Process "explorer.exe" -ArgumentList "shell:::{A8A91A66-3A7D-4424-8D24-04E180695C7A}"
+}
+
+function Open-TaskManager {
+    Start-Process "taskmgr.exe"
+}
+
+function Open-DeviceManager {
+    Start-Process "devmgmt.msc"
+}
+
+function Open-DiskManagement {
+    Start-Process "diskmgmt.msc"
+}
+
+function Open-SystemProperties {
+    Start-Process "sysdm.cpl"
+}
+
+function Open-MSConfig {
+    Start-Process "msconfig.exe"
+}
+
+function Open-PowerOptions {
+    Start-Process "powercfg.cpl"
+}
+
+# ============================================================
 #  SECTION B: GUI COLOUR AND STYLE CONSTANTS
 # ============================================================
 
@@ -702,7 +738,7 @@ $script:AllTasks = [System.Collections.Generic.List[hashtable]]::new()
 
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "Tool Installer  -  by AFNAN"
-$form.Size = New-Object System.Drawing.Size(1050, 600)
+$form.Size = New-Object System.Drawing.Size(1300, 600)
 $form.MinimumSize = New-Object System.Drawing.Size(820, 620)
 $form.StartPosition = "CenterScreen"
 $form.BackColor = $CLR_BG
@@ -1197,7 +1233,7 @@ $COL_W = 250   # column stride (group width 236 + 14 gap)
 $GAP_Y = 14
 $START_X = 14
 $START_Y = 12
-$colY = @($START_Y, $START_Y, $START_Y, $START_Y)   # current Y per column
+$colY = @($START_Y, $START_Y, $START_Y, $START_Y, $START_Y)   # current Y per column
 
 function Add-Category {
     param([int]$Col, [string]$Title, [array]$Items)
@@ -1328,6 +1364,18 @@ Add-Category -Col 3 -Title "Productivity Apps" -Items @(
     @{ Name = "Notepad++"; Func = { Install-NotepadPP } },
     @{ Name = "ShareX"; Func = { Install-ShareX } },
     @{ Name = "qBittorrent"; Func = { Install-QBit } }
+)
+
+# Column 4 ---------------------------------------------------------------------
+Add-Category -Col 4 -Title "Control Panel" -Items @(
+    @{ Name = "Classic Control Panel"; Func = { Open-ControlPanel } },
+    @{ Name = "Devices and Printers"; Func = { Open-DevicesAndPrinters } },
+    @{ Name = "Task Manager"; Func = { Open-TaskManager } },
+    @{ Name = "Device Manager"; Func = { Open-DeviceManager } },
+    @{ Name = "Disk Management"; Func = { Open-DiskManagement } },
+    @{ Name = "System Properties"; Func = { Open-SystemProperties } },
+    @{ Name = "System Config (MSConfig)"; Func = { Open-MSConfig } },
+    @{ Name = "Power Options"; Func = { Open-PowerOptions } }
 )
 
 # Let AutoScroll automatically compute the required virtual bounds
@@ -1516,5 +1564,4 @@ $form.Add_Shown({
 [System.Windows.Forms.Application]::Run($form)
 
 exit
-
 
