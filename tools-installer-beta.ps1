@@ -343,52 +343,38 @@ function Install-GWS {
 }
 
 # ============================================================
-#  Win Tools
+#  Control Panel
 # ============================================================
-
-function Install-TestDisk {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Downloading TestDisk... && curl.exe -L --retry 3 --retry-delay 2 -o `"%USERPROFILE%\Downloads\testdisk-7.3-WIP.win64.zip`" `"https://www.cgsecurity.org/Download_and_donate.php/testdisk-7.3-WIP.win64.zip`" && echo. && echo Downloaded to Downloads folder. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+function Open-ControlPanel {
+    Start-Process "control.exe"
 }
 
-function Install-FreeRecover {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Downloading FreeRecover... && curl.exe -L --retry 3 --retry-delay 2 -o `"%TEMP%\FreeRecover.exe`" `"https://sourceforge.net/projects/freerecover/files/FreeRecover.exe`" && echo Running... && `"%TEMP%\FreeRecover.exe`" && echo. && echo Press any key to exit . . . && pause >nul && exit"
+function Open-DevicesAndPrinters {
+    Start-Process "explorer.exe" -ArgumentList "shell:::{A8A91A66-3A7D-4424-8D24-04E180695C7A}"
 }
 
-function Install-KickassUndelete {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Downloading Kickass Undelete... && curl.exe -L --retry 3 --retry-delay 2 -o `"%TEMP%\KickassUndelete.exe`" `"https://sourceforge.net/projects/kickassundelete/files/Kickass%20Undelete%201.5.5/KickassUndelete_1.5.5.exe/download`" && echo Running... && `"%TEMP%\KickassUndelete.exe`" && echo. && echo Press any key to exit . . . && pause >nul && exit"
+function Open-TaskManager {
+    Start-Process "taskmgr.exe"
 }
 
-function Install-CPUZ {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing CPU-Z (portable) via Chocolatey... run cpuz in cmd to run && choco upgrade cpuz -y --install-if-not-installed && echo. && echo CPU-Z installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+function Open-DeviceManager {
+    Start-Process "devmgmt.msc"
 }
 
-function Install-HWiNFO {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing HWiNFO via Chocolatey... && choco upgrade hwinfo -y --install-if-not-installed && echo. && echo HWiNFO installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+function Open-DiskManagement {
+    Start-Process "diskmgmt.msc"
 }
 
-function Install-GPUZ {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing GPU-Z (portable) via Chocolatey... && choco upgrade gpu-z -y --install-if-not-installed && echo. && echo GPU-Z installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+function Open-SystemProperties {
+    Start-Process "sysdm.cpl"
 }
 
-function Install-CrystalDiskInfo {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing CrystalDiskInfo via Chocolatey... && choco upgrade crystaldiskinfo -y --install-if-not-installed && echo. && echo CrystalDiskInfo installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+function Open-MSConfig {
+    Start-Process "msconfig.exe"
 }
 
-function Install-CrystalDiskMark {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing CrystalDiskMark via Chocolatey... && choco upgrade crystaldiskmark -y --install-if-not-installed && echo. && echo CrystalDiskMark installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
-}
-
-function Install-DriverStoreExplorer {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Checking/Installing DriverStore Explorer via Winget... & winget install lostindark.DriverStoreExplorer --accept-package-agreements --accept-source-agreements --silent & echo. & echo Launching DriverStore Explorer... & start /b rapr & echo. & echo Press any key to exit . . . & pause >nul & exit"
+function Open-PowerOptions {
+    Start-Process "powercfg.cpl"
 }
 
 # ============================================================
@@ -665,41 +651,68 @@ function Install-QBit {
 }
 
 # ============================================================
-#  COLUMN 4: CONTROL PANEL FUNCTIONS
+#  Win Tools
 # ============================================================
 
-function Open-ControlPanel {
-    Start-Process "control.exe"
+function Install-TestDisk {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Downloading TestDisk... && curl.exe -L --retry 3 --retry-delay 2 -o `"%USERPROFILE%\Downloads\testdisk-7.3-WIP.win64.zip`" `"https://www.cgsecurity.org/Download_and_donate.php/testdisk-7.3-WIP.win64.zip`" && echo. && echo Downloaded to Downloads folder. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
-function Open-DevicesAndPrinters {
-    Start-Process "explorer.exe" -ArgumentList "shell:::{A8A91A66-3A7D-4424-8D24-04E180695C7A}"
+function Install-FreeRecover {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Downloading FreeRecover... && curl.exe -L --retry 3 --retry-delay 2 -o `"%TEMP%\FreeRecover.exe`" `"https://sourceforge.net/projects/freerecover/files/FreeRecover.exe`" && echo Running... && `"%TEMP%\FreeRecover.exe`" && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
-function Open-TaskManager {
-    Start-Process "taskmgr.exe"
+function Install-KickassUndelete {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Downloading Kickass Undelete... && curl.exe -L --retry 3 --retry-delay 2 -o `"%TEMP%\KickassUndelete.exe`" `"https://sourceforge.net/projects/kickassundelete/files/Kickass%20Undelete%201.5.5/KickassUndelete_1.5.5.exe/download`" && echo Running... && `"%TEMP%\KickassUndelete.exe`" && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
-function Open-DeviceManager {
-    Start-Process "devmgmt.msc"
+function Install-CPUZ {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing CPU-Z (portable) via Chocolatey... run cpuz in cmd to run && choco upgrade cpuz -y --install-if-not-installed && echo. && echo CPU-Z installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
-function Open-DiskManagement {
-    Start-Process "diskmgmt.msc"
+function Install-HWiNFO {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing HWiNFO via Chocolatey... && choco upgrade hwinfo -y --install-if-not-installed && echo. && echo HWiNFO installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
-function Open-SystemProperties {
-    Start-Process "sysdm.cpl"
+function Install-GPUZ {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing GPU-Z (portable) via Chocolatey... && choco upgrade gpu-z -y --install-if-not-installed && echo. && echo GPU-Z installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
-function Open-MSConfig {
-    Start-Process "msconfig.exe"
+function Install-CrystalDiskInfo {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing CrystalDiskInfo via Chocolatey... && choco upgrade crystaldiskinfo -y --install-if-not-installed && echo. && echo CrystalDiskInfo installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
-function Open-PowerOptions {
-    Start-Process "powercfg.cpl"
+function Install-CrystalDiskMark {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing CrystalDiskMark via Chocolatey... && choco upgrade crystaldiskmark -y --install-if-not-installed && echo. && echo CrystalDiskMark installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
+function Install-DriverStoreExplorer {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Checking/Installing DriverStore Explorer via Winget... & winget install lostindark.DriverStoreExplorer --accept-package-agreements --accept-source-agreements --silent & echo. & echo Launching DriverStore Explorer... & start /b rapr & echo. & echo Press any key to exit . . . & pause >nul & exit"
+}
+
+function Install-Ventoy {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing Ventoy via Chocolatey... && choco upgrade ventoy -y --install-if-not-installed && echo. && echo Ventoy installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
+function Install-Rufus {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing Rufus via Chocolatey... && choco upgrade rufus -y --install-if-not-installed && echo. && echo Rufus installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
+function Install-AnyBurn {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing AnyBurn via Chocolatey... && choco upgrade anyburn -y --install-if-not-installed && echo. && echo AnyBurn installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
 # ============================================================
 #  SECTION B: GUI COLOUR AND STYLE CONSTANTS
 # ============================================================
@@ -1268,16 +1281,15 @@ Add-Category -Col 0 -Title "Automation" -Items @(
     @{ Name = "Google Workspace CLI (GWS)"; Func = { Install-GWS } }
 )
 
-Add-Category -Col 0 -Title "Win Tools" -Items @(
-    @{ Name = "TestDisk"; Func = { Install-TestDisk } },
-    @{ Name = "FreeRecover"; Func = { Install-FreeRecover } },
-    @{ Name = "Kickass Undelete"; Func = { Install-KickassUndelete } },
-    @{ Name = "CPU-Z"; Func = { Install-CPUZ } },
-    @{ Name = "HWiNFO"; Func = { Install-HWiNFO } },
-    @{ Name = "GPU-Z"; Func = { Install-GPUZ } },
-    @{ Name = "CrystalDiskInfo"; Func = { Install-CrystalDiskInfo } },
-    @{ Name = "CrystalDiskMark"; Func = { Install-CrystalDiskMark } },
-    @{ Name = "DriverStore Explorer"; Func = { Install-DriverStoreExplorer } }
+Add-Category -Col 0 -Title "Control Panel" -Items @(
+    @{ Name = "Classic Control Panel"; Func = { Open-ControlPanel } },
+    @{ Name = "Devices and Printers"; Func = { Open-DevicesAndPrinters } },
+    @{ Name = "Task Manager"; Func = { Open-TaskManager } },
+    @{ Name = "Device Manager"; Func = { Open-DeviceManager } },
+    @{ Name = "Disk Management"; Func = { Open-DiskManagement } },
+    @{ Name = "System Properties"; Func = { Open-SystemProperties } },
+    @{ Name = "System Config (MSConfig)"; Func = { Open-MSConfig } },
+    @{ Name = "Power Options"; Func = { Open-PowerOptions } }
 )
 
 # Column 1 ---------------------------------------------------------------------
@@ -1321,7 +1333,7 @@ Add-Category -Col 2 -Title "Run Scripts" -Items @(
     @{ Name = "GHGrab (GitHub Grabber)"; Func = { Run-GHGrab } },
     @{ Name = "Tools Installer Setup"; Func = { Run-Setup } },
     @{ Name = "Tor Link"; Func = { Run-TorLink } },
-	    @{ Name = "Tork"; Func = { Install-Tork } },
+	@{ Name = "Tork"; Func = { Install-Tork } },
     @{ Name = "YTDLP Frontend"; Func = { Run-YTDLPFrontend } },
     @{ Name = "Yoinks"; Func = { Run-Yoinks } }
 )
@@ -1367,16 +1379,21 @@ Add-Category -Col 3 -Title "Productivity Apps" -Items @(
 )
 
 # Column 4 ---------------------------------------------------------------------
-Add-Category -Col 4 -Title "Control Panel" -Items @(
-    @{ Name = "Classic Control Panel"; Func = { Open-ControlPanel } },
-    @{ Name = "Devices and Printers"; Func = { Open-DevicesAndPrinters } },
-    @{ Name = "Task Manager"; Func = { Open-TaskManager } },
-    @{ Name = "Device Manager"; Func = { Open-DeviceManager } },
-    @{ Name = "Disk Management"; Func = { Open-DiskManagement } },
-    @{ Name = "System Properties"; Func = { Open-SystemProperties } },
-    @{ Name = "System Config (MSConfig)"; Func = { Open-MSConfig } },
-    @{ Name = "Power Options"; Func = { Open-PowerOptions } }
+Add-Category -Col 4 -Title "Win Tools" -Items @(
+    @{ Name = "TestDisk"; Func = { Install-TestDisk } },
+    @{ Name = "FreeRecover"; Func = { Install-FreeRecover } },
+    @{ Name = "Kickass Undelete"; Func = { Install-KickassUndelete } },
+    @{ Name = "CPU-Z"; Func = { Install-CPUZ } },
+    @{ Name = "HWiNFO"; Func = { Install-HWiNFO } },
+    @{ Name = "GPU-Z"; Func = { Install-GPUZ } },
+    @{ Name = "CrystalDiskInfo"; Func = { Install-CrystalDiskInfo } },
+    @{ Name = "CrystalDiskMark"; Func = { Install-CrystalDiskMark } },
+    @{ Name = "DriverStore Explorer"; Func = { Install-DriverStoreExplorer } },
+    @{ Name = "Ventoy"; Func = { Install-Ventoy } },
+    @{ Name = "Rufus"; Func = { Install-Rufus } },
+    @{ Name = "AnyBurn"; Func = { Install-AnyBurn } }
 )
+
 
 # Let AutoScroll automatically compute the required virtual bounds
 # based on the scaled locations of the child GroupBoxes.
