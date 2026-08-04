@@ -711,7 +711,7 @@ function Install-Rufus {
 
 function Install-AnyBurn {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing AnyBurn via Chocolatey... && choco upgrade anyburn -y --install-if-not-installed && echo. && echo AnyBurn installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing AnyBurn via Winget... & winget install PowerSoftware.AnyBurn --accept-package-agreements --accept-source-agreements --silent & echo. & echo AnyBurn installation completed. & echo. & echo Press any key to exit . . . & pause >nul & exit"
 }
 # ============================================================
 #  SECTION B: GUI COLOUR AND STYLE CONSTANTS
