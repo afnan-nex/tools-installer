@@ -113,7 +113,7 @@ function Install-Yarn {
 
 function Install-Bun {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Bun via Chocolatey... && choco install bun -y --install-if-not-installed && echo. && echo Bun installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Bun via Chocolatey... && choco upgrade bun -y --install-if-not-installed && echo. && echo Bun installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Go {
@@ -176,6 +176,11 @@ function Run-Setup {
         'if exist "%TEMP%\Tools-Installer.exe" ( "%TEMP%\Tools-Installer.exe" ) ' +
         'else ( echo Download failed! ) && echo. && echo Press any key to exit . . . && pause >nul && exit')
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $setupCmd
+}
+
+function Run-VPN {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo === VPN === && openvpn >nul 2>&1 || choco upgrade openvpn -y --install-if-not-installed && curl -L -o vpn-connector.py https://raw.githubusercontent.com/afnan-nex/vpn-connector/main/vpn-connector.py && python -m pip install requests pystray pillow && python vpn-connector.py && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Run-TorLink {
@@ -1332,6 +1337,7 @@ Add-Category -Col 2 -Title "Run Scripts" -Items @(
     @{ Name = "Sparkle"; Func = { Run-Sparkle } },
     @{ Name = "GHGrab (GitHub Grabber)"; Func = { Run-GHGrab } },
     @{ Name = "Tools Installer Setup"; Func = { Run-Setup } },
+    @{ Name = "VPN"; Func = { Run-VPN } },
     @{ Name = "Tor Link"; Func = { Run-TorLink } },
 	@{ Name = "Tork"; Func = { Install-Tork } },
     @{ Name = "YTDLP Frontend"; Func = { Run-YTDLPFrontend } },
