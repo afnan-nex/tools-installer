@@ -103,7 +103,7 @@ function Install-Scoop {
 
 function Install-Pnpm {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing pnpm via Chocolatey... && choco install pnpm -y --install-if-not-installed && echo. && echo pnpm installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing pnpm via Chocolatey... && choco upgrade pnpm -y --install-if-not-installed && echo. && echo pnpm installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Yarn {
