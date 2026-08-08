@@ -262,7 +262,7 @@ function Install-Localtunnel {
 
 function Install-Miniserve {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Miniserve via Winget... use miniserve --qrcode to run && winget install svenstaro.miniserve --accept-package-agreements --accept-source-agreements --silent && echo. && echo Miniserve installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Miniserve via Winget... use miniserve --qrcode to run && winget upgrade svenstaro.miniserve --silent || winget install svenstaro.miniserve --accept-package-agreements --accept-source-agreements --silent && echo. && echo Miniserve installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 # ============================================================
@@ -316,7 +316,7 @@ function Install-IDM {
 
 function Install-GhostDownloader {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Ghost Downloader via Winget... && winget install -e --id XiaoYouChR.GhostDownloader --silent --accept-source-agreements --accept-package-agreements && echo. && echo Ghost Downloader installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Ghost Downloader via Winget... && winget upgrade -e --id XiaoYouChR.GhostDownloader --silent || winget install -e --id XiaoYouChR.GhostDownloader --silent --accept-source-agreements --accept-package-agreements && echo. && echo Ghost Downloader installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-VirtualBox {
@@ -420,7 +420,7 @@ function Install-LLMFit {
 
 function Install-Ollama {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Ollama... && winget install Ollama.Ollama --accept-package-agreements --accept-source-agreements --silent && echo. && echo Finished. Press any key to close... && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Ollama... && winget upgrade Ollama.Ollama --silent || winget install Ollama.Ollama --accept-package-agreements --accept-source-agreements --silent && echo. && echo Finished. Press any key to close... && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-ClaudeCode {
@@ -496,7 +496,7 @@ function Install-RustDesk {
 
 function Install-HiBit {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing HiBit Uninstaller via Winget... && winget install HiBitSoftware.HiBitUninstaller --accept-package-agreements --accept-source-agreements --silent && echo. && echo HiBit Uninstaller installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing HiBit Uninstaller via Winget... && winget upgrade HiBitSoftware.HiBitUninstaller --silent || winget install HiBitSoftware.HiBitUninstaller --accept-package-agreements --accept-source-agreements --silent && echo. && echo HiBit Uninstaller installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Superfile {
@@ -511,7 +511,7 @@ function Install-Alacritty {
 
 function Install-Scrcpy {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Scrcpy GUI via Winget... && winget install pizi.scrcpygui --accept-package-agreements --accept-source-agreements --silent && echo. && echo Scrcpy GUI installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Scrcpy GUI via Winget... && winget upgrade pizi.scrcpygui --silent || winget install pizi.scrcpygui --accept-package-agreements --accept-source-agreements --silent && echo. && echo Scrcpy GUI installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Cursor {
@@ -550,7 +550,7 @@ function Install-Cursor {
 
 function Install-VCC-Runtimes {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing all Visual C++ Runtimes via winget... && winget install -e --id abbodi1406.vcredist --accept-package-agreements --accept-source-agreements --silent && echo. && echo Visual C++ Runtimes installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing all Visual C++ Runtimes via winget... && winget upgrade -e --id abbodi1406.vcredist --silent || winget install -e --id abbodi1406.vcredist --accept-package-agreements --accept-source-agreements --silent && echo. && echo Visual C++ Runtimes installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 # function Install-DirectX {
@@ -597,7 +597,7 @@ function Install-VCC-Runtimes {
 
 function Install-DirectX {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing DirectX End-User Runtime via winget... && winget install -e --id Microsoft.DirectX --accept-package-agreements --accept-source-agreements --silent && echo. && echo DirectX installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing DirectX End-User Runtime via winget... && winget upgrade -e --id Microsoft.DirectX --silent || winget install -e --id Microsoft.DirectX --accept-package-agreements --accept-source-agreements --silent && echo. && echo DirectX installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 # ============================================================
@@ -701,7 +701,7 @@ function Install-CrystalDiskMark {
 
 function Install-DriverStoreExplorer {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Checking/Installing DriverStore Explorer via Winget... & winget install lostindark.DriverStoreExplorer --accept-package-agreements --accept-source-agreements --silent & echo. & echo Launching DriverStore Explorer... & start /b rapr & echo. & echo Press any key to exit . . . & pause >nul & exit"
+    "echo Checking/Installing DriverStore Explorer via Winget... && winget upgrade lostindark.DriverStoreExplorer --silent || winget install lostindark.DriverStoreExplorer --accept-package-agreements --accept-source-agreements --silent && echo. && echo Launching DriverStore Explorer... && start /b rapr && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Ventoy {
@@ -716,7 +716,7 @@ function Install-Rufus {
 
 function Install-AnyBurn {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing AnyBurn via Winget... & winget install PowerSoftware.AnyBurn --accept-package-agreements --accept-source-agreements --silent & echo. & echo AnyBurn installation completed. & echo. & echo Press any key to exit . . . & pause >nul & exit"
+    "echo Installing AnyBurn via Winget... && winget upgrade PowerSoftware.AnyBurn --silent || winget install PowerSoftware.AnyBurn --accept-package-agreements --accept-source-agreements --silent && echo. && echo AnyBurn installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 # ============================================================
 #  SECTION B: GUI COLOUR AND STYLE CONSTANTS
