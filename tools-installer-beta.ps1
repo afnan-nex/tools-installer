@@ -19,6 +19,11 @@ Add-Type -Name Win32 -Namespace Native -MemberDefinition @'
 '@
 [Native.Win32]::ShowWindow([Native.Win32]::GetConsoleWindow(), 0) | Out-Null
 try {
+    Add-Type -Name Fw -Namespace Native -MemberDefinition @'
+        [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
+'@ -ErrorAction SilentlyContinue
+} catch {}
+try {
     Add-Type -Name DWM -Namespace Native -MemberDefinition @'
         [DllImport("dwmapi.dll", PreserveSig = false)]
         public static extern void DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
@@ -938,11 +943,39 @@ $txtSearch.Add_KeyDown({
         }
         
         if ($visibleTasks.Count -eq 1) {
-            $visibleTasks[0].Button.PerformClick()
+            $task = $visibleTasks[0]
+            $name = $task.Name
+            $f = $task.Function
+            Write-Log "Launching: $name ..." -Level Running
+            try {
+                & $f
+                Write-Log "$name - launched." -Level Success
+            }
+            catch {
+                Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error
+            }
         }
+
+        $txtSearch.Focus()
+        $txtSearch.Select($txtSearch.Text.Length, 0)
+        $script:SearchRefocusTicks = 0
+        $script:SearchRefocusTimer.Start()
     }
 })
 $pnlHeader.Controls.Add($txtSearch)
+
+$script:SearchRefocusTimer = New-Object System.Windows.Forms.Timer
+$script:SearchRefocusTimer.Interval = 100
+$script:SearchRefocusTicks = 0
+$script:SearchRefocusTimer.Add_Tick({
+    $script:SearchRefocusTicks++
+    $txtSearch.Focus()
+    try { [Native.Fw]::SetForegroundWindow($form.Handle) | Out-Null } catch {}
+    if ($script:SearchRefocusTicks -ge 25) {
+        $script:SearchRefocusTimer.Stop()
+        $script:SearchRefocusTicks = 0
+    }
+})
 
 # -- BOTTOM PANEL (Log + Controls) --------------------------------------------
 $pnlBottom = New-Object System.Windows.Forms.Panel
