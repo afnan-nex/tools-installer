@@ -393,8 +393,7 @@ function Open-PowerOptions {
 
 function Install-Agy {
     $agyCmd = ('echo Installing Agy... && ' +
-        'curl -fsSL https://antigravity.google/cli/install.cmd -o install.cmd && ' +
-        'install.cmd --verbose && del install.cmd && echo. && ' +
+        'powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://antigravity.google/cli/install.ps1 | iex" && echo. && ' +
         'echo Installation completed. Press any key to close this window. && echo. && echo Press any key to exit . . . && pause >nul && exit')
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $agyCmd
 }
