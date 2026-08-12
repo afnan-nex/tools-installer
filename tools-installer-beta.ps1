@@ -722,6 +722,11 @@ function Install-AnyBurn {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo Installing AnyBurn via Winget... && winget upgrade PowerSoftware.AnyBurn --silent || winget install PowerSoftware.AnyBurn --accept-package-agreements --accept-source-agreements --silent && echo. && echo AnyBurn installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
+
+function Install-Downly {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo === Downly === && aria2c >nul 2>&1 || choco upgrade aria2 -y --install-if-not-installed && curl -L -o Downly.py https://raw.githubusercontent.com/afnan-nex/Downly/main/Downly.py && python -m pip install customtkinter aria2p pillow && python Downly.py && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
 # ============================================================
 #  SECTION B: GUI COLOUR AND STYLE CONSTANTS
 # ============================================================
@@ -1430,6 +1435,7 @@ Add-Category -Col 4 -Title "Win Tools" -Items @(
     @{ Name = "Ventoy"; Func = { Install-Ventoy } },
     @{ Name = "Rufus"; Func = { Install-Rufus } },
     @{ Name = "AnyBurn"; Func = { Install-AnyBurn } }
+    @{ Name = "Downly"; Func = { Install-Downly } }
 )
 
 
