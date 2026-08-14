@@ -103,7 +103,7 @@ function Install-NodeLTS {
 
 function Install-Scoop {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Scoop... && powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://get.scoop.sh > install.ps1; .\install.ps1 -RunAsAdmin; Remove-Item install.ps1`" && echo Adding extras bucket... && set PATH=%USERPROFILE%\scoop\shims;%PATH% && scoop bucket add extras && echo. && echo Scoop installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Scoop... && powershell -NoProfile -ExecutionPolicy Bypass -Command `"Write-Host 'Initializing...'; if (Get-Command scoop -ErrorAction SilentlyContinue) { Write-Host 'Scoop is already installed. Run ''scoop update'' to get the latest version.'; Write-Host 'Abort.'; scoop update } else { iex (irm get.scoop.sh) }; Write-Host ''; Write-Host 'Adding extras bucket...'; if (scoop bucket list | Select-String 'extras') { Write-Host 'WARN  The ''extras'' bucket already exists. To add this bucket again, first remove it by running ''scoop bucket rm extras''.' } else { scoop bucket add extras }`" && echo. && echo Scoop installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Pnpm {
