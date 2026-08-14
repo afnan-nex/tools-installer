@@ -19,11 +19,6 @@ Add-Type -Name Win32 -Namespace Native -MemberDefinition @'
 '@
 [Native.Win32]::ShowWindow([Native.Win32]::GetConsoleWindow(), 0) | Out-Null
 try {
-    Add-Type -Name Fw -Namespace Native -MemberDefinition @'
-        [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
-'@ -ErrorAction SilentlyContinue
-} catch {}
-try {
     Add-Type -Name DWM -Namespace Native -MemberDefinition @'
         [DllImport("dwmapi.dll", PreserveSig = false)]
         public static extern void DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
@@ -98,17 +93,17 @@ function Install-Choco {
 
 function Install-NodeLTS {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Node.js LTS via Chocolatey... && choco upgrade nodejs-lts -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Node.js installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Node.js LTS via Chocolatey... && choco upgrade nodejs-lts -y --install-if-not-installed && echo. && echo Node.js installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Scoop {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Scoop... && powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://get.scoop.sh > install.ps1; .\install.ps1 -RunAsAdmin; Remove-Item install.ps1`" && echo Adding extras bucket... && set PATH=%USERPROFILE%\scoop\shims;%PATH% && scoop bucket add extras && echo. && echo Scoop installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Scoop... && powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm https://get.scoop.sh > install.ps1; .\install.ps1 -RunAsAdmin; Remove-Item install.ps1`" && echo Adding extras bucket... && scoop bucket add extras && echo. && echo Scoop installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Pnpm {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing pnpm via Chocolatey... && choco upgrade pnpm -y --install-if-not-installed --no-desktop-shortcut && echo. && echo pnpm installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing pnpm via Chocolatey... && choco install pnpm -y --install-if-not-installed && echo. && echo pnpm installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Yarn {
@@ -118,17 +113,17 @@ function Install-Yarn {
 
 function Install-Bun {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Bun via Chocolatey... && choco upgrade bun -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Bun installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Bun via Chocolatey... && choco install bun -y --install-if-not-installed && echo. && echo Bun installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Go {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Go via Chocolatey... && choco upgrade golang -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Go installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Go via Chocolatey... && choco upgrade golang -y --install-if-not-installed && echo. && echo Go installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Deno {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Deno via Chocolatey... && choco upgrade deno -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Deno installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Deno via Chocolatey... && choco upgrade deno -y --install-if-not-installed && echo. && echo Deno installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 # ============================================================
@@ -183,11 +178,6 @@ function Run-Setup {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $setupCmd
 }
 
-function Run-VPN {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo === VPN === && openvpn >nul 2>&1 || choco upgrade openvpn -y --install-if-not-installed --no-desktop-shortcut && curl -L -o vpn-connector.py https://raw.githubusercontent.com/afnan-nex/vpn-connector/main/vpn-connector.py && python -m pip install requests pystray pillow && python vpn-connector.py && echo. && echo Press any key to exit . . . && pause >nul && exit"
-}
-
 function Run-TorLink {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
     "echo === TorLink === && npx --yes torlnk && echo. && echo Press any key to close... && echo. && echo Press any key to exit . . . && pause >nul && exit"
@@ -217,47 +207,47 @@ function Run-Yoinks {
 
 function Install-Git {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Git via Chocolatey... && choco upgrade git -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Git installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Git via Chocolatey... && choco upgrade git -y --install-if-not-installed && echo. && echo Git installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Python {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Python via Chocolatey... && choco upgrade python -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Python installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Python via Chocolatey... && choco upgrade python -y --install-if-not-installed && echo. && echo Python installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Dotnet {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing .NET via Chocolatey... && choco upgrade dotnet -y --install-if-not-installed --no-desktop-shortcut && echo. && echo .NET installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing .NET via Chocolatey... && choco upgrade dotnet -y --install-if-not-installed && echo. && echo .NET installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-FFmpeg {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing FFmpeg via Chocolatey... && choco upgrade ffmpeg -y --install-if-not-installed --no-desktop-shortcut && echo. && echo FFmpeg installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing FFmpeg via Chocolatey... && choco upgrade ffmpeg -y --install-if-not-installed && echo. && echo FFmpeg installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-7Zip {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing 7-Zip via Chocolatey... && choco upgrade 7zip -y --install-if-not-installed --no-desktop-shortcut && echo. && echo 7-Zip installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing 7-Zip via Chocolatey... && choco upgrade 7zip -y --install-if-not-installed && echo. && echo 7-Zip installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-PeaZip {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing PeaZip via Chocolatey... && choco upgrade peazip -y --install-if-not-installed --no-desktop-shortcut && echo. && echo PeaZip installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing PeaZip via Chocolatey... && choco upgrade peazip -y --install-if-not-installed && echo. && echo PeaZip installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-WinDirStat {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing WinDirStat via Chocolatey... && choco upgrade windirstat -y --install-if-not-installed --no-desktop-shortcut && echo. && echo WinDirStat installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing WinDirStat via Chocolatey... && choco upgrade windirstat -y --install-if-not-installed && echo. && echo WinDirStat installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-YTDLP {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing yt-dlp via Chocolatey... && choco upgrade yt-dlp -y --install-if-not-installed --no-desktop-shortcut && echo. && echo yt-dlp installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing yt-dlp via Chocolatey... && choco upgrade yt-dlp -y --install-if-not-installed && echo. && echo yt-dlp installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Ngrok {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing ngrok via Chocolatey... && choco upgrade ngrok -y --install-if-not-installed --no-desktop-shortcut && echo. && echo ngrok installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing ngrok via Chocolatey... && choco upgrade ngrok -y --install-if-not-installed && echo. && echo ngrok installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Localtunnel {
@@ -267,7 +257,7 @@ function Install-Localtunnel {
 
 function Install-Miniserve {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Miniserve via Winget... use miniserve --qrcode to run && winget upgrade svenstaro.miniserve --silent || winget install svenstaro.miniserve --accept-package-agreements --accept-source-agreements --silent && echo. && echo Miniserve installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Miniserve via Winget... use miniserve --qrcode to run && winget install svenstaro.miniserve --accept-package-agreements --accept-source-agreements --silent && echo. && echo Miniserve installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 # ============================================================
@@ -276,57 +266,57 @@ function Install-Miniserve {
 
 function Install-FastStone {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing FastStone Image Viewer via Chocolatey... && choco upgrade faststone-image-viewer -y --install-if-not-installed --no-desktop-shortcut && echo. && echo FastStone Image Viewer installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing FastStone Image Viewer via Chocolatey... && choco upgrade faststone-image-viewer -y --install-if-not-installed && echo. && echo FastStone Image Viewer installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-VLC {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing VLC Media Player via Chocolatey... && choco upgrade vlc.install -y --install-if-not-installed --no-desktop-shortcut && echo. && echo VLC Media Player installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing VLC Media Player via Chocolatey... && choco upgrade vlc.install -y --install-if-not-installed && echo. && echo VLC Media Player installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-MPC-HC {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing MPC-HC via Chocolatey... && choco upgrade mpc-hc-clsid2 -y --install-if-not-installed --no-desktop-shortcut && echo. && echo MPC-HC installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing MPC-HC via Chocolatey... && choco upgrade mpc-hc-clsid2 -y --install-if-not-installed && echo. && echo MPC-HC installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-OnlyOffice {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Only Office via Chocolatey... && choco upgrade onlyoffice-desktopeditors -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Only Office installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Only Office via Chocolatey... && choco upgrade onlyoffice-desktopeditors -y --install-if-not-installed && echo. && echo Only Office installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Kdenlive {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Kdenlive via Chocolatey... && choco upgrade kdenlive -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Kdenlive installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Kdenlive via Chocolatey... && choco upgrade kdenlive -y --install-if-not-installed && echo. && echo Kdenlive installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-HandBrake {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing HandBrake via Chocolatey... && choco upgrade handbrake -y --install-if-not-installed --no-desktop-shortcut && echo. && echo HandBrake installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing HandBrake via Chocolatey... && choco upgrade handbrake -y --install-if-not-installed && echo. && echo HandBrake installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-AntiGravity-ide {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing AntiGravity IDE via Chocolatey... && choco upgrade antigravity-ide -y --install-if-not-installed --no-desktop-shortcut && echo. && echo AntiGravity IDE installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing AntiGravity IDE via Chocolatey... && choco upgrade antigravity-ide -y --install-if-not-installed && echo. && echo AntiGravity IDE installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-VSCode {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Visual Studio Code via Chocolatey... && choco upgrade vscode -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Visual Studio Code installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Visual Studio Code via Chocolatey... && choco upgrade vscode -y --install-if-not-installed && echo. && echo Visual Studio Code installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-IDM {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Internet Download Manager via Chocolatey... && choco upgrade internet-download-manager -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Internet Download Manager installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Internet Download Manager via Chocolatey... && choco upgrade internet-download-manager -y --install-if-not-installed && echo. && echo Internet Download Manager installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-GhostDownloader {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Ghost Downloader via Winget... && winget upgrade -e --id XiaoYouChR.GhostDownloader --silent || winget install -e --id XiaoYouChR.GhostDownloader --silent --accept-source-agreements --accept-package-agreements && echo. && echo Ghost Downloader installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Ghost Downloader via Winget... && winget install -e --id XiaoYouChR.GhostDownloader --silent --accept-source-agreements --accept-package-agreements && echo. && echo Ghost Downloader installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-VirtualBox {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing VirtualBox via Chocolatey... && choco upgrade virtualbox -y --install-if-not-installed --no-desktop-shortcut && echo. && echo VirtualBox installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing VirtualBox via Chocolatey... && choco upgrade virtualbox -y --install-if-not-installed && echo. && echo VirtualBox installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 # ============================================================
 #  Automation
@@ -353,38 +343,52 @@ function Install-GWS {
 }
 
 # ============================================================
-#  Control Panel
+#  Win Tools
 # ============================================================
-function Open-ControlPanel {
-    Start-Process "control.exe"
+
+function Install-TestDisk {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Downloading TestDisk... && curl.exe -L --retry 3 --retry-delay 2 -o `"%USERPROFILE%\Downloads\testdisk-7.3-WIP.win64.zip`" `"https://www.cgsecurity.org/Download_and_donate.php/testdisk-7.3-WIP.win64.zip`" && echo. && echo Downloaded to Downloads folder. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
-function Open-DevicesAndPrinters {
-    Start-Process "explorer.exe" -ArgumentList "shell:::{A8A91A66-3A7D-4424-8D24-04E180695C7A}"
+function Install-FreeRecover {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Downloading FreeRecover... && curl.exe -L --retry 3 --retry-delay 2 -o `"%TEMP%\FreeRecover.exe`" `"https://sourceforge.net/projects/freerecover/files/FreeRecover.exe`" && echo Running... && `"%TEMP%\FreeRecover.exe`" && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
-function Open-TaskManager {
-    Start-Process "taskmgr.exe"
+function Install-KickassUndelete {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Downloading Kickass Undelete... && curl.exe -L --retry 3 --retry-delay 2 -o `"%TEMP%\KickassUndelete.exe`" `"https://sourceforge.net/projects/kickassundelete/files/Kickass%20Undelete%201.5.5/KickassUndelete_1.5.5.exe/download`" && echo Running... && `"%TEMP%\KickassUndelete.exe`" && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
-function Open-DeviceManager {
-    Start-Process "devmgmt.msc"
+function Install-CPUZ {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing CPU-Z (portable) via Chocolatey... run cpuz in cmd to run && choco upgrade cpuz -y --install-if-not-installed && echo. && echo CPU-Z installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
-function Open-DiskManagement {
-    Start-Process "diskmgmt.msc"
+function Install-HWiNFO {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing HWiNFO via Chocolatey... && choco upgrade hwinfo -y --install-if-not-installed && echo. && echo HWiNFO installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
-function Open-SystemProperties {
-    Start-Process "sysdm.cpl"
+function Install-GPUZ {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing GPU-Z (portable) via Chocolatey... && choco upgrade gpu-z -y --install-if-not-installed && echo. && echo GPU-Z installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
-function Open-MSConfig {
-    Start-Process "msconfig.exe"
+function Install-CrystalDiskInfo {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing CrystalDiskInfo via Chocolatey... && choco upgrade crystaldiskinfo -y --install-if-not-installed && echo. && echo CrystalDiskInfo installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
-function Open-PowerOptions {
-    Start-Process "powercfg.cpl"
+function Install-CrystalDiskMark {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Installing CrystalDiskMark via Chocolatey... && choco upgrade crystaldiskmark -y --install-if-not-installed && echo. && echo CrystalDiskMark installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+}
+
+function Install-DriverStoreExplorer {
+    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+    "echo Checking/Installing DriverStore Explorer via Winget... & winget install lostindark.DriverStoreExplorer --accept-package-agreements --accept-source-agreements --silent & echo. & echo Launching DriverStore Explorer... & start /b rapr & echo. & echo Press any key to exit . . . & pause >nul & exit"
 }
 
 # ============================================================
@@ -393,7 +397,8 @@ function Open-PowerOptions {
 
 function Install-Agy {
     $agyCmd = ('echo Installing Agy... && ' +
-        'powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://antigravity.google/cli/install.ps1 | iex" && echo. && ' +
+        'curl -fsSL https://antigravity.google/cli/install.cmd -o install.cmd && ' +
+        'install.cmd --verbose && del install.cmd && echo. && ' +
         'echo Installation completed. Press any key to close this window. && echo. && echo Press any key to exit . . . && pause >nul && exit')
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $agyCmd
 }
@@ -405,7 +410,7 @@ function Install-Opencode {
 
 function Install-Cursoride {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Cursor IDE via Chocolatey... && choco upgrade cursoride -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Cursor IDE installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Cursor IDE via Chocolatey... && choco upgrade cursoride -y --install-if-not-installed && echo. && echo Cursor IDE installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Open-GoogleDesktopApp {
@@ -424,7 +429,7 @@ function Install-LLMFit {
 
 function Install-Ollama {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Ollama... && winget upgrade Ollama.Ollama --silent || winget install Ollama.Ollama --accept-package-agreements --accept-source-agreements --silent && echo. && echo Finished. Press any key to close... && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Ollama... && winget install Ollama.Ollama --accept-package-agreements --accept-source-agreements --silent && echo. && echo Finished. Press any key to close... && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-ClaudeCode {
@@ -473,7 +478,7 @@ Read-Host "Press Enter to close"
 
 function Install-Everything {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Everything via Chocolatey... && choco upgrade everything -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Everything installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Everything via Chocolatey... && choco upgrade everything -y --install-if-not-installed && echo. && echo Everything installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Set-CMD0A {
@@ -495,12 +500,12 @@ Read-Host "Press Enter to close"
 
 function Install-RustDesk {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing RustDesk via Chocolatey... && choco upgrade rustdesk -y --install-if-not-installed --no-desktop-shortcut && echo. && echo RustDesk installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing RustDesk via Chocolatey... && choco upgrade rustdesk -y --install-if-not-installed && echo. && echo RustDesk installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-HiBit {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing HiBit Uninstaller via Winget... && winget upgrade HiBitSoftware.HiBitUninstaller --silent || winget install HiBitSoftware.HiBitUninstaller --accept-package-agreements --accept-source-agreements --silent && echo. && echo HiBit Uninstaller installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing HiBit Uninstaller via Winget... && winget install HiBitSoftware.HiBitUninstaller --accept-package-agreements --accept-source-agreements --silent && echo. && echo HiBit Uninstaller installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Superfile {
@@ -510,12 +515,12 @@ function Install-Superfile {
 
 function Install-Alacritty {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Alacritty via Chocolatey... && choco upgrade alacritty -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Alacritty installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Alacritty via Chocolatey... && choco upgrade alacritty -y --install-if-not-installed && echo. && echo Alacritty installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Scrcpy {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Scrcpy GUI via Winget... && winget upgrade pizi.scrcpygui --silent || winget install pizi.scrcpygui --accept-package-agreements --accept-source-agreements --silent && echo. && echo Scrcpy GUI installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Scrcpy GUI via Winget... && winget install pizi.scrcpygui --accept-package-agreements --accept-source-agreements --silent && echo. && echo Scrcpy GUI installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Cursor {
@@ -554,7 +559,7 @@ function Install-Cursor {
 
 function Install-VCC-Runtimes {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing all Visual C++ Runtimes via winget... && winget upgrade -e --id abbodi1406.vcredist --silent || winget install -e --id abbodi1406.vcredist --accept-package-agreements --accept-source-agreements --silent && echo. && echo Visual C++ Runtimes installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing all Visual C++ Runtimes via winget... && winget install -e --id abbodi1406.vcredist --accept-package-agreements --accept-source-agreements --silent && echo. && echo Visual C++ Runtimes installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 # function Install-DirectX {
@@ -601,7 +606,7 @@ function Install-VCC-Runtimes {
 
 function Install-DirectX {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing DirectX End-User Runtime via winget... && winget upgrade -e --id Microsoft.DirectX --silent || winget install -e --id Microsoft.DirectX --accept-package-agreements --accept-source-agreements --silent && echo. && echo DirectX installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing DirectX End-User Runtime via winget... && winget install -e --id Microsoft.DirectX --accept-package-agreements --accept-source-agreements --silent && echo. && echo DirectX installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 # ============================================================
@@ -620,17 +625,17 @@ function Install-Office365 {
 
 function Install-Chrome {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Google Chrome via Chocolatey... && choco upgrade googlechrome -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Chrome installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Google Chrome via Chocolatey... && choco upgrade googlechrome -y --install-if-not-installed && echo. && echo Chrome installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-Zen {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Zen Browser via Chocolatey... && choco upgrade zen-browser --prerelease -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Zen Browser installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Zen Browser via Chocolatey... && choco upgrade zen-browser --prerelease -y --install-if-not-installed && echo. && echo Zen Browser installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-OBS {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing OBS Studio via Chocolatey... && choco upgrade obs-studio -y --install-if-not-installed --no-desktop-shortcut && echo. && echo OBS Studio installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing OBS Studio via Chocolatey... && choco upgrade obs-studio -y --install-if-not-installed && echo. && echo OBS Studio installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 
@@ -646,92 +651,19 @@ function Install-LocalSend {
 
 function Install-NotepadPP {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Notepad++ via Chocolatey... && choco upgrade notepadplusplus -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Notepad++ installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing Notepad++ via Chocolatey... && choco upgrade notepadplusplus -y --install-if-not-installed && echo. && echo Notepad++ installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-ShareX {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing ShareX via Chocolatey... && choco upgrade sharex -y --install-if-not-installed --no-desktop-shortcut && echo. && echo ShareX installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing ShareX via Chocolatey... && choco upgrade sharex -y --install-if-not-installed && echo. && echo ShareX installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
 function Install-QBit {
     Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing qBittorrent via Chocolatey... && choco upgrade qbittorrent -y --install-if-not-installed --no-desktop-shortcut && echo. && echo qBittorrent installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    "echo Installing qBittorrent via Chocolatey... && choco upgrade qbittorrent -y --install-if-not-installed && echo. && echo qBittorrent installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
 }
 
-# ============================================================
-#  Win Tools
-# ============================================================
-
-function Install-TestDisk {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Downloading TestDisk... && curl.exe -L --retry 3 --retry-delay 2 -o `"%USERPROFILE%\Downloads\testdisk-7.3-WIP.win64.zip`" `"https://www.cgsecurity.org/Download_and_donate.php/testdisk-7.3-WIP.win64.zip`" && echo. && echo Downloaded to Downloads folder. && echo. && echo Press any key to exit . . . && pause >nul && exit"
-}
-
-function Install-FreeRecover {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Downloading FreeRecover... && curl.exe -L --retry 3 --retry-delay 2 -o `"%TEMP%\FreeRecover.exe`" `"https://sourceforge.net/projects/freerecover/files/FreeRecover.exe`" && echo Running... && `"%TEMP%\FreeRecover.exe`" && echo. && echo Press any key to exit . . . && pause >nul && exit"
-}
-
-function Install-KickassUndelete {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Downloading Kickass Undelete... && curl.exe -L --retry 3 --retry-delay 2 -o `"%TEMP%\KickassUndelete.exe`" `"https://sourceforge.net/projects/kickassundelete/files/Kickass%20Undelete%201.5.5/KickassUndelete_1.5.5.exe/download`" && echo Running... && `"%TEMP%\KickassUndelete.exe`" && echo. && echo Press any key to exit . . . && pause >nul && exit"
-}
-
-function Install-CPUZ {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing CPU-Z (portable) via Chocolatey... run cpuz in cmd to run && choco upgrade cpuz -y --install-if-not-installed --no-desktop-shortcut && echo. && echo CPU-Z installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
-}
-
-function Install-HWiNFO {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing HWiNFO via Chocolatey... && choco upgrade hwinfo -y --install-if-not-installed --no-desktop-shortcut && echo. && echo HWiNFO installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
-}
-
-function Install-GPUZ {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing GPU-Z (portable) via Chocolatey... && choco upgrade gpu-z -y --install-if-not-installed --no-desktop-shortcut && echo. && echo GPU-Z installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
-}
-
-function Install-CrystalDiskInfo {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing CrystalDiskInfo via Chocolatey... && choco upgrade crystaldiskinfo -y --install-if-not-installed --no-desktop-shortcut && echo. && echo CrystalDiskInfo installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
-}
-
-function Install-CrystalDiskMark {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing CrystalDiskMark via Chocolatey... && choco upgrade crystaldiskmark -y --install-if-not-installed --no-desktop-shortcut && echo. && echo CrystalDiskMark installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
-}
-
-function Install-DriverStoreExplorer {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Checking/Installing DriverStore Explorer via Winget... && winget upgrade lostindark.DriverStoreExplorer --silent || winget install lostindark.DriverStoreExplorer --accept-package-agreements --accept-source-agreements --silent && echo. && echo Launching DriverStore Explorer... && start /b rapr && echo. && echo Press any key to exit . . . && pause >nul && exit"
-}
-
-function Install-Ventoy {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Ventoy via Chocolatey... && choco upgrade ventoy -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Ventoy installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
-}
-
-function Install-Rufus {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing Rufus via Chocolatey... && choco upgrade rufus -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Rufus installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
-}
-
-function Install-AnyBurn {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo Installing AnyBurn via Winget... && winget upgrade PowerSoftware.AnyBurn --silent || winget install PowerSoftware.AnyBurn --accept-package-agreements --accept-source-agreements --silent && echo. && echo AnyBurn installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
-}
-
-function Run-GitCloner {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo === Git Cloner === && curl -L -o `"%TEMP%\git_batch_cloner.py`" https://raw.githubusercontent.com/afnan-nex/git-batch-cloner/main/git_batch_cloner.py && python `"%TEMP%\git_batch_cloner.py`" && echo. && echo Press any key to exit . . . && pause >nul && exit"
-}
-
-function Install-Downly {
-    Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-    "echo === Downly === && aria2c >nul 2>&1 || choco upgrade aria2 -y --install-if-not-installed && curl -L -o Downly.py https://raw.githubusercontent.com/afnan-nex/Downly/main/Downly.py && python -m pip install customtkinter aria2p pillow && python Downly.py && echo. && echo Press any key to exit . . . && pause >nul && exit"
-}
 # ============================================================
 #  SECTION B: GUI COLOUR AND STYLE CONSTANTS
 # ============================================================
@@ -770,7 +702,7 @@ $script:AllTasks = [System.Collections.Generic.List[hashtable]]::new()
 
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "Tool Installer  -  by AFNAN"
-$form.Size = New-Object System.Drawing.Size(1300, 600)
+$form.Size = New-Object System.Drawing.Size(1050, 600)
 $form.MinimumSize = New-Object System.Drawing.Size(820, 620)
 $form.StartPosition = "CenterScreen"
 $form.BackColor = $CLR_BG
@@ -952,39 +884,11 @@ $txtSearch.Add_KeyDown({
         }
         
         if ($visibleTasks.Count -eq 1) {
-            $task = $visibleTasks[0]
-            $name = $task.Name
-            $f = $task.Function
-            Write-Log "Launching: $name ..." -Level Running
-            try {
-                & $f
-                Write-Log "$name - launched." -Level Success
-            }
-            catch {
-                Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error
-            }
+            $visibleTasks[0].Button.PerformClick()
         }
-
-        $txtSearch.Focus()
-        $txtSearch.Select($txtSearch.Text.Length, 0)
-        $script:SearchRefocusTicks = 0
-        $script:SearchRefocusTimer.Start()
     }
 })
 $pnlHeader.Controls.Add($txtSearch)
-
-$script:SearchRefocusTimer = New-Object System.Windows.Forms.Timer
-$script:SearchRefocusTimer.Interval = 100
-$script:SearchRefocusTicks = 0
-$script:SearchRefocusTimer.Add_Tick({
-    $script:SearchRefocusTicks++
-    $txtSearch.Focus()
-    try { [Native.Fw]::SetForegroundWindow($form.Handle) | Out-Null } catch {}
-    if ($script:SearchRefocusTicks -ge 25) {
-        $script:SearchRefocusTimer.Stop()
-        $script:SearchRefocusTicks = 0
-    }
-})
 
 # -- BOTTOM PANEL (Log + Controls) --------------------------------------------
 $pnlBottom = New-Object System.Windows.Forms.Panel
@@ -1033,7 +937,7 @@ $script:LogBox.ScrollBars = "Vertical"
 $script:LogBox.WordWrap = $false
 $script:LogBox.Size = New-Object System.Drawing.Size(710, 186)
 $script:LogBox.Location = New-Object System.Drawing.Point(10, 34)
-$script:LogBox.Anchor = "Top,Left,Bottom"
+$script:LogBox.Anchor = "Top,Left,Bottom,Right"
 $pnlBottom.Controls.Add($script:LogBox)
 
 # Progress bar
@@ -1054,7 +958,7 @@ $script:LblStatus.Font = $FNT_SMALL
 $script:LblStatus.ForeColor = $CLR_MUTED
 $script:LblStatus.AutoSize = $true
 $script:LblStatus.Location = New-Object System.Drawing.Point(735, 12)
-$script:LblStatus.Anchor = "Top,Left"
+$script:LblStatus.Anchor = "Top,Right"
 $pnlBottom.Controls.Add($script:LblStatus)
 
 $btnSelAll = New-Object System.Windows.Forms.Button
@@ -1068,7 +972,7 @@ $btnSelAll.FlatAppearance.BorderSize = 1
 $btnSelAll.FlatAppearance.MouseOverBackColor = $CLR_BTNHOV
 $btnSelAll.Size = New-Object System.Drawing.Size(120, 28)
 $btnSelAll.Location = New-Object System.Drawing.Point(735, 36)
-$btnSelAll.Anchor = "Top,Left"
+$btnSelAll.Anchor = "Top,Right"
 $btnSelAll.Cursor = [System.Windows.Forms.Cursors]::Hand
 $btnSelAll.Add_Click({ foreach ($t in $script:AllTasks) { $t.CheckBox.Checked = $true } })
 $pnlBottom.Controls.Add($btnSelAll)
@@ -1084,9 +988,9 @@ $btnUpgradeAll.FlatAppearance.BorderSize = 1
 $btnUpgradeAll.FlatAppearance.MouseOverBackColor = $CLR_BTNHOV
 $btnUpgradeAll.Size = New-Object System.Drawing.Size(120, 28)
 $btnUpgradeAll.Location = New-Object System.Drawing.Point(865, 36)
-$btnUpgradeAll.Anchor = "Top,Left"
+$btnUpgradeAll.Anchor = "Top,Right"
 $btnUpgradeAll.Cursor = [System.Windows.Forms.Cursors]::Hand
-$btnUpgradeAll.Add_Click({ Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", "choco upgrade all -y --no-desktop-shortcut && echo. && echo Press any key to exit . . . && pause >nul && exit" })
+$btnUpgradeAll.Add_Click({ Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", "choco upgrade all -y && echo. && echo Press any key to exit . . . && pause >nul && exit" })
 $pnlBottom.Controls.Add($btnUpgradeAll)
 
 $btnDeselAll = New-Object System.Windows.Forms.Button
@@ -1100,7 +1004,7 @@ $btnDeselAll.FlatAppearance.BorderSize = 1
 $btnDeselAll.FlatAppearance.MouseOverBackColor = $CLR_BTNHOV
 $btnDeselAll.Size = New-Object System.Drawing.Size(120, 28)
 $btnDeselAll.Location = New-Object System.Drawing.Point(735, 70)
-$btnDeselAll.Anchor = "Top,Left"
+$btnDeselAll.Anchor = "Top,Right"
 $btnDeselAll.Cursor = [System.Windows.Forms.Cursors]::Hand
 $btnDeselAll.Add_Click({ foreach ($t in $script:AllTasks) { $t.CheckBox.Checked = $false } })
 $pnlBottom.Controls.Add($btnDeselAll)
@@ -1116,7 +1020,7 @@ $btnWingetUpgradeAll.FlatAppearance.BorderSize = 1
 $btnWingetUpgradeAll.FlatAppearance.MouseOverBackColor = $CLR_BTNHOV
 $btnWingetUpgradeAll.Size = New-Object System.Drawing.Size(120, 28)
 $btnWingetUpgradeAll.Location = New-Object System.Drawing.Point(865, 70)
-$btnWingetUpgradeAll.Anchor = "Top,Left"
+$btnWingetUpgradeAll.Anchor = "Top,Right"
 $btnWingetUpgradeAll.Cursor = [System.Windows.Forms.Cursors]::Hand
 $btnWingetUpgradeAll.Add_Click({ Start-Process winget -WindowStyle Minimized -ArgumentList "upgrade", "--all", "--silent", "--accept-source-agreements", "--accept-package-agreements" })
 $pnlBottom.Controls.Add($btnWingetUpgradeAll)
@@ -1132,7 +1036,7 @@ $script:BtnRun.FlatAppearance.MouseOverBackColor = $CLR_RUNHOV
 $script:BtnRun.FlatAppearance.MouseDownBackColor = [System.Drawing.Color]::FromArgb(28, 82, 160)
 $script:BtnRun.Size = New-Object System.Drawing.Size(250, 52)
 $script:BtnRun.Location = New-Object System.Drawing.Point(735, 112)
-$script:BtnRun.Anchor = "Top,Left"
+$script:BtnRun.Anchor = "Top,Right"
 $script:BtnRun.Cursor = [System.Windows.Forms.Cursors]::Hand
 $pnlBottom.Controls.Add($script:BtnRun)
 
@@ -1293,7 +1197,7 @@ $COL_W = 250   # column stride (group width 236 + 14 gap)
 $GAP_Y = 14
 $START_X = 14
 $START_Y = 12
-$colY = @($START_Y, $START_Y, $START_Y, $START_Y, $START_Y)   # current Y per column
+$colY = @($START_Y, $START_Y, $START_Y, $START_Y)   # current Y per column
 
 function Add-Category {
     param([int]$Col, [string]$Title, [array]$Items)
@@ -1328,15 +1232,16 @@ Add-Category -Col 0 -Title "Automation" -Items @(
     @{ Name = "Google Workspace CLI (GWS)"; Func = { Install-GWS } }
 )
 
-Add-Category -Col 0 -Title "Control Panel" -Items @(
-    @{ Name = "Classic Control Panel"; Func = { Open-ControlPanel } },
-    @{ Name = "Devices and Printers"; Func = { Open-DevicesAndPrinters } },
-    @{ Name = "Task Manager"; Func = { Open-TaskManager } },
-    @{ Name = "Device Manager"; Func = { Open-DeviceManager } },
-    @{ Name = "Disk Management"; Func = { Open-DiskManagement } },
-    @{ Name = "System Properties"; Func = { Open-SystemProperties } },
-    @{ Name = "System Config (MSConfig)"; Func = { Open-MSConfig } },
-    @{ Name = "Power Options"; Func = { Open-PowerOptions } }
+Add-Category -Col 0 -Title "Win Tools" -Items @(
+    @{ Name = "TestDisk"; Func = { Install-TestDisk } },
+    @{ Name = "FreeRecover"; Func = { Install-FreeRecover } },
+    @{ Name = "Kickass Undelete"; Func = { Install-KickassUndelete } },
+    @{ Name = "CPU-Z"; Func = { Install-CPUZ } },
+    @{ Name = "HWiNFO"; Func = { Install-HWiNFO } },
+    @{ Name = "GPU-Z"; Func = { Install-GPUZ } },
+    @{ Name = "CrystalDiskInfo"; Func = { Install-CrystalDiskInfo } },
+    @{ Name = "CrystalDiskMark"; Func = { Install-CrystalDiskMark } },
+    @{ Name = "DriverStore Explorer"; Func = { Install-DriverStoreExplorer } }
 )
 
 # Column 1 ---------------------------------------------------------------------
@@ -1379,9 +1284,8 @@ Add-Category -Col 2 -Title "Run Scripts" -Items @(
     @{ Name = "Sparkle"; Func = { Run-Sparkle } },
     @{ Name = "GHGrab (GitHub Grabber)"; Func = { Run-GHGrab } },
     @{ Name = "Tools Installer Setup"; Func = { Run-Setup } },
-    @{ Name = "VPN"; Func = { Run-VPN } },
     @{ Name = "Tor Link"; Func = { Run-TorLink } },
-	@{ Name = "Tork"; Func = { Install-Tork } },
+	    @{ Name = "Tork"; Func = { Install-Tork } },
     @{ Name = "YTDLP Frontend"; Func = { Run-YTDLPFrontend } },
     @{ Name = "Yoinks"; Func = { Run-Yoinks } }
 )
@@ -1425,25 +1329,6 @@ Add-Category -Col 3 -Title "Productivity Apps" -Items @(
     @{ Name = "ShareX"; Func = { Install-ShareX } },
     @{ Name = "qBittorrent"; Func = { Install-QBit } }
 )
-
-# Column 4 ---------------------------------------------------------------------
-Add-Category -Col 4 -Title "Win Tools" -Items @(
-    @{ Name = "TestDisk"; Func = { Install-TestDisk } },
-    @{ Name = "FreeRecover"; Func = { Install-FreeRecover } },
-    @{ Name = "Kickass Undelete"; Func = { Install-KickassUndelete } },
-    @{ Name = "CPU-Z"; Func = { Install-CPUZ } },
-    @{ Name = "HWiNFO"; Func = { Install-HWiNFO } },
-    @{ Name = "GPU-Z"; Func = { Install-GPUZ } },
-    @{ Name = "CrystalDiskInfo"; Func = { Install-CrystalDiskInfo } },
-    @{ Name = "CrystalDiskMark"; Func = { Install-CrystalDiskMark } },
-    @{ Name = "DriverStore Explorer"; Func = { Install-DriverStoreExplorer } },
-    @{ Name = "Ventoy"; Func = { Install-Ventoy } },
-    @{ Name = "Rufus"; Func = { Install-Rufus } },
-    @{ Name = "AnyBurn"; Func = { Install-AnyBurn } }
-    @{ Name = "Git Cloner"; Func = { Run-GitCloner } }
-    @{ Name = "Downly"; Func = { Install-Downly } }
-)
-
 
 # Let AutoScroll automatically compute the required virtual bounds
 # based on the scaled locations of the child GroupBoxes.
@@ -1597,27 +1482,17 @@ $script:BtnRun.Add_Click({
 # ============================================================
 #  SECTION H: RESIZE HANDLER  (keep right-side controls tidy)
 # ============================================================
-$resizeHandler = {
+$form.Add_Resize({
         $w = $pnlHeader.Width
         $btnPortfolio.Location = New-Object System.Drawing.Point(($w - 268), 17)
         $txtSearch.Location = New-Object System.Drawing.Point(($w - 166), 21)
 
-        $rx = $pnlBottom.Width - 315
-        $script:LblStatus.Location = New-Object System.Drawing.Point($rx, 12)
-        $btnSelAll.Location = New-Object System.Drawing.Point($rx, 36)
-        $btnUpgradeAll.Location = New-Object System.Drawing.Point(($rx + 130), 36)
-        $btnDeselAll.Location = New-Object System.Drawing.Point($rx, 70)
-        $btnWingetUpgradeAll.Location = New-Object System.Drawing.Point(($rx + 130), 70)
-        $script:BtnRun.Location = New-Object System.Drawing.Point($rx, 112)
-
-        $logW = $rx - 20
+        $logW = $pnlBottom.Width - 320
         if ($logW -gt 100) {
             $script:LogBox.Width = $logW
             $script:ProgressBar.Width = $logW
         }
-    }
-$form.Add_Resize($resizeHandler)
-& $resizeHandler
+    })
 
 # ============================================================
 #  SECTION I: STARTUP MESSAGE AND LAUNCH
