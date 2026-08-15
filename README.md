@@ -1,6 +1,6 @@
 # **Tools Installer**
 
-A Windows batch script with an interactive menu to quickly install developer tools and run automation scripts. This script simplifies the setup of essential development tools and automation utilities on Windows systems.
+A modern Windows WPF GUI application wrapper for `tools-installer.ps1` to quickly install developer tools, productivity apps, system utilities, and run optimization/automation scripts. It simplifies the setup of essential environments and configurations on Windows systems.
 
 ## Run in CMD
 ```cmd
@@ -49,50 +49,61 @@ Start-Process "$env:TEMP\tools-installer.cmd" -Verb RunAs
 ```
 </details>
 
+---
+
 ## **Features**
 
-*   **Interactive Menu**: Choose from a list of options to install tools or run scripts.
-*   **Developer Tools**: Install Node.js LTS, Python, Git, Chocolatey, n8n, Gemini CLI, and Qwen CLI.
-*   **Automation Scripts**: Run Chris Titus Tool, MassGrave, and Coporton scripts.
-*   **PowerShell Management**: View or unrestrict PowerShell execution policies.
-*   **Flexible Execution**: Run all tools/scripts in sequence or select specific ones to execute.
+*   **Modern WPF XAML GUI**: A clean, hardware-accelerated dark theme dashboard that renders all categories in responsive columns.
+*   **Instant Search Filtering**: Type in the search box to filter categories and applications instantly. Pressing **Enter** when a single match is displayed will launch it immediately, automatically highlighting the search box for your next query.
+*   **Intuitive Keyboard Navigation**:
+    *   **Arrow Keys**: Move focus between buttons/columns. Navigating Left/Right matches the closest vertical button in the next column rather than resetting to the top of the list.
+    *   **Spacebar**: Toggles the checkbox next to the focused tool to queue/select it for a batch run.
+    *   **Enter**: Executes all checked items simultaneously in the background (Run Selected) and unselects/clears all checkboxes when finished.
+*   **Distinct Taskbar Branding**: Uses Win32 API overrides to separate the application process group from standard PowerShell windows, displaying the custom app icon natively on the Windows taskbar.
+*   **Non-Blocking Executions**: Individual scripts run in dedicated background sessions, allowing the main GUI to remain fully responsive.
 
-## **Menu Options**
+---
 
-1.  **See Policy**: Displays the current PowerShell execution policy.
-2.  **Unrestrict Policy**: Sets PowerShell execution policy to Unrestricted.
-3.  **Install Chocolatey**: Installs the Chocolatey package manager.
-4.  **Install Node.js LTS**: Installs the Long-Term Support version of Node.js.
-5.  **Run Chris Titus Tool**: Executes the Chris Titus Windows optimization script.
-6.  **Run Mass Grave**: Runs the MassGrave Windows activation script.
-7.  **Run Coporton**: Executes the Coporton automation script.
-8.  **Install Python**: Installs the latest version of Python.
-9.  **Install Git**: Installs Git for version control.
-10.  **Install n8n**: Installs n8n automation tool (run `n8n` in cmd to start).
-11.  **Install Gemini CLI**: Installs Google's Gemini CLI (run `gemini` in cmd to start).
-12.  **Install Qwen CLI**: Installs Qwen CLI (run `qwen` in cmd to start).
-13.  **Run All**: Executes all options in sequence.
-14.  **Exit**: Closes the script.
+## **Categorized Tools & Scripts**
+
+### 1. **Essential & Package Managers**
+*   Chocolatey, Scoop, Node.js LTS, pnpm, Yarn, Bun, Go, Deno.
+
+### 2. **PowerShell & Tweaks**
+*   See execution policy, Unrestrict PowerShell execution policies.
+
+### 3. **Run Scripts & Optimizations**
+*   Chris Titus Tool, Mass Grave (Windows Activation), Win11 Debloat, WinScript, Coporton, IDM Fixer, Sparkle, GHGrab, Tools Installer Setup, VPN, Tor Link, Tork, YTDLP Frontend, Yoinks.
+
+### 4. **AI Assistants & Tools**
+*   Agy, Opencode, Cursor IDE, Google Desktop App, LLM-Checker, LLMFit, Ollama, Claude Code, Claude Code Router, Codebuff, Omniroute.
+
+### 5. **System Tools & Runtimes**
+*   Winget, Everything Search, CMD Color 0a, RustDesk, HiBit Uninstaller, Superfile, Alacritty, Scrcpy GUI, Cursor / Elegant repository, VC++ Runtimes, DirectX Runtime.
+
+### 6. **Control Panel Access**
+*   Classic Control Panel, Devices and Printers, Task Manager, Device Manager, Disk Management, System Properties, System Config (MSConfig), Power Options.
+
+### 7. **Productivity Apps**
+*   Office 365, Google Chrome, Zen Browser, OBS Studio, LocalSend, Notepad++, ShareX, qBittorrent.
+
+### 8. **Diagnostics & Data Recovery**
+*   TestDisk, FreeRecover, Kickass Undelete, CPU-Z, HWiNFO, GPU-Z, CrystalDiskInfo, CrystalDiskMark, DriverStore Explorer, Ventoy, Rufus, AnyBurn, Git Cloner, Downly, Monkeytype TUI.
+
+---
 
 ## **Prerequisites**
 
-*   Windows operating system.
-*   Administrative privileges to run the script and install tools.
-*   Internet connection for downloading tools and scripts.
+*   Windows 10 / 11.
+*   Administrative privileges (STA mode runspace).
+*   Internet connection to download packages.
 
 ## **Usage**
 
-1.  Download the `tools-installer.bat` script from the [GitHub repository](https://github.com/afnan-nex/tools-installer).
-2.  Right-click the script and select **Run as Administrator**.
-3.  Use the interactive menu to select options by entering numbers (1-27).
-4.  Follow on-screen prompts to install tools or run scripts.
-5.  For CLI tools (n8n, Gemini CLI, Qwen CLI), run their respective commands in the command prompt after installation.
-
-## **Installation Notes**
-
-*   **Chocolatey**: Required for installing Node.js, Python, and Git. Ensure option 3 is run before options 4, 8, or 9 if Chocolatey is not already installed.
-*   **PowerShell Policy**: Options 1 and 2 help manage PowerShell execution policies, which may be required for some scripts.
-*   **CLI Tools**: After installing n8n, Gemini CLI, or Qwen CLI, open a new command prompt and type their respective commands (`n8n`, `gemini`, `qwen`) to use them.
+1. Run the script using the recommended commands above.
+2. Select tools by checking the boxes next to them.
+3. Click **Run selected** (or press **Enter**) to run the batch installer.
+4. Or, click any button (or focus and press a standard click trigger) to execute it immediately.
 
 ## **License**
 
@@ -100,12 +111,15 @@ This project is licensed under the MIT License. See the [LICENSE](https://github
 
 ## **Author**
 
-Created by Afnan Siddiqui. Follow me on Instagram: [@afnan-nex](https://instagram.com/afnan-nex).
+Created by AFNAN with ❤️.
+
+Portfolio: [https://afnan-nex.github.io/portfolio/](https://afnan-nex.github.io/portfolio/).
+
+Instagram: [@afnan-nex](https://instagram.com/afnan-nex).
 
 ## **Disclaimer**
 
-This script downloads and executes third-party tools and scripts. Use at your own risk. Ensure you understand the purpose of each tool/script before running. The author is not responsible for any damages or issues caused by the use of this script.
+This script downloads and executes third-party tools and scripts. Use at your own risk. The author is not responsible for any damages or issues caused by the use of this script.
 
-Once you get addicted to winning, no chance you would lose
-Work 24/7 and when you start see yourself going up, you would see that the before was boring
-The first time win is difficult once you won you would see that it is not that difficult i have done it before 
+---
+*"Once you get addicted to winning, no chance you would lose. Work 24/7 and when you start see yourself going up, you would see that the before was boring. The first time win is difficult; once you won you would see that it is not that difficult, you have done it before."*
