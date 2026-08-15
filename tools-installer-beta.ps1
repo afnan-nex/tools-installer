@@ -84,7 +84,7 @@ try {
     }
 
     function Open-Portfolio {
-        Start-Process "https://github.com/afnan-nex/tools-installer"
+        Start-Process "https://afnan-nex.github.io/portfolio/"
     }
 
     # ============================================================
@@ -1489,11 +1489,25 @@ Read-Host "Press Enter to close"
         
         $focused = [System.Windows.Input.Keyboard]::FocusedElement
         
-        # Enter key triggers click on focused Button
+        # Enter key executes all selected and unselects
         if ($e.Key -eq [System.Windows.Input.Key]::Enter) {
-            if ($focused -is [System.Windows.Controls.Button]) {
+            if ($focused -ne $script:txtSearch) {
                 $e.Handled = $true
-                $focused.RaiseEvent((New-Object System.Windows.RoutedEventArgs([System.Windows.Controls.Button]::ClickEvent)))
+                $script:BtnRun.RaiseEvent((New-Object System.Windows.RoutedEventArgs([System.Windows.Controls.Button]::ClickEvent)))
+                foreach ($t in $script:AllTasks) {
+                    $t.CheckBox.IsChecked = $false
+                }
+                $script:chkSelectAll.IsChecked = $false
+            }
+        }
+        # Space key toggles selection on the focused button
+        elseif ($e.Key -eq [System.Windows.Input.Key]::Space) {
+            if ($focused -is [System.Windows.Controls.Button]) {
+                $currentTask = $script:AllTasks | Where-Object { $_.Button -eq $focused }
+                if ($null -ne $currentTask) {
+                    $e.Handled = $true
+                    $currentTask.CheckBox.IsChecked = -not $currentTask.CheckBox.IsChecked
+                }
             }
         }
         # Down Arrow from search box focuses first visible task button
