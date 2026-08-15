@@ -1479,8 +1479,10 @@ Read-Host "Press Enter to close"
                 }
             }
 
-            $script:txtSearch.Focus()
-            $script:txtSearch.Select($script:txtSearch.Text.Length, 0)
+            [void]$script:txtSearch.Dispatcher.BeginInvoke([System.Action] {
+                $script:txtSearch.Focus() | Out-Null
+                $script:txtSearch.SelectAll()
+            })
         }
     })
 
@@ -1610,9 +1612,16 @@ Read-Host "Press Enter to close"
                 $helper = New-Object System.Windows.Interop.WindowInteropHelper($script:window)
                 $hwnd = $helper.Handle
                 try { [Native.DWM]::DwmSetWindowAttribute($hwnd, 20, [ref]$darkMode, 4) }
-                catch { try { [Native.DWM]::DwmSetWindowAttribute($hwnd, 19, [ref]$darkMode, 4) } catch {} }
+                catch { try { [Native.DWM]::DWMSetWindowAttribute($hwnd, 19, [ref]$darkMode, 4) } catch {} }
             }
         } catch {}
+    })
+
+    $script:window.Add_Activated({
+        [void]$script:txtSearch.Dispatcher.BeginInvoke([System.Action] {
+            $script:txtSearch.Focus() | Out-Null
+            $script:txtSearch.SelectAll()
+        })
     })
 
     # Load window Icon dynamically
