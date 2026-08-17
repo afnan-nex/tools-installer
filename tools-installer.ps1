@@ -339,6 +339,11 @@ try {
         "echo Installing Visual Studio Code via Chocolatey... && choco upgrade vscode -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Visual Studio Code installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
+    function Install-Zed {
+        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+        "echo Installing Zed Editor via Chocolatey... && choco upgrade zed-editor -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Zed Editor installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    }
+
     function Install-IDM {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
         "echo Installing Internet Download Manager via Chocolatey... && choco upgrade internet-download-manager -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Internet Download Manager installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
@@ -1141,6 +1146,7 @@ Read-Host "Press Enter to close"
         @{ Name = "HandBrake"; Func = { Install-HandBrake } },
         @{ Name = "AntiGravity IDE"; Func = { Install-AntiGravity-ide } },
         @{ Name = "VS Code"; Func = { Install-VSCode } },
+        @{ Name = "Zed Editor"; Func = { Install-Zed } },
         @{ Name = "IDM"; Func = { Install-IDM } },
         @{ Name = "Ghost Downloader"; Func = { Install-GhostDownloader } },
         @{ Name = "Virtual Box"; Func = { Install-VirtualBox } }
