@@ -120,7 +120,7 @@ try {
 
     function Install-NodeLTS {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Node.js LTS via Chocolatey... && choco upgrade nodejs-lts -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Node.js installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing Node.js LTS via Chocolatey... && choco upgrade nodejs-lts -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Node.js installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-Scoop {
@@ -130,7 +130,7 @@ try {
 
     function Install-Pnpm {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing pnpm via Chocolatey... && choco upgrade pnpm -y --install-if-not-installed --no-desktop-shortcut && echo. && echo pnpm installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing pnpm via Chocolatey... && choco upgrade pnpm -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo pnpm installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-Yarn {
@@ -140,17 +140,17 @@ try {
 
     function Install-Bun {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Bun via Chocolatey... && choco upgrade bun -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Bun installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing Bun via Chocolatey... && choco upgrade bun -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Bun installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-Go {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Go via Chocolatey... && choco upgrade golang -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Go installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing Go via Chocolatey... && choco upgrade golang -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Go installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-Deno {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Deno via Chocolatey... && choco upgrade deno -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Deno installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing Deno via Chocolatey... && choco upgrade deno -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Deno installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     # ============================================================
@@ -301,52 +301,52 @@ try {
 
     function Install-FastStone {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing FastStone Image Viewer via Chocolatey... && choco upgrade faststone-image-viewer -y --install-if-not-installed --no-desktop-shortcut && echo. && echo FastStone Image Viewer installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing FastStone Image Viewer via Chocolatey... && choco upgrade faststone-image-viewer -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo FastStone Image Viewer installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-VLC {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing VLC Media Player via Chocolatey... && choco upgrade vlc.install -y --install-if-not-installed --no-desktop-shortcut && echo. && echo VLC Media Player installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing VLC Media Player via Chocolatey... && choco upgrade vlc.install -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo VLC Media Player installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-MPC-HC {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing MPC-HC via Chocolatey... && choco upgrade mpc-hc-clsid2 -y --install-if-not-installed --no-desktop-shortcut && echo. && echo MPC-HC installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing MPC-HC via Chocolatey... && choco upgrade mpc-hc-clsid2 -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo MPC-HC installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-OnlyOffice {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Only Office via Chocolatey... && choco upgrade onlyoffice-desktopeditors -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Only Office installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing Only Office via Chocolatey... && choco upgrade onlyoffice-desktopeditors -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Only Office installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-Kdenlive {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Kdenlive via Chocolatey... && choco upgrade kdenlive -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Kdenlive installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing Kdenlive via Chocolatey... && choco upgrade kdenlive -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Kdenlive installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-HandBrake {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing HandBrake via Chocolatey... && choco upgrade handbrake -y --install-if-not-installed --no-desktop-shortcut && echo. && echo HandBrake installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing HandBrake via Chocolatey... && choco upgrade handbrake -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo HandBrake installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-AntiGravity-ide {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing AntiGravity IDE via Chocolatey... && choco upgrade antigravity-ide -y --install-if-not-installed --no-desktop-shortcut && echo. && echo AntiGravity IDE installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing AntiGravity IDE via Chocolatey... && choco upgrade antigravity-ide -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo AntiGravity IDE installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-VSCode {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Visual Studio Code via Chocolatey... && choco upgrade vscode -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Visual Studio Code installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing Visual Studio Code via Chocolatey... && choco upgrade vscode -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Visual Studio Code installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-Zed {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Zed Editor via Chocolatey... && choco upgrade zed-editor -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Zed Editor installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing Zed Editor via Chocolatey... && choco upgrade zed-editor -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Zed Editor installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-IDM {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Internet Download Manager via Chocolatey... && choco upgrade internet-download-manager -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Internet Download Manager installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing Internet Download Manager via Chocolatey... && choco upgrade internet-download-manager -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Internet Download Manager installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-GhostDownloader {
@@ -356,7 +356,7 @@ try {
 
     function Install-VirtualBox {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing VirtualBox via Chocolatey... && choco upgrade virtualbox -y --install-if-not-installed --no-desktop-shortcut && echo. && echo VirtualBox installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing VirtualBox via Chocolatey... && choco upgrade virtualbox -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo VirtualBox installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
     # ============================================================
     #  Automation
@@ -435,7 +435,7 @@ try {
 
     function Install-Cursoride {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Cursor IDE via Chocolatey... && choco upgrade cursoride -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Cursor IDE installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing Cursor IDE via Chocolatey... && choco upgrade cursoride -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Cursor IDE installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Open-GoogleDesktopApp {
@@ -504,7 +504,7 @@ Read-Host "Press Enter to close"
 
     function Install-Everything {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Everything via Chocolatey... && choco upgrade everything -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Everything installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing Everything via Chocolatey... && choco upgrade everything -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Everything installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Set-CMD0A {
@@ -526,7 +526,7 @@ Read-Host "Press Enter to close"
 
     function Install-RustDesk {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing RustDesk via Chocolatey... && choco upgrade rustdesk -y --install-if-not-installed --no-desktop-shortcut && echo. && echo RustDesk installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing RustDesk via Chocolatey... && choco upgrade rustdesk -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo RustDesk installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-HiBit {
@@ -541,7 +541,7 @@ Read-Host "Press Enter to close"
 
     function Install-Alacritty {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Alacritty via Chocolatey... && choco upgrade alacritty -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Alacritty installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing Alacritty via Chocolatey... && choco upgrade alacritty -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Alacritty installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-Scrcpy {
@@ -580,17 +580,17 @@ Read-Host "Press Enter to close"
 
     function Install-Chrome {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Google Chrome via Chocolatey... && choco upgrade googlechrome -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Chrome installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing Google Chrome via Chocolatey... && choco upgrade googlechrome -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Chrome installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-Zen {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Zen Browser via Chocolatey... && choco upgrade zen-browser --prerelease -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Zen Browser installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing Zen Browser via Chocolatey... && choco upgrade zen-browser --prerelease -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Zen Browser installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-OBS {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing OBS Studio via Chocolatey... && choco upgrade obs-studio -y --install-if-not-installed --no-desktop-shortcut && echo. && echo OBS Studio installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing OBS Studio via Chocolatey... && choco upgrade obs-studio -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo OBS Studio installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
 
@@ -606,17 +606,17 @@ Read-Host "Press Enter to close"
 
     function Install-NotepadPP {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Notepad++ via Chocolatey... && choco upgrade notepadplusplus -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Notepad++ installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing Notepad++ via Chocolatey... && choco upgrade notepadplusplus -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Notepad++ installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-ShareX {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing ShareX via Chocolatey... && choco upgrade sharex -y --install-if-not-installed --no-desktop-shortcut && echo. && echo ShareX installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing ShareX via Chocolatey... && choco upgrade sharex -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo ShareX installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-QBit {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing qBittorrent via Chocolatey... && choco upgrade qbittorrent -y --install-if-not-installed --no-desktop-shortcut && echo. && echo qBittorrent installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing qBittorrent via Chocolatey... && choco upgrade qbittorrent -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo qBittorrent installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     # ============================================================
@@ -640,28 +640,28 @@ Read-Host "Press Enter to close"
 
     function Install-CPUZ {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing CPU-Z (portable) via Chocolatey... run cpuz in cmd to run && choco upgrade cpuz -y --install-if-not-installed --no-desktop-shortcut && echo. && echo CPU-Z installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing CPU-Z (portable) via Chocolatey... run cpuz in cmd to run && choco upgrade cpuz -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo CPU-Z installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-HWiNFO {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing HWiNFO via Chocolatey... && choco upgrade hwinfo -y --install-if-not-installed --no-desktop-shortcut && echo. && echo HWiNFO installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing HWiNFO via Chocolatey... && choco upgrade hwinfo -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo HWiNFO installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     # Ensure unique function name
     function Install-GPUZ {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing GPU-Z (portable) via Chocolatey... && choco upgrade gpu-z -y --install-if-not-installed --no-desktop-shortcut && echo. && echo GPU-Z installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing GPU-Z (portable) via Chocolatey... && choco upgrade gpu-z -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo GPU-Z installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-CrystalDiskInfo {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing CrystalDiskInfo via Chocolatey... && choco upgrade crystaldiskinfo -y --install-if-not-installed --no-desktop-shortcut && echo. && echo CrystalDiskInfo installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing CrystalDiskInfo via Chocolatey... && choco upgrade crystaldiskinfo -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo CrystalDiskInfo installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-CrystalDiskMark {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing CrystalDiskMark via Chocolatey... && choco upgrade crystaldiskmark -y --install-if-not-installed --no-desktop-shortcut && echo. && echo CrystalDiskMark installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing CrystalDiskMark via Chocolatey... && choco upgrade crystaldiskmark -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo CrystalDiskMark installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-DriverStoreExplorer {
@@ -671,13 +671,13 @@ Read-Host "Press Enter to close"
 
     function Install-Ventoy {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Ventoy via Chocolatey... && choco upgrade ventoy -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Ventoy installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing Ventoy via Chocolatey... && choco upgrade ventoy -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Ventoy installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     # Ensure unique function name
     function Install-Rufus {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Rufus via Chocolatey... && choco upgrade rufus -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Rufus installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo Installing Rufus via Chocolatey... && choco upgrade rufus -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Rufus installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Install-AnyBurn {
@@ -693,7 +693,7 @@ Read-Host "Press Enter to close"
     # Ensure unique function name
     function Install-Downly {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo === Downly === && aria2c >nul 2>&1 || choco upgrade aria2 -y --install-if-not-installed && curl -L -o Downly.py https://raw.githubusercontent.com/afnan-nex/Downly/main/Downly.py && python -m pip install customtkinter aria2p pillow && python Downly.py && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        "echo === Downly === && aria2c >nul 2>&1 || choco upgrade aria2 -y --force --install-if-not-installed && curl -L -o Downly.py https://raw.githubusercontent.com/afnan-nex/Downly/main/Downly.py && python -m pip install customtkinter aria2p pillow && python Downly.py && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     function Run-MonkeytypeTui {
@@ -1031,6 +1031,9 @@ Read-Host "Press Enter to close"
             catch {
                 Write-Log "ERROR: $taskName - $($_.Exception.Message)" -Level Error
             }
+            [void]$script:window.Dispatcher.BeginInvoke([System.Action] {
+                $script:window.Activate() | Out-Null
+            })
         })
 
         $ParentStackPanel.Children.Add($rowGrid) | Out-Null
@@ -1623,12 +1626,6 @@ Read-Host "Press Enter to close"
         } catch {}
     })
 
-    $script:window.Add_Activated({
-        [void]$script:txtSearch.Dispatcher.BeginInvoke([System.Action] {
-            $script:txtSearch.Focus() | Out-Null
-            $script:txtSearch.SelectAll()
-        })
-    })
 
     # Load window Icon dynamically
     $iconPath = "$env:TEMP\Tools-Installer.ico"
