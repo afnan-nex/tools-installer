@@ -295,6 +295,11 @@ try {
         "echo Installing Miniserve via Winget... use miniserve --qrcode to run && winget upgrade svenstaro.miniserve --silent || winget install svenstaro.miniserve --accept-package-agreements --accept-source-agreements --silent && echo. && echo Miniserve installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
+    function Install-WebView2 {
+        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+        "echo Installing Microsoft Edge WebView2 Runtime via Winget... && winget install Microsoft.EdgeWebView2Runtime --accept-package-agreements --accept-source-agreements --silent --verbose && echo. && echo Edge WebView2 Runtime installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    }
+
     # ============================================================
     #  Other Apps
     # ============================================================
@@ -484,16 +489,24 @@ try {
 
     function Install-Winget {
         $wingetPs = @'
-Write-Host "Installing Winget..."
-try {
-    $progressPreference = 'silentlyContinue'
-    Invoke-WebRequest -Uri 'https://aka.ms/getwinget' -OutFile 'winget.msixbundle'
-    Add-AppxPackage 'winget.msixbundle'
-    Remove-Item 'winget.msixbundle' -Force
-    Write-Host "Winget installed successfully."
-} catch {
-    Write-Host ("Error installing Winget: " + $_.Exception.Message)
-    Write-Host "You may need to install from Microsoft Store instead."
+Write-Host "Checking if Winget is already installed..."
+if (Get-Command winget -ErrorAction SilentlyContinue) {
+    Write-Host "Winget is already installed on your PC." -ForegroundColor Green
+} else {
+    Write-Host "Winget is not installed. Installing Winget with verbose output..."
+    try {
+        $progressPreference = 'silentlyContinue'
+        Invoke-WebRequest -Uri 'https://aka.ms/getwinget' -OutFile 'winget.msixbundle'
+        Add-AppxPackage 'winget.msixbundle'
+        Remove-Item 'winget.msixbundle' -Force
+        Write-Host "Winget installed successfully." -ForegroundColor Green
+        Write-Host ""
+        Write-Host "Winget version info:" -ForegroundColor Cyan
+        winget --version --verbose
+    } catch {
+        Write-Host ("Error installing Winget: " + $_.Exception.Message) -ForegroundColor Red
+        Write-Host "You may need to install from Microsoft Store instead."
+    }
 }
 Read-Host "Press Enter to close"
 '@
@@ -1137,7 +1150,8 @@ Read-Host "Press Enter to close"
         @{ Name = "yt-dlp"; Func = { Install-YTDLP } },
         @{ Name = "ngrok"; Func = { Install-Ngrok } },
         @{ Name = "localtunnel"; Func = { Install-Localtunnel } },
-        @{ Name = "miniserve"; Func = { Install-Miniserve } }
+        @{ Name = "miniserve"; Func = { Install-Miniserve } },
+        @{ Name = "Edge WebView2 Runtime"; Func = { Install-WebView2 } }
     )
 
     Add-Category -ColIndex 1 -Title "Other Apps" -Items @(
