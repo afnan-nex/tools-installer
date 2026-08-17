@@ -80,7 +80,7 @@ try {
     #  About AFNAN
     # ============================================================
     function Open-Github {
-        Start-Process "https://github.com/afnan-nex/tools-installer"
+        Start-Process "https://github.com/afnan-nex"
     }
 
     function Open-Portfolio {
