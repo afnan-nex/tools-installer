@@ -8,7 +8,20 @@ $logPath = "C:\Users\Admin\Desktop\tools-installer\crash.log"
 if (Test-Path $logPath) { Remove-Item $logPath -Force -ErrorAction SilentlyContinue }
 
 try {
-    # -- 1. SUPPRESS CONSOLE WINDOW (Win32 API) ------------------------------------
+    $ErrorActionPreference = "Stop"
+
+    # -- 1. ADMINISTRATOR ELEVATION & STA MODE FORCING -----------------------------
+    $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+    $isSTA = [System.Threading.Thread]::CurrentThread.GetApartmentState() -eq 'STA'
+
+    if (-not $isAdmin -or -not $isSTA) {
+        $relaunch = "-NoProfile -ExecutionPolicy Bypass -STA -File `"$PSCommandPath`""
+        $verb = if (-not $isAdmin) { "RunAs" } else { $null }
+        Start-Process powershell -ArgumentList $relaunch -Verb $verb
+        exit
+    }
+
+    # -- 2. WIN32 CONSOLE API DECLARATION -----------------------------------------
     try {
         [void][Console.Window]
     } catch {
@@ -19,27 +32,37 @@ public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 public static extern IntPtr GetConsoleWindow();
 "@ -ErrorAction SilentlyContinue
     }
-    # 0 = SW_HIDE (Hides the calling console window immediately)
-    [Console.Window]::ShowWindow([Console.Window]::GetConsoleWindow(), 0) | Out-Null
-} catch {
-    # If console suppression fails, log it but continue
-    "Console suppression error: $_" | Out-File -FilePath $logPath -Append
-}
 
-try {
-    $ErrorActionPreference = "Stop"
-
-    # -- 2. ADMINISTRATOR ELEVATION & STA MODE FORCING -----------------------------
-    $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-    $isSTA = [System.Threading.Thread]::CurrentThread.GetApartmentState() -eq 'STA'
-
-    if (-not $isAdmin -or -not $isSTA) {
-        $relaunch = "-NoProfile -ExecutionPolicy Bypass -STA -File `"$PSCommandPath`""
-        $verb = if (-not $isAdmin) { "RunAs" } else { $null }
-        Start-Process powershell -WindowStyle Minimized -ArgumentList $relaunch -Verb $verb
-        exit
+    # -- 3. CLI PROGRESS BAR HELPER -----------------------------------------------
+    function Update-InitProgress {
+        param(
+            [int]$Percent,
+            [string]$Status
+        )
+        Write-Progress -Activity "Tool Installer - Starting Up" -Status "$Status ($Percent%)" -PercentComplete $Percent
+        try {
+            $width = 24
+            $filled = [int][Math]::Floor(($Percent / 100.0) * $width)
+            $empty = [Math]::Max(0, $width - $filled)
+            $bar = ("#" * $filled) + ("-" * $empty)
+            $msg = "`r  [$bar] $($Percent.ToString().PadLeft(3))% : $Status"
+            $msg = $msg.PadRight(76)
+            Write-Host -NoNewline $msg -ForegroundColor Cyan
+        } catch {}
     }
 
+    try {
+        [Console]::CursorVisible = $false
+    } catch {}
+
+    Write-Host ""
+    Write-Host " ========================================================== " -ForegroundColor DarkCyan
+    Write-Host "                TOOL INSTALLER  -  BY AFNAN                 " -ForegroundColor Cyan
+    Write-Host " ========================================================== " -ForegroundColor DarkCyan
+    Write-Host ""
+    Update-InitProgress -Percent 10 -Status "Initializing environment..."
+
+    Update-InitProgress -Percent 20 -Status "Configuring Windows DWM & App ID..."
     try {
         [void][Native.DWM]
     } catch {
@@ -62,7 +85,8 @@ try {
         [Native.Shell]::SetCurrentProcessExplicitAppUserModelID("Afnan.ToolsInstaller.Gui")
     } catch {}
 
-    # -- 3. LOAD WPF ASSEMBLIES ----------------------------------------------------
+    # -- 4. LOAD WPF ASSEMBLIES ----------------------------------------------------
+    Update-InitProgress -Percent 35 -Status "Loading WPF Presentation Framework..."
     Add-Type -AssemblyName System.Xaml
     Add-Type -AssemblyName PresentationFramework
     Add-Type -AssemblyName PresentationCore
@@ -953,6 +977,8 @@ Read-Host "Press Enter to close"
 </Window>
 "@
 
+    Update-InitProgress -Percent 55 -Status "Compiling XAML UI layout & styles..."
+
     # Parse raw XAML directly via System.Xaml parser
     $script:window = [Windows.Markup.XamlReader]::Parse($xaml)
 
@@ -1102,6 +1128,7 @@ Read-Host "Press Enter to close"
     }
 
     # Column 0
+    Update-InitProgress -Percent 65 -Status "Building Category (1/5): Essential & System..."
     Add-Category -ColIndex 0 -Title "About AFNAN" -Items @(
         @{ Name = "Open Portfolio"; Func = { Open-Portfolio } }
     )
@@ -1139,6 +1166,7 @@ Read-Host "Press Enter to close"
     )
 
     # Column 1
+    Update-InitProgress -Percent 72 -Status "Building Category (2/5): Recommended Tools & Apps..."
     Add-Category -ColIndex 1 -Title "Recommended Tools" -Items @(
         @{ Name = "Git"; Func = { Install-Git } },
         @{ Name = "Python"; Func = { Install-Python } },
@@ -1170,6 +1198,7 @@ Read-Host "Press Enter to close"
     )
 
     # Column 2
+    Update-InitProgress -Percent 80 -Status "Building Category (3/5): Run Scripts & AI Tools..."
     Add-Category -ColIndex 2 -Title "Run Scripts" -Items @(
         @{ Name = "Chris Titus Tool"; Func = { Run-Titus } },
         @{ Name = "Mass Grave"; Func = { Run-MassGrave } },
@@ -1202,6 +1231,7 @@ Read-Host "Press Enter to close"
     )
 
     # Column 3
+    Update-InitProgress -Percent 88 -Status "Building Category (4/5): System & Productivity..."
     Add-Category -ColIndex 3 -Title "System Tools" -Items @(
         @{ Name = "Winget"; Func = { Install-Winget } },
         @{ Name = "Everything Search"; Func = { Install-Everything } },
@@ -1228,6 +1258,7 @@ Read-Host "Press Enter to close"
     )
 
     # Column 4
+    Update-InitProgress -Percent 94 -Status "Building Category (5/5): Win Tools & Utilities..."
     Add-Category -ColIndex 4 -Title "Win Tools" -Items @(
         @{ Name = "TestDisk"; Func = { Install-TestDisk } },
         @{ Name = "FreeRecover"; Func = { Install-FreeRecover } },
@@ -1641,16 +1672,36 @@ Read-Host "Press Enter to close"
     })
 
 
+    Update-InitProgress -Percent 98 -Status "Preparing window icon and theme..."
+
     # Load window Icon dynamically
     $iconPath = "$env:TEMP\Tools-Installer.ico"
     try {
         if (-not (Test-Path $iconPath)) {
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/afnan-nex/tools-installer/main/Setup/Tools-Installer.ico" -OutFile $iconPath -UseBasicParsing -TimeoutSec 5 -ErrorAction Stop
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/afnan-nex/tools-installer/main/Setup/Tools-Installer.ico" -OutFile $iconPath -UseBasicParsing -TimeoutSec 3 -ErrorAction SilentlyContinue
         }
-        $script:window.Icon = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri($iconPath))
+        if (Test-Path $iconPath) {
+            $script:window.Icon = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri($iconPath))
+        }
     }
     catch {}
+
+    Update-InitProgress -Percent 100 -Status "Ready! Launching application..."
+    Start-Sleep -Milliseconds 150
+    Write-Progress -Activity "Tool Installer - Starting Up" -Completed
+    Write-Host "`n`n  [OK] Initialization complete. Launching GUI...`n" -ForegroundColor Green
+    Start-Sleep -Milliseconds 150
+
+    # Hide the calling PowerShell CLI console window on completion
+    try {
+        $consoleHWnd = [Console.Window]::GetConsoleWindow()
+        if ($consoleHWnd -ne [IntPtr]::Zero) {
+            [Console.Window]::ShowWindow($consoleHWnd, 0) | Out-Null
+        }
+    } catch {
+        "Console suppression error: $_" | Out-File -FilePath $logPath -Append
+    }
 
     $script:window.ShowDialog() | Out-Null
     exit
