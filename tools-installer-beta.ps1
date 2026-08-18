@@ -4,6 +4,7 @@
 #  Compatible with PowerShell 5.1 and PowerShell 7+
 # ============================================================
 
+
 $logPath = "C:\Users\Admin\Desktop\tools-installer\crash.log"
 if (Test-Path $logPath) { Remove-Item $logPath -Force -ErrorAction SilentlyContinue }
 
