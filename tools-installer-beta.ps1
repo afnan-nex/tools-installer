@@ -588,7 +588,7 @@ Read-Host "Press Enter to close"
 
     function Install-Cursor {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/c",
-        "echo Cloning Elegant repository from GitHub... && git clone https://github.com/afnan-nex/Elegant && cd /d Elegant && call apply_cursors.cmd"
+        "echo Downloading Elegant repository from GitHub... && curl -L -o Elegant.zip https://github.com/afnan-nex/Elegant/archive/refs/heads/main.zip && powershell -NoProfile -ExecutionPolicy Bypass -Command `"Expand-Archive -Path 'Elegant.zip' -DestinationPath . -Force; Remove-Item Elegant.zip -Force; Rename-Item Elegant-main Elegant -Force`" && cd /d Elegant && call apply_cursors.cmd"
     }
 
     function Install-VCC-Runtimes {
