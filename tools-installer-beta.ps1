@@ -587,8 +587,10 @@ Read-Host "Press Enter to close"
     }
 
     function Install-Cursor {
+        $tmpDir = "$env:TEMP\Elegant"
+        if (Test-Path $tmpDir) { Remove-Item $tmpDir -Recurse -Force }
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/c",
-        "echo Downloading Elegant repository from GitHub... && curl -L -o Elegant.zip https://github.com/afnan-nex/Elegant/archive/refs/heads/main.zip && tar -xf Elegant.zip && del Elegant.zip && rename Elegant-main Elegant && cd /d Elegant && call apply_cursors.cmd"
+        "cd /d `"%tmpDir%`" && echo Downloading Elegant repository from GitHub... && curl -L -o Elegant.zip https://github.com/afnan-nex/Elegant/archive/refs/heads/main.zip && tar -xf Elegant.zip && del Elegant.zip && rename Elegant-main Elegant && cd /d Elegant && call apply_cursors.cmd"
     }
 
     function Install-VCC-Runtimes {
