@@ -587,8 +587,8 @@ Read-Host "Press Enter to close"
     }
 
     function Install-Cursor {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Cloning Elegant repository from GitHub... && git clone https://github.com/afnan-nex/Elegant && echo. && echo Repository cloned successfully to Elegant folder. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Start-Process cmd -WindowStyle Minimized -ArgumentList "/c",
+        "echo Cloning Elegant repository from GitHub... && git clone https://github.com/afnan-nex/Elegant && cd /d Elegant && call apply_cursors.cmd"
     }
 
     function Install-VCC-Runtimes {
