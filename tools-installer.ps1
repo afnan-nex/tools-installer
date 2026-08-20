@@ -511,6 +511,28 @@ public static extern IntPtr GetConsoleWindow();
     #  System tools
     # ============================================================
 
+    function Install-WSL {
+        $wslCmd = ('echo === Installing / Updating WSL (Windows Subsystem for Linux) ^& Ubuntu === && ' +
+            'bcdedit.exe /set hypervisorlaunchtype auto >nul 2>&1 & ' +
+            'powershell -NoProfile -ExecutionPolicy Bypass -Command "' +
+            'Write-Host ''[1/4] Checking and enabling Windows Virtualization features...'' -ForegroundColor Cyan; ' +
+            'dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart >$null 2>&1; ' +
+            'dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart >$null 2>&1; ' +
+            'Write-Host ''[2/4] Installing / Updating WSL core and kernel...'' -ForegroundColor Cyan; ' +
+            'wsl.exe --update --web-download; ' +
+            'if ($LASTEXITCODE -ne 0) { wsl.exe --install --no-distribution --web-download }; ' +
+            'Write-Host ''[3/4] Installing / Updating Ubuntu Linux distribution...'' -ForegroundColor Cyan; ' +
+            'wsl.exe --install -d Ubuntu --web-download; ' +
+            'if ($LASTEXITCODE -ne 0) { winget install --id Canonical.Ubuntu.2404 --exact --accept-package-agreements --accept-source-agreements --silent }; ' +
+            'Write-Host ''`n[4/4] Current WSL Configuration:'' -ForegroundColor Green; ' +
+            'wsl.exe --status; ' +
+            'Write-Host ''`nInstalled Distributions:'' -ForegroundColor Green; ' +
+            'wsl.exe -l -v; ' +
+            'Write-Host ''`n[NOTE] If this is your first time enabling WSL on this PC, please restart your computer to activate virtualization.'' -ForegroundColor Yellow;' +
+            '" && echo. && echo WSL setup process finished. Press any key to exit . . . && pause >nul && exit')
+        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $wslCmd
+    }
+
     function Install-Winget {
         $wingetPs = @'
 Write-Host "Checking if Winget is already installed..."
@@ -1247,6 +1269,7 @@ pause
     # Column 3
     Update-InitProgress -Percent 88 -Status "Building Category (4/5): System & Productivity..."
     Add-Category -ColIndex 3 -Title "System Tools" -Items @(
+        @{ Name = "WSL (Ubuntu)"; Func = { Install-WSL } },
         @{ Name = "Winget"; Func = { Install-Winget } },
         @{ Name = "Everything Search"; Func = { Install-Everything } },
         @{ Name = "CMD Color 0a"; Func = { Set-CMD0A } },
