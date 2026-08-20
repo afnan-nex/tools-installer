@@ -791,9 +791,11 @@ pause
     $brushSep = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(48, 48, 78))
 
     # ============================================================
-    #  SECTION C: TASK REGISTRY
+    #  SECTION C: TASK & SCRIPT REGISTRIES
     # ============================================================
     $script:AllTasks = [System.Collections.Generic.List[hashtable]]::new()
+    $script:AllScripts = [System.Collections.Generic.List[hashtable]]::new()
+    $script:ScriptGroupBoxes = [System.Collections.Generic.List[System.Windows.Controls.GroupBox]]::new()
 
     # ============================================================
     #  SECTION D: WPF XAML LAYOUT DEFINITION
@@ -952,6 +954,98 @@ pause
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- Segmented Tab Navigation RadioButton Style -->
+        <Style x:Key="NavTabStyle" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="#78789B"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="TabBorder" Background="Transparent" CornerRadius="12" Padding="14,3">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="TabBorder" Property="Background" Value="#63B3ED"/>
+                                <Setter Property="Foreground" Value="#12121C"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsChecked" Value="False"/>
+                                    <Condition Property="IsMouseOver" Value="True"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Foreground" Value="#DADAE8"/>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Android-Style Toggle Switch CheckBox Style -->
+        <Style x:Key="AndroidToggleSwitch" TargetType="CheckBox">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid Width="46" Height="24" VerticalAlignment="Center">
+                            <Border x:Name="Track" Background="#2A2A44" BorderBrush="#3C3C60" BorderThickness="1" CornerRadius="12"/>
+                            <Border x:Name="Thumb" Width="18" Height="18" Background="#78789B" CornerRadius="9" HorizontalAlignment="Left" Margin="3,0,0,0"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Track" Property="Background" Value="#48C78E"/>
+                                <Setter TargetName="Track" Property="BorderBrush" Value="#48C78E"/>
+                                <Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right"/>
+                                <Setter TargetName="Thumb" Property="Margin" Value="0,0,3,0"/>
+                                <Setter TargetName="Thumb" Property="Background" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Track" Property="Opacity" Value="0.88"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Green Apply Button Style -->
+        <Style x:Key="GreenApplyButton" TargetType="Button">
+            <Setter Property="Background" Value="#48C78E"/>
+            <Setter Property="Foreground" Value="#12121C"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="16,4"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="3" SnapsToDevicePixels="true">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="#5EE0A5"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="#38A169"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter TargetName="border" Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
     
     <Grid>
@@ -963,9 +1057,23 @@ pause
         
         <!-- Header Panel -->
         <Grid Grid.Row="0" Background="#181826">
-            <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="12,0,0,0">
-                <TextBlock Text="Tool Installer" FontFamily="Segoe UI" FontSize="18" FontWeight="Bold" Foreground="#63B3ED"/>
-                <TextBlock Text="Check items for batch run   |   Click a button for immediate single execution" FontFamily="Segoe UI" FontSize="11" Foreground="#78789B" Margin="0,2,0,0"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0">
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                    <TextBlock Text="Tool Installer" FontFamily="Segoe UI" FontSize="18" FontWeight="Bold" Foreground="#63B3ED"/>
+                    <TextBlock Name="LblSubtitle" Text="Check items for batch run   |   Click a button for immediate single execution" FontFamily="Segoe UI" FontSize="11" Foreground="#78789B" Margin="0,2,0,0"/>
+                </StackPanel>
+
+                <!-- Slider Segmented Switch (Apps / Scripts) on right side of Tool Installer text -->
+                <Border Background="#12121C" BorderBrush="#30304E" BorderThickness="1" CornerRadius="14" Margin="22,0,0,0" Height="28" VerticalAlignment="Center" Padding="2">
+                    <Grid Width="156">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <RadioButton Name="TabApps" Grid.Column="0" Content="Apps" IsChecked="True" GroupName="NavTabs" Style="{StaticResource NavTabStyle}"/>
+                        <RadioButton Name="TabScripts" Grid.Column="1" Content="Scripts" GroupName="NavTabs" Style="{StaticResource NavTabStyle}"/>
+                    </Grid>
+                </Border>
             </StackPanel>
             
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,15,0">
@@ -975,23 +1083,33 @@ pause
             </StackPanel>
         </Grid>
         
-        <!-- Scrollable Columns Grid -->
-        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="#12121C">
-            <Grid Name="MainGrid">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Name="Col0" Margin="14,12,7,12"/>
-                <StackPanel Grid.Column="1" Name="Col1" Margin="7,12,7,12"/>
-                <StackPanel Grid.Column="2" Name="Col2" Margin="7,12,7,12"/>
-                <StackPanel Grid.Column="3" Name="Col3" Margin="7,12,7,12"/>
-                <StackPanel Grid.Column="4" Name="Col4" Margin="7,12,14,12"/>
-            </Grid>
-        </ScrollViewer>
+        <!-- Main Content Area -->
+        <Grid Grid.Row="1">
+            <!-- Apps View -->
+            <ScrollViewer Name="AppsScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="#12121C" Visibility="Visible">
+                <Grid Name="MainGrid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Name="Col0" Margin="14,12,7,12"/>
+                    <StackPanel Grid.Column="1" Name="Col1" Margin="7,12,7,12"/>
+                    <StackPanel Grid.Column="2" Name="Col2" Margin="7,12,7,12"/>
+                    <StackPanel Grid.Column="3" Name="Col3" Margin="7,12,7,12"/>
+                    <StackPanel Grid.Column="4" Name="Col4" Margin="7,12,14,12"/>
+                </Grid>
+            </ScrollViewer>
+
+            <!-- Scripts View -->
+            <ScrollViewer Name="ScriptsScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Background="#12121C" Visibility="Collapsed">
+                <StackPanel Name="ScriptsContainer" Margin="24,16,24,16" MaxWidth="880" HorizontalAlignment="Left">
+                    <!-- Script categories populated dynamically -->
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
         
         <!-- Bottom Panel -->
         <Grid Grid.Row="2" Background="#181826">
@@ -1000,10 +1118,16 @@ pause
             <DockPanel Margin="12,0,12,0" LastChildFill="False" VerticalAlignment="Center">
                 <TextBlock Name="LblStatus" Text="Ready" Foreground="#78789B" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
                 
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
+                <!-- Apps Bottom Controls -->
+                <StackPanel Name="PanelAppsControls" Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
                     <Button Name="BtnUpgradeAll" Content="choco update" Width="100" Height="26" Margin="0,0,10,0" Cursor="Hand"/>
                     <Button Name="BtnWingetUpgradeAll" Content="winget update" Width="100" Height="26" Margin="0,0,10,0" Cursor="Hand"/>
                     <Button Name="BtnRun" Content="Run selected" Width="100" Height="26" Cursor="Hand"/>
+                </StackPanel>
+
+                <!-- Scripts Bottom Controls -->
+                <StackPanel Name="PanelScriptsControls" Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center" Visibility="Collapsed">
+                    <Button Name="BtnApplyScripts" Content="Apply" Width="110" Height="28" Style="{StaticResource GreenApplyButton}"/>
                 </StackPanel>
             </DockPanel>
             
@@ -1019,18 +1143,27 @@ pause
     $script:window = [Windows.Markup.XamlReader]::Parse($xaml)
 
     # Extract named controls in script scope
+    $script:lblSubtitle = $script:window.FindName("LblSubtitle")
+    $script:tabApps = $script:window.FindName("TabApps")
+    $script:tabScripts = $script:window.FindName("TabScripts")
     $script:chkSelectAll = $script:window.FindName("ChkSelectAll")
     $script:btnGithub = $script:window.FindName("BtnGithub")
     $script:txtSearch = $script:window.FindName("TxtSearch")
+    $script:appsScrollViewer = $script:window.FindName("AppsScrollViewer")
+    $script:scriptsScrollViewer = $script:window.FindName("ScriptsScrollViewer")
+    $script:scriptsContainer = $script:window.FindName("ScriptsContainer")
     $script:col0 = $script:window.FindName("Col0")
     $script:col1 = $script:window.FindName("Col1")
     $script:col2 = $script:window.FindName("Col2")
     $script:col3 = $script:window.FindName("Col3")
     $script:col4 = $script:window.FindName("Col4")
     $script:LblStatus = $script:window.FindName("LblStatus")
+    $script:panelAppsControls = $script:window.FindName("PanelAppsControls")
+    $script:panelScriptsControls = $script:window.FindName("PanelScriptsControls")
     $script:btnUpgradeAll = $script:window.FindName("BtnUpgradeAll")
     $script:btnWingetUpgradeAll = $script:window.FindName("BtnWingetUpgradeAll")
     $script:BtnRun = $script:window.FindName("BtnRun")
+    $script:btnApplyScripts = $script:window.FindName("BtnApplyScripts")
     $script:ProgressBar = $script:window.FindName("ProgressBar")
 
     # ============================================================
@@ -1148,7 +1281,149 @@ pause
     }
 
     # ============================================================
-    #  SECTION F: POPULATE ALL CATEGORIES
+    #  SECTION E-2: HELPER FUNCTIONS FOR SCRIPTS SECTION
+    # ============================================================
+
+    function New-ScriptRow {
+        param(
+            [hashtable]    $ScriptDef,
+            $ParentStackPanel
+        )
+
+        $cardBorder = New-Object System.Windows.Controls.Border
+        $cardBorder.Background = $brushGroup
+        $cardBorder.BorderBrush = $brushSep
+        $cardBorder.BorderThickness = New-Object System.Windows.Thickness(1)
+        $cardBorder.CornerRadius = New-Object System.Windows.CornerRadius(6)
+        $cardBorder.Margin = New-Object System.Windows.Thickness(0, 0, 0, 8)
+        $cardBorder.Padding = New-Object System.Windows.Thickness(14, 10, 14, 10)
+
+        $rowGrid = New-Object System.Windows.Controls.Grid
+        
+        $colSwitch = New-Object System.Windows.Controls.ColumnDefinition
+        $colSwitch.Width = New-Object System.Windows.GridLength(100)
+        
+        $colInfo = New-Object System.Windows.Controls.ColumnDefinition
+        $colInfo.Width = New-Object System.Windows.GridLength(1, [System.Windows.GridUnitType]::Star)
+        
+        $colBtn = New-Object System.Windows.Controls.ColumnDefinition
+        $colBtn.Width = New-Object System.Windows.GridLength(100)
+        
+        $rowGrid.ColumnDefinitions.Add($colSwitch)
+        $rowGrid.ColumnDefinitions.Add($colInfo)
+        $rowGrid.ColumnDefinitions.Add($colBtn)
+
+        # Android Toggle Switch container
+        $switchPanel = New-Object System.Windows.Controls.StackPanel
+        $switchPanel.Orientation = [System.Windows.Controls.Orientation]::Horizontal
+        $switchPanel.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
+
+        $switch = New-Object System.Windows.Controls.CheckBox
+        $switch.Style = $script:window.FindResource("AndroidToggleSwitch")
+        $switch.IsChecked = $false
+        $switch.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
+        $switchPanel.Children.Add($switch) | Out-Null
+
+        $lblState = New-Object System.Windows.Controls.TextBlock
+        $lblState.Text = "OFF"
+        $lblState.FontFamily = New-Object System.Windows.Media.FontFamily("Segoe UI")
+        $lblState.FontSize = 11
+        $lblState.FontWeight = [System.Windows.FontWeights]::Bold
+        $lblState.Foreground = $brushMuted
+        $lblState.Margin = New-Object System.Windows.Thickness(8, 0, 0, 0)
+        $lblState.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
+        $switchPanel.Children.Add($lblState) | Out-Null
+
+        $rowGrid.Children.Add($switchPanel) | Out-Null
+        [System.Windows.Controls.Grid]::SetColumn($switchPanel, 0)
+
+        # Switch Toggle Event Wireup
+        $switch.Add_Checked({
+            $lblState.Text = "ON"
+            $lblState.Foreground = $brushGreen
+        })
+        $switch.Add_Unchecked({
+            $lblState.Text = "OFF"
+            $lblState.Foreground = $brushMuted
+        })
+
+        # Info container (Name + Description)
+        $infoPanel = New-Object System.Windows.Controls.StackPanel
+        $infoPanel.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
+        $infoPanel.Margin = New-Object System.Windows.Thickness(10, 0, 10, 0)
+
+        $lblTitle = New-Object System.Windows.Controls.TextBlock
+        $lblTitle.Text = $ScriptDef.Name
+        $lblTitle.FontFamily = New-Object System.Windows.Media.FontFamily("Segoe UI")
+        $lblTitle.FontSize = 13
+        $lblTitle.FontWeight = [System.Windows.FontWeights]::SemiBold
+        $lblTitle.Foreground = $brushText
+        $infoPanel.Children.Add($lblTitle) | Out-Null
+
+        if (-not [string]::IsNullOrEmpty($ScriptDef.Description)) {
+            $lblDesc = New-Object System.Windows.Controls.TextBlock
+            $lblDesc.Text = $ScriptDef.Description
+            $lblDesc.FontFamily = New-Object System.Windows.Media.FontFamily("Segoe UI")
+            $lblDesc.FontSize = 11
+            $lblDesc.Foreground = $brushMuted
+            $lblDesc.Margin = New-Object System.Windows.Thickness(0, 2, 0, 0)
+            $lblDesc.TextWrapping = [System.Windows.TextWrapping]::Wrap
+            $infoPanel.Children.Add($lblDesc) | Out-Null
+        }
+
+        $rowGrid.Children.Add($infoPanel) | Out-Null
+        [System.Windows.Controls.Grid]::SetColumn($infoPanel, 1)
+
+        # Quick Run Button
+        $btnRunNow = New-Object System.Windows.Controls.Button
+        $btnRunNow.Content = "Run Now"
+        $btnRunNow.Height = 26
+        $btnRunNow.Padding = New-Object System.Windows.Thickness(8, 2, 8, 2)
+        $btnRunNow.HorizontalContentAlignment = [System.Windows.HorizontalAlignment]::Center
+        $btnRunNow.Cursor = [System.Windows.Input.Cursors]::Hand
+        $btnRunNow.Tag = $ScriptDef
+        
+        $btnRunNow.Add_Click({
+            param($s, $e)
+            $def = $s.Tag
+            $name = $def.Name
+            Write-Log "Launching script: $name ..." -Level Running
+            try {
+                if ($null -ne $def.On) {
+                    & $def.On
+                    Write-Log "$name - executed." -Level Success
+                }
+            } catch {
+                Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error
+            }
+            [void]$script:window.Dispatcher.BeginInvoke([System.Action] {
+                $script:window.Activate() | Out-Null
+            })
+        })
+
+        $rowGrid.Children.Add($btnRunNow) | Out-Null
+        [System.Windows.Controls.Grid]::SetColumn($btnRunNow, 2)
+
+        $cardBorder.Child = $rowGrid
+        $ParentStackPanel.Children.Add($cardBorder) | Out-Null
+
+        $entry = @{
+            Name        = $ScriptDef.Name
+            Category    = $ScriptDef.Category
+            Description = $ScriptDef.Description
+            On          = $ScriptDef.On
+            Off         = $ScriptDef.Off
+            Switch      = $switch
+            StateLabel  = $lblState
+            CardBorder  = $cardBorder
+            RunNowBtn   = $btnRunNow
+        }
+        $script:AllScripts.Add($entry)
+        return $entry
+    }
+
+    # ============================================================
+    #  SECTION F: POPULATE APPS CATEGORIES
     # ============================================================
 
     function Add-Category {
@@ -1167,11 +1442,6 @@ pause
     Update-InitProgress -Percent 65 -Status "Building Category (1/5): Essential & System..."
     Add-Category -ColIndex 0 -Title "About AFNAN" -Items @(
         @{ Name = "Open Portfolio"; Func = { Open-Portfolio } }
-    )
-
-    Add-Category -ColIndex 0 -Title "PowerShell Tweaks" -Items @(
-        @{ Name = "See Policy"; Func = { See-Policy } },
-        @{ Name = "Unrestrict Policy"; Func = { Unrestrict-Policy } }
     )
 
     Add-Category -ColIndex 0 -Title "Essential" -Items @(
@@ -1272,13 +1542,11 @@ pause
         @{ Name = "WSL (Ubuntu)"; Func = { Install-WSL } },
         @{ Name = "Winget"; Func = { Install-Winget } },
         @{ Name = "Everything Search"; Func = { Install-Everything } },
-        @{ Name = "CMD Color 0a"; Func = { Set-CMD0A } },
         @{ Name = "RustDesk"; Func = { Install-RustDesk } },
         @{ Name = "HiBit Uninstaller"; Func = { Install-HiBit } },
         @{ Name = "Superfile"; Func = { Install-Superfile } },
         @{ Name = "Alacritty"; Func = { Install-Alacritty } },
         @{ Name = "Scrcpy GUI"; Func = { Install-Scrcpy } },
-        @{ Name = "Cursor / Elegant"; Func = { Install-Cursor } },
         @{ Name = "VC++ Runtimes"; Func = { Install-VCC-Runtimes } },
         @{ Name = "DirectX Runtime"; Func = { Install-DirectX } }
     )
@@ -1315,7 +1583,62 @@ pause
     )
 
     # ============================================================
-    #  SECTION G: RUN SELECTED (non-blocking via Runspace)
+    #  SECTION F-2: POPULATE SCRIPTS SECTION (On/Off Architecture)
+    # ============================================================
+    $script:ScriptDefinitions = @(
+        @{
+            Name        = "See Execution Policy"
+            Category    = "PowerShell Tweaks"
+            Description = "Inspect current PowerShell execution policy across all scopes"
+            On          = { See-Policy }
+            Off         = $null   # Reserved for toggle-off action
+        },
+        @{
+            Name        = "Unrestrict Policy"
+            Category    = "PowerShell Tweaks"
+            Description = "Set PowerShell execution policy to Unrestricted for CurrentUser and LocalMachine"
+            On          = { Unrestrict-Policy }
+            Off         = $null   # Reserved for toggle-off action
+        },
+        @{
+            Name        = "CMD Color 0a"
+            Category    = "System Tweaks"
+            Description = "Set Command Prompt color scheme to Matrix green (0a)"
+            On          = { Set-CMD0A }
+            Off         = $null   # Reserved for toggle-off action
+        },
+        @{
+            Name        = "Cursor / Elegant Theme"
+            Category    = "System Tweaks"
+            Description = "Download and apply custom Elegant mouse cursor scheme"
+            On          = { Install-Cursor }
+            Off         = $null   # Reserved for toggle-off action
+        }
+    )
+
+    function Build-ScriptsSection {
+        $categories = $script:ScriptDefinitions | Group-Object -Property Category
+        foreach ($cat in $categories) {
+            $gb = New-Object System.Windows.Controls.GroupBox
+            $gb.Header = $cat.Name
+            $gb.Margin = New-Object System.Windows.Thickness(0, 0, 0, 16)
+            
+            $inner = New-Object System.Windows.Controls.StackPanel
+            $gb.Content = $inner
+            
+            foreach ($scriptDef in $cat.Group) {
+                New-ScriptRow -ScriptDef $scriptDef -ParentStackPanel $inner | Out-Null
+            }
+            
+            $script:scriptsContainer.Children.Add($gb) | Out-Null
+            $script:ScriptGroupBoxes.Add($gb)
+        }
+    }
+
+    Build-ScriptsSection
+
+    # ============================================================
+    #  SECTION G: RUN SELECTED APPS (non-blocking via Runspace)
     # ============================================================
 
     $script:BtnRun.Add_Click({
@@ -1449,8 +1772,150 @@ pause
     })
 
     # ============================================================
+    #  SECTION G-2: APPLY SCRIPTS (non-blocking via Runspace)
+    # ============================================================
+
+    $script:btnApplyScripts.Add_Click({
+        # Gather active (ON) scripts
+        $activeScripts = @($script:AllScripts | Where-Object { $_.Switch.IsChecked })
+
+        if (-not $activeScripts -or $activeScripts.Count -eq 0) {
+            [System.Windows.MessageBox]::Show(
+                "No scripts are toggled ON.`nPlease switch ON at least one script before clicking Apply.",
+                "Nothing Switched ON",
+                [System.Windows.MessageBoxButton]::OK,
+                [System.Windows.MessageBoxImage]::Information
+            ) | Out-Null
+            return
+        }
+
+        $script:btnApplyScripts.IsEnabled = $false
+        $script:btnApplyScripts.Content = "Applying..."
+        $script:ProgressBar.Value = 0
+        $script:ProgressBar.Maximum = $activeScripts.Count
+
+        Write-Log ("=== Applying {0} active script(s) ===" -f $activeScripts.Count) -Level Info
+
+        # Share references into runspace
+        $rsData = @{
+            ActiveScripts = $activeScripts
+            ProgressBar   = $script:ProgressBar
+            StatusLabel   = $script:LblStatus
+            ApplyButton   = $script:btnApplyScripts
+            CLR_TEXT      = $brushText
+            CLR_YELLOW    = $brushYellow
+            CLR_GREEN     = $brushGreen
+            CLR_RED       = $brushRed
+        }
+
+        $rs = [System.Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
+        $rs.ApartmentState = "STA"
+        $rs.ThreadOptions = "ReuseThread"
+        $rs.Open()
+        foreach ($k in $rsData.Keys) { $rs.SessionStateProxy.SetVariable($k, $rsData[$k]) }
+
+        $ps = [System.Management.Automation.PowerShell]::Create()
+        $ps.Runspace = $rs
+
+        [void]$ps.AddScript({
+            function Ui-Log {
+                param([string]$Msg, $Clr)
+                $ts = (Get-Date).ToString("HH:mm:ss")
+                $StatusLabel.Dispatcher.Invoke([System.Action] {
+                    $StatusLabel.Foreground = $Clr
+                    $StatusLabel.Text = "[$ts] $Msg"
+                })
+            }
+
+            $total = $ActiveScripts.Count
+            $ok = 0
+            $fail = 0
+
+            for ($i = 0; $i -lt $total; $i++) {
+                $scriptItem = $ActiveScripts[$i]
+                $sName = $scriptItem.Name
+                $StatusLabel.Dispatcher.Invoke([System.Action] {
+                    $StatusLabel.Text = "Applying $($i+1) of $total : $sName"
+                })
+
+                Ui-Log -Msg "Applying: $sName ..." -Clr $CLR_YELLOW
+
+                if ($null -eq $scriptItem.On) {
+                    Ui-Log -Msg "Skipped:  $sName (No On action)" -Clr $CLR_YELLOW
+                    continue
+                }
+
+                try {
+                    & $scriptItem.On
+                    Ui-Log -Msg "Applied: $sName" -Clr $CLR_GREEN
+                    $ok++
+                }
+                catch {
+                    Ui-Log -Msg "FAILED:  $sName | $($_.Exception.Message)" -Clr $CLR_RED
+                    $fail++
+                }
+
+                $pVal = $i + 1
+                $ProgressBar.Dispatcher.Invoke([System.Action] {
+                    $ProgressBar.Value = [Math]::Min($pVal, $ProgressBar.Maximum)
+                })
+
+                Start-Sleep -Milliseconds 250
+            }
+
+            $sumMsg = "=== Applied: $ok Successful  |  $fail Failed ==="
+            $sumClr = if ($fail -gt 0) { $CLR_RED } else { $CLR_GREEN }
+            Ui-Log -Msg $sumMsg -Clr $sumClr
+
+            $ApplyButton.Dispatcher.Invoke([System.Action] {
+                $ApplyButton.IsEnabled = $true
+                $ApplyButton.Content = "Apply"
+            })
+            $StatusLabel.Dispatcher.Invoke([System.Action] {
+                $StatusLabel.Text = "Done   Applied: $ok   Failed: $fail"
+            })
+
+            $ApplyButton.Dispatcher.Invoke([System.Action] {
+                $icon = if ($fail -gt 0) {
+                    [System.Windows.MessageBoxImage]::Warning
+                }
+                else {
+                    [System.Windows.MessageBoxImage]::Information
+                }
+                [System.Windows.MessageBox]::Show(
+                    "Script application complete.`n`nApplied : $ok`nFailed  : $fail",
+                    "Apply Summary",
+                    [System.Windows.MessageBoxButton]::OK,
+                    $icon
+                ) | Out-Null
+            })
+        })
+
+        [void]$ps.BeginInvoke()
+    })
+
+    # ============================================================
     #  SECTION H: EVENT WIREUPS
     # ============================================================
+
+    # Navigation Slidebar Tabs Switching
+    $script:tabApps.Add_Checked({
+        $script:appsScrollViewer.Visibility = [System.Windows.Visibility]::Visible
+        $script:scriptsScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
+        $script:chkSelectAll.Visibility = [System.Windows.Visibility]::Visible
+        $script:panelAppsControls.Visibility = [System.Windows.Visibility]::Visible
+        $script:panelScriptsControls.Visibility = [System.Windows.Visibility]::Collapsed
+        $script:lblSubtitle.Text = "Check items for batch run   |   Click a button for immediate single execution"
+    })
+
+    $script:tabScripts.Add_Checked({
+        $script:appsScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
+        $script:scriptsScrollViewer.Visibility = [System.Windows.Visibility]::Visible
+        $script:chkSelectAll.Visibility = [System.Windows.Visibility]::Collapsed
+        $script:panelAppsControls.Visibility = [System.Windows.Visibility]::Collapsed
+        $script:panelScriptsControls.Visibility = [System.Windows.Visibility]::Visible
+        $script:lblSubtitle.Text = "Toggle switches ON/OFF and click Apply to execute system scripts and tweaks"
+    })
 
     # Select All / Unselect All
     $script:chkSelectAll.Add_Checked({
@@ -1495,7 +1960,7 @@ pause
         $query = $script:txtSearch.Text.Trim()
         $isQueryEmpty = ($query -eq "") -or ($query -eq "Search...")
 
-        # Set each row's visibility
+        # Set each Apps row's visibility
         foreach ($t in $script:AllTasks) {
             $innerPanel = $t.RowGrid.Parent
             $gb = $innerPanel.Parent
@@ -1517,7 +1982,7 @@ pause
             }
         }
         
-        # Hide groupboxes with no visible tasks
+        # Hide Apps groupboxes with no visible tasks
         $gbs = @()
         foreach ($t in $script:AllTasks) {
             $innerPanel = $t.RowGrid.Parent
@@ -1542,6 +2007,33 @@ pause
                 $gb.Visibility = [System.Windows.Visibility]::Collapsed
             }
         }
+
+        # Filter Scripts view cards
+        foreach ($s in $script:AllScripts) {
+            if ($isQueryEmpty) {
+                $sMatch = $true
+            } else {
+                $sMatch = ($s.Name -match "(?i)" + [regex]::Escape($query)) -or 
+                          ($s.Category -match "(?i)" + [regex]::Escape($query)) -or 
+                          ($s.Description -match "(?i)" + [regex]::Escape($query))
+            }
+            $s.CardBorder.Visibility = if ($sMatch) { [System.Windows.Visibility]::Visible } else { [System.Windows.Visibility]::Collapsed }
+        }
+
+        # Hide script groupboxes if no children visible
+        if ($null -ne $script:ScriptGroupBoxes) {
+            foreach ($sgb in $script:ScriptGroupBoxes) {
+                $inner = $sgb.Content
+                $anyVis = $false
+                foreach ($child in $inner.Children) {
+                    if ($child.Visibility -eq [System.Windows.Visibility]::Visible) {
+                        $anyVis = $true
+                        break
+                    }
+                }
+                $sgb.Visibility = if ($anyVis) { [System.Windows.Visibility]::Visible } else { [System.Windows.Visibility]::Collapsed }
+            }
+        }
     })
 
     $script:txtSearch.Add_KeyDown({
@@ -1549,24 +2041,48 @@ pause
         if ($e.Key -eq [System.Windows.Input.Key]::Enter) {
             $e.Handled = $true
             
-            $visibleTasks = @()
-            foreach ($t in $script:AllTasks) {
-                if ($t.RowGrid.Visibility -eq [System.Windows.Visibility]::Visible) {
-                    $visibleTasks += $t
+            # If in Apps view
+            if ($script:tabApps.IsChecked) {
+                $visibleTasks = @()
+                foreach ($t in $script:AllTasks) {
+                    if ($t.RowGrid.Visibility -eq [System.Windows.Visibility]::Visible) {
+                        $visibleTasks += $t
+                    }
                 }
-            }
-            
-            if ($visibleTasks.Count -eq 1) {
-                $task = $visibleTasks[0]
-                $name = $task.Name
-                $f = $task.Function
-                Write-Log "Launching: $name ..." -Level Running
-                try {
-                    & $f
-                    Write-Log "$name - launched." -Level Success
+                
+                if ($visibleTasks.Count -eq 1) {
+                    $task = $visibleTasks[0]
+                    $name = $task.Name
+                    $f = $task.Function
+                    Write-Log "Launching: $name ..." -Level Running
+                    try {
+                        & $f
+                        Write-Log "$name - launched." -Level Success
+                    }
+                    catch {
+                        Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error
+                    }
                 }
-                catch {
-                    Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error
+            } else {
+                # If in Scripts view
+                $visibleScripts = @()
+                foreach ($s in $script:AllScripts) {
+                    if ($s.CardBorder.Visibility -eq [System.Windows.Visibility]::Visible) {
+                        $visibleScripts += $s
+                    }
+                }
+                if ($visibleScripts.Count -eq 1) {
+                    $sItem = $visibleScripts[0]
+                    $name = $sItem.Name
+                    Write-Log "Launching script: $name ..." -Level Running
+                    try {
+                        if ($null -ne $sItem.On) {
+                            & $sItem.On
+                            Write-Log "$name - executed." -Level Success
+                        }
+                    } catch {
+                        Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error
+                    }
                 }
             }
 
@@ -1582,15 +2098,19 @@ pause
         
         $focused = [System.Windows.Input.Keyboard]::FocusedElement
         
-        # Enter key executes all selected and unselects
+        # Enter key executes all selected and unselects in Apps view
         if ($e.Key -eq [System.Windows.Input.Key]::Enter) {
             if ($focused -ne $script:txtSearch) {
                 $e.Handled = $true
-                $script:BtnRun.RaiseEvent((New-Object System.Windows.RoutedEventArgs([System.Windows.Controls.Button]::ClickEvent)))
-                foreach ($t in $script:AllTasks) {
-                    $t.CheckBox.IsChecked = $false
+                if ($script:tabApps.IsChecked) {
+                    $script:BtnRun.RaiseEvent((New-Object System.Windows.RoutedEventArgs([System.Windows.Controls.Button]::ClickEvent)))
+                    foreach ($t in $script:AllTasks) {
+                        $t.CheckBox.IsChecked = $false
+                    }
+                    $script:chkSelectAll.IsChecked = $false
+                } else {
+                    $script:btnApplyScripts.RaiseEvent((New-Object System.Windows.RoutedEventArgs([System.Windows.Controls.Button]::ClickEvent)))
                 }
-                $script:chkSelectAll.IsChecked = $false
             }
         }
         # Space key toggles selection on the focused button
@@ -1605,12 +2125,14 @@ pause
         }
         # Down Arrow from search box focuses first visible task button
         elseif ($e.Key -eq [System.Windows.Input.Key]::Down -and $focused -eq $script:txtSearch) {
-            $firstTask = $script:AllTasks | Where-Object { $_.RowGrid.Visibility -eq [System.Windows.Visibility]::Visible } | Select-Object -First 1
-            if ($null -ne $firstTask) {
-                $firstBtn = $firstTask.Button
-                if ($null -ne $firstBtn) {
-                    $e.Handled = $true
-                    $firstBtn.Focus() | Out-Null
+            if ($script:tabApps.IsChecked) {
+                $firstTask = $script:AllTasks | Where-Object { $_.RowGrid.Visibility -eq [System.Windows.Visibility]::Visible } | Select-Object -First 1
+                if ($null -ne $firstTask) {
+                    $firstBtn = $firstTask.Button
+                    if ($null -ne $firstBtn) {
+                        $e.Handled = $true
+                        $firstBtn.Focus() | Out-Null
+                    }
                 }
             }
         }
@@ -1707,7 +2229,6 @@ pause
             }
         } catch {}
     })
-
 
     Update-InitProgress -Percent 98 -Status "Preparing window icon and theme..."
 
