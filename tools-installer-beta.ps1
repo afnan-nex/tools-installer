@@ -670,6 +670,48 @@ Read-Host "Press Enter to close"
         Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
     }
 
+    function Set-Win11ContextMenu {
+        $psCode = @'
+Write-Host "Restoring default Windows 11 context menu..." -ForegroundColor Cyan
+try {
+    reg delete "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" /f 2>$null
+    Write-Host "Restarting Windows Explorer to apply changes..." -ForegroundColor Yellow
+    Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+    Start-Process explorer.exe
+    Write-Host "Windows 11 modern context menu restored successfully!" -ForegroundColor Green
+} catch {
+    Write-Host ("Error: " + $_.Exception.Message) -ForegroundColor Red
+}
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\set_win11_context_menu.ps1"
+        $psCode | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    }
+
+    function Set-Win10ContextMenu {
+        $psCode = @'
+Write-Host "Enabling classic Windows 10 context menu..." -ForegroundColor Cyan
+try {
+    $keyPath = "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32"
+    if (-not (Test-Path $keyPath)) {
+        New-Item -Path $keyPath -Force | Out-Null
+    }
+    Set-ItemProperty -Path $keyPath -Name "(Default)" -Value "" -Force | Out-Null
+    Write-Host "Restarting Windows Explorer to apply changes..." -ForegroundColor Yellow
+    Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+    Start-Process explorer.exe
+    Write-Host "Classic Windows 10 context menu enabled successfully!" -ForegroundColor Green
+} catch {
+    Write-Host ("Error: " + $_.Exception.Message) -ForegroundColor Red
+}
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\set_win10_context_menu.ps1"
+        $psCode | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    }
+
     function Install-VCC-Runtimes {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
         "echo Installing all Visual C++ Runtimes via winget... && winget upgrade -e --id abbodi1406.vcredist --silent || winget install -e --id abbodi1406.vcredist --accept-package-agreements --accept-source-agreements --silent && echo. && echo Visual C++ Runtimes installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
@@ -1053,23 +1095,24 @@ Read-Host "Press Enter to close"
         
         <!-- Header Panel -->
         <Grid Grid.Row="0" Background="#181826">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0">
-                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                    <TextBlock Text="Tool Installer" FontFamily="Segoe UI" FontSize="18" FontWeight="Bold" Foreground="#63B3ED"/>
-                    <TextBlock Name="LblSubtitle" Text="Check items for batch run   |   Click a button for immediate single execution" FontFamily="Segoe UI" FontSize="11" Foreground="#78789B" Margin="0,2,0,0"/>
-                </StackPanel>
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Tool Installer" FontFamily="Segoe UI" FontSize="18" FontWeight="Bold" Foreground="#63B3ED" VerticalAlignment="Center"/>
 
-                <!-- Slider Segmented Switch (Apps / Scripts) on right side of Tool Installer text -->
-                <Border Background="#12121C" BorderBrush="#30304E" BorderThickness="1" CornerRadius="14" Margin="22,0,0,0" Height="28" VerticalAlignment="Center" Padding="2">
-                    <Grid Width="156">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <RadioButton Name="TabApps" Grid.Column="0" Content="Apps" IsChecked="True" GroupName="NavTabs" Style="{StaticResource NavTabStyle}"/>
-                        <RadioButton Name="TabScripts" Grid.Column="1" Content="Scripts" GroupName="NavTabs" Style="{StaticResource NavTabStyle}"/>
-                    </Grid>
-                </Border>
+                    <!-- Slider Segmented Switch (Apps / Scripts) anchored right beside Tool Installer text -->
+                    <Border Background="#12121C" BorderBrush="#30304E" BorderThickness="1" CornerRadius="14" Margin="16,0,0,0" Height="28" VerticalAlignment="Center" Padding="2">
+                        <Grid Width="156">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <RadioButton Name="TabApps" Grid.Column="0" Content="Apps" IsChecked="True" GroupName="NavTabs" Style="{StaticResource NavTabStyle}"/>
+                            <RadioButton Name="TabScripts" Grid.Column="1" Content="Scripts" GroupName="NavTabs" Style="{StaticResource NavTabStyle}"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+                
+                <TextBlock Name="LblSubtitle" Text="Check items for batch run   |   Click a button for immediate single execution" FontFamily="Segoe UI" FontSize="11" Foreground="#78789B" Margin="0,3,0,0"/>
             </StackPanel>
             
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,15,0">
@@ -1574,6 +1617,13 @@ Read-Host "Press Enter to close"
     #  SECTION F-2: POPULATE SCRIPTS SECTION (On/Off Architecture)
     # ============================================================
     $script:ScriptDefinitions = @(
+        @{
+            Name        = "Context Menu Style"
+            Category    = "System Tweaks"
+            Description = "Run: Modern Windows 11 context menu  |  Revert: Classic Windows 10 context menu"
+            On          = { Set-Win11ContextMenu }
+            Off         = { Set-Win10ContextMenu }
+        },
         @{
             Name        = "See Execution Policy"
             Category    = "PowerShell Tweaks"
