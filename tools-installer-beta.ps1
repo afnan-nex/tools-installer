@@ -129,6 +129,14 @@ public static extern IntPtr GetConsoleWindow();
             "Write-Host 'Policy updated successfully.'"" && echo. && echo Press any key to close... && echo. && echo Press any key to exit . . . && pause >nul && exit")
     }
 
+    function Restrict-Policy {
+        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", ("echo Setting PowerShell Execution Policy to Restricted... && " +
+            "powershell -NoProfile -ExecutionPolicy Bypass -Command " +
+            """Set-ExecutionPolicy Restricted -Force -Scope CurrentUser; " +
+            "Set-ExecutionPolicy Restricted -Force -Scope LocalMachine; " +
+            "Write-Host 'Policy set to Restricted successfully.'"" && echo. && echo Press any key to close... && echo. && echo Press any key to exit . . . && pause >nul && exit")
+    }
+
     # ============================================================
     #  Essential
     # ============================================================
@@ -583,6 +591,22 @@ Read-Host "Press Enter to close"
         Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
     }
 
+    function Reset-CMDColor {
+        $resetCmd0aPs = @'
+Write-Host "Resetting CMD color to default..."
+try {
+    Remove-ItemProperty -Path 'HKCU:\Software\Microsoft\Command Processor' -Name 'AutoRun' -ErrorAction SilentlyContinue
+    Write-Host "CMD color settings reset to default." -ForegroundColor Green
+} catch {
+    Write-Host ("Error: " + $_.Exception.Message) -ForegroundColor Red
+}
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\reset_cmd0a.ps1"
+        $resetCmd0aPs | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    }
+
     function Install-RustDesk {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
         "echo Installing RustDesk via Chocolatey... && choco upgrade rustdesk -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo RustDesk installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
@@ -625,6 +649,25 @@ pause
         $batPath = "$env:TEMP\install_cursor.bat"
         $bat | Out-File -FilePath $batPath -Encoding ASCII
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/c `"$batPath`""
+    }
+
+    function Reset-Cursor {
+        $resetCursorPs = @'
+Write-Host "Restoring default Windows cursor scheme..."
+try {
+    $cursorPath = 'HKCU:\Control Panel\Cursors'
+    Set-ItemProperty -Path $cursorPath -Name '(Default)' -Value 'Windows Default' -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $cursorPath -Name 'Scheme Source' -Value 0 -ErrorAction SilentlyContinue
+    rundll32.exe user32.dll,UpdatePerUserSystemParameters
+    Write-Host "Windows default cursor scheme restored." -ForegroundColor Green
+} catch {
+    Write-Host ("Error: " + $_.Exception.Message) -ForegroundColor Red
+}
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\reset_cursor.ps1"
+        $resetCursorPs | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
     }
 
     function Install-VCC-Runtimes {
@@ -778,17 +821,29 @@ pause
     #  SECTION B: WPF COLOR BRUSHES AND RESOURCES
     # ============================================================
 
-    $brushBG = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(18, 18, 28))
-    $brushPanel = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(24, 24, 38))
-    $brushGroup = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(30, 30, 48))
-    $brushAccent = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(99, 179, 237))
-    $brushBtn = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(42, 42, 68))
-    $brushText = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(218, 218, 232))
-    $brushMuted = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(120, 120, 155))
-    $brushGreen = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(72, 199, 142))
-    $brushRed = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(252, 110, 110))
-    $brushYellow = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(253, 203, 88))
-    $brushSep = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(48, 48, 78))
+    $script:brushBG = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(18, 18, 28))
+    $script:brushPanel = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(24, 24, 38))
+    $script:brushGroup = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(30, 30, 48))
+    $script:brushAccent = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(99, 179, 237))
+    $script:brushBtn = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(42, 42, 68))
+    $script:brushText = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(218, 218, 232))
+    $script:brushMuted = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(120, 120, 155))
+    $script:brushGreen = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(72, 199, 142))
+    $script:brushRed = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(252, 110, 110))
+    $script:brushYellow = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(253, 203, 88))
+    $script:brushSep = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromRgb(48, 48, 78))
+
+    $brushBG = $script:brushBG
+    $brushPanel = $script:brushPanel
+    $brushGroup = $script:brushGroup
+    $brushAccent = $script:brushAccent
+    $brushBtn = $script:brushBtn
+    $brushText = $script:brushText
+    $brushMuted = $script:brushMuted
+    $brushGreen = $script:brushGreen
+    $brushRed = $script:brushRed
+    $brushYellow = $script:brushYellow
+    $brushSep = $script:brushSep
 
     # ============================================================
     #  SECTION C: TASK & SCRIPT REGISTRIES
@@ -987,65 +1042,6 @@ pause
             </Setter>
         </Style>
 
-        <!-- Android-Style Toggle Switch CheckBox Style -->
-        <Style x:Key="AndroidToggleSwitch" TargetType="CheckBox">
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="CheckBox">
-                        <Grid Width="46" Height="24" VerticalAlignment="Center">
-                            <Border x:Name="Track" Background="#2A2A44" BorderBrush="#3C3C60" BorderThickness="1" CornerRadius="12"/>
-                            <Border x:Name="Thumb" Width="18" Height="18" Background="#78789B" CornerRadius="9" HorizontalAlignment="Left" Margin="3,0,0,0"/>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Track" Property="Background" Value="#48C78E"/>
-                                <Setter TargetName="Track" Property="BorderBrush" Value="#48C78E"/>
-                                <Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right"/>
-                                <Setter TargetName="Thumb" Property="Margin" Value="0,0,3,0"/>
-                                <Setter TargetName="Thumb" Property="Background" Value="#FFFFFF"/>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Track" Property="Opacity" Value="0.88"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- Green Apply Button Style -->
-        <Style x:Key="GreenApplyButton" TargetType="Button">
-            <Setter Property="Background" Value="#48C78E"/>
-            <Setter Property="Foreground" Value="#12121C"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="16,4"/>
-            <Setter Property="FontFamily" Value="Segoe UI"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="3" SnapsToDevicePixels="true">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="true">
-                                <Setter TargetName="border" Property="Background" Value="#5EE0A5"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="true">
-                                <Setter TargetName="border" Property="Background" Value="#38A169"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="false">
-                                <Setter TargetName="border" Property="Opacity" Value="0.5"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
     </Window.Resources>
     
     <Grid>
@@ -1124,11 +1120,6 @@ pause
                     <Button Name="BtnWingetUpgradeAll" Content="winget update" Width="100" Height="26" Margin="0,0,10,0" Cursor="Hand"/>
                     <Button Name="BtnRun" Content="Run selected" Width="100" Height="26" Cursor="Hand"/>
                 </StackPanel>
-
-                <!-- Scripts Bottom Controls -->
-                <StackPanel Name="PanelScriptsControls" Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center" Visibility="Collapsed">
-                    <Button Name="BtnApplyScripts" Content="Apply" Width="110" Height="28" Style="{StaticResource GreenApplyButton}"/>
-                </StackPanel>
             </DockPanel>
             
             <ProgressBar Name="ProgressBar" Height="4" VerticalAlignment="Bottom" Background="#1E1E30" BorderThickness="0" Foreground="#48C78E" Minimum="0" Value="0"/>
@@ -1159,11 +1150,9 @@ pause
     $script:col4 = $script:window.FindName("Col4")
     $script:LblStatus = $script:window.FindName("LblStatus")
     $script:panelAppsControls = $script:window.FindName("PanelAppsControls")
-    $script:panelScriptsControls = $script:window.FindName("PanelScriptsControls")
     $script:btnUpgradeAll = $script:window.FindName("BtnUpgradeAll")
     $script:btnWingetUpgradeAll = $script:window.FindName("BtnWingetUpgradeAll")
     $script:BtnRun = $script:window.FindName("BtnRun")
-    $script:btnApplyScripts = $script:window.FindName("BtnApplyScripts")
     $script:ProgressBar = $script:window.FindName("ProgressBar")
 
     # ============================================================
@@ -1291,8 +1280,8 @@ pause
         )
 
         $cardBorder = New-Object System.Windows.Controls.Border
-        $cardBorder.Background = $brushGroup
-        $cardBorder.BorderBrush = $brushSep
+        $cardBorder.Background = $script:brushGroup
+        $cardBorder.BorderBrush = $script:brushSep
         $cardBorder.BorderThickness = New-Object System.Windows.Thickness(1)
         $cardBorder.CornerRadius = New-Object System.Windows.CornerRadius(6)
         $cardBorder.Margin = New-Object System.Windows.Thickness(0, 0, 0, 8)
@@ -1300,64 +1289,26 @@ pause
 
         $rowGrid = New-Object System.Windows.Controls.Grid
         
-        $colSwitch = New-Object System.Windows.Controls.ColumnDefinition
-        $colSwitch.Width = New-Object System.Windows.GridLength(100)
-        
         $colInfo = New-Object System.Windows.Controls.ColumnDefinition
         $colInfo.Width = New-Object System.Windows.GridLength(1, [System.Windows.GridUnitType]::Star)
         
-        $colBtn = New-Object System.Windows.Controls.ColumnDefinition
-        $colBtn.Width = New-Object System.Windows.GridLength(100)
+        $colBtns = New-Object System.Windows.Controls.ColumnDefinition
+        $colBtns.Width = New-Object System.Windows.GridLength(165)
         
-        $rowGrid.ColumnDefinitions.Add($colSwitch)
         $rowGrid.ColumnDefinitions.Add($colInfo)
-        $rowGrid.ColumnDefinitions.Add($colBtn)
-
-        # Android Toggle Switch container
-        $switchPanel = New-Object System.Windows.Controls.StackPanel
-        $switchPanel.Orientation = [System.Windows.Controls.Orientation]::Horizontal
-        $switchPanel.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
-
-        $switch = New-Object System.Windows.Controls.CheckBox
-        $switch.Style = $script:window.FindResource("AndroidToggleSwitch")
-        $switch.IsChecked = $false
-        $switch.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
-        $switchPanel.Children.Add($switch) | Out-Null
-
-        $lblState = New-Object System.Windows.Controls.TextBlock
-        $lblState.Text = "OFF"
-        $lblState.FontFamily = New-Object System.Windows.Media.FontFamily("Segoe UI")
-        $lblState.FontSize = 11
-        $lblState.FontWeight = [System.Windows.FontWeights]::Bold
-        $lblState.Foreground = $brushMuted
-        $lblState.Margin = New-Object System.Windows.Thickness(8, 0, 0, 0)
-        $lblState.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
-        $switchPanel.Children.Add($lblState) | Out-Null
-
-        $rowGrid.Children.Add($switchPanel) | Out-Null
-        [System.Windows.Controls.Grid]::SetColumn($switchPanel, 0)
-
-        # Switch Toggle Event Wireup
-        $switch.Add_Checked({
-            $lblState.Text = "ON"
-            $lblState.Foreground = $brushGreen
-        })
-        $switch.Add_Unchecked({
-            $lblState.Text = "OFF"
-            $lblState.Foreground = $brushMuted
-        })
+        $rowGrid.ColumnDefinitions.Add($colBtns)
 
         # Info container (Name + Description)
         $infoPanel = New-Object System.Windows.Controls.StackPanel
         $infoPanel.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
-        $infoPanel.Margin = New-Object System.Windows.Thickness(10, 0, 10, 0)
+        $infoPanel.Margin = New-Object System.Windows.Thickness(0, 0, 12, 0)
 
         $lblTitle = New-Object System.Windows.Controls.TextBlock
         $lblTitle.Text = $ScriptDef.Name
         $lblTitle.FontFamily = New-Object System.Windows.Media.FontFamily("Segoe UI")
         $lblTitle.FontSize = 13
         $lblTitle.FontWeight = [System.Windows.FontWeights]::SemiBold
-        $lblTitle.Foreground = $brushText
+        $lblTitle.Foreground = $script:brushText
         $infoPanel.Children.Add($lblTitle) | Out-Null
 
         if (-not [string]::IsNullOrEmpty($ScriptDef.Description)) {
@@ -1365,25 +1316,62 @@ pause
             $lblDesc.Text = $ScriptDef.Description
             $lblDesc.FontFamily = New-Object System.Windows.Media.FontFamily("Segoe UI")
             $lblDesc.FontSize = 11
-            $lblDesc.Foreground = $brushMuted
+            $lblDesc.Foreground = $script:brushMuted
             $lblDesc.Margin = New-Object System.Windows.Thickness(0, 2, 0, 0)
             $lblDesc.TextWrapping = [System.Windows.TextWrapping]::Wrap
             $infoPanel.Children.Add($lblDesc) | Out-Null
         }
 
         $rowGrid.Children.Add($infoPanel) | Out-Null
-        [System.Windows.Controls.Grid]::SetColumn($infoPanel, 1)
+        [System.Windows.Controls.Grid]::SetColumn($infoPanel, 0)
 
-        # Quick Run Button
-        $btnRunNow = New-Object System.Windows.Controls.Button
-        $btnRunNow.Content = "Run Now"
-        $btnRunNow.Height = 26
-        $btnRunNow.Padding = New-Object System.Windows.Thickness(8, 2, 8, 2)
-        $btnRunNow.HorizontalContentAlignment = [System.Windows.HorizontalAlignment]::Center
-        $btnRunNow.Cursor = [System.Windows.Input.Cursors]::Hand
-        $btnRunNow.Tag = $ScriptDef
+        # Action Buttons container (Revert + Run)
+        $btnsPanel = New-Object System.Windows.Controls.StackPanel
+        $btnsPanel.Orientation = [System.Windows.Controls.Orientation]::Horizontal
+        $btnsPanel.HorizontalAlignment = [System.Windows.HorizontalAlignment]::Right
+        $btnsPanel.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
+
+        # Revert Button
+        $btnRevert = New-Object System.Windows.Controls.Button
+        $btnRevert.Content = "Revert"
+        $btnRevert.Width = 72
+        $btnRevert.Height = 26
+        $btnRevert.Margin = New-Object System.Windows.Thickness(0, 0, 8, 0)
+        $btnRevert.HorizontalContentAlignment = [System.Windows.HorizontalAlignment]::Center
+        $btnRevert.Cursor = [System.Windows.Input.Cursors]::Hand
+        $btnRevert.Tag = $ScriptDef
         
-        $btnRunNow.Add_Click({
+        $btnRevert.Add_Click({
+            param($s, $e)
+            $def = $s.Tag
+            $name = $def.Name
+            if ($null -ne $def.Off) {
+                Write-Log "Reverting: $name ..." -Level Running
+                try {
+                    & $def.Off
+                    Write-Log "$name - reverted." -Level Success
+                } catch {
+                    Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error
+                }
+            } else {
+                Write-Log "Info: No revert action needed for $name." -Level Info
+            }
+            [void]$script:window.Dispatcher.BeginInvoke([System.Action] {
+                $script:window.Activate() | Out-Null
+            })
+        })
+        $btnsPanel.Children.Add($btnRevert) | Out-Null
+
+        # Run Button
+        $btnRun = New-Object System.Windows.Controls.Button
+        $btnRun.Content = "Run"
+        $btnRun.Width = 72
+        $btnRun.Height = 26
+        $btnRun.HorizontalContentAlignment = [System.Windows.HorizontalAlignment]::Center
+        $btnRun.Cursor = [System.Windows.Input.Cursors]::Hand
+        $btnRun.Tag = $ScriptDef
+        
+        $btnRun.Add_Click({
             param($s, $e)
             $def = $s.Tag
             $name = $def.Name
@@ -1400,9 +1388,10 @@ pause
                 $script:window.Activate() | Out-Null
             })
         })
+        $btnsPanel.Children.Add($btnRun) | Out-Null
 
-        $rowGrid.Children.Add($btnRunNow) | Out-Null
-        [System.Windows.Controls.Grid]::SetColumn($btnRunNow, 2)
+        $rowGrid.Children.Add($btnsPanel) | Out-Null
+        [System.Windows.Controls.Grid]::SetColumn($btnsPanel, 1)
 
         $cardBorder.Child = $rowGrid
         $ParentStackPanel.Children.Add($cardBorder) | Out-Null
@@ -1413,10 +1402,9 @@ pause
             Description = $ScriptDef.Description
             On          = $ScriptDef.On
             Off         = $ScriptDef.Off
-            Switch      = $switch
-            StateLabel  = $lblState
             CardBorder  = $cardBorder
-            RunNowBtn   = $btnRunNow
+            RunBtn      = $btnRun
+            RevertBtn   = $btnRevert
         }
         $script:AllScripts.Add($entry)
         return $entry
@@ -1591,28 +1579,28 @@ pause
             Category    = "PowerShell Tweaks"
             Description = "Inspect current PowerShell execution policy across all scopes"
             On          = { See-Policy }
-            Off         = $null   # Reserved for toggle-off action
+            Off         = $null
         },
         @{
             Name        = "Unrestrict Policy"
             Category    = "PowerShell Tweaks"
             Description = "Set PowerShell execution policy to Unrestricted for CurrentUser and LocalMachine"
             On          = { Unrestrict-Policy }
-            Off         = $null   # Reserved for toggle-off action
+            Off         = { Restrict-Policy }
         },
         @{
             Name        = "CMD Color 0a"
             Category    = "System Tweaks"
             Description = "Set Command Prompt color scheme to Matrix green (0a)"
             On          = { Set-CMD0A }
-            Off         = $null   # Reserved for toggle-off action
+            Off         = { Reset-CMDColor }
         },
         @{
             Name        = "Cursor / Elegant Theme"
             Category    = "System Tweaks"
             Description = "Download and apply custom Elegant mouse cursor scheme"
             On          = { Install-Cursor }
-            Off         = $null   # Reserved for toggle-off action
+            Off         = { Reset-Cursor }
         }
     )
 
@@ -1772,129 +1760,6 @@ pause
     })
 
     # ============================================================
-    #  SECTION G-2: APPLY SCRIPTS (non-blocking via Runspace)
-    # ============================================================
-
-    $script:btnApplyScripts.Add_Click({
-        # Gather active (ON) scripts
-        $activeScripts = @($script:AllScripts | Where-Object { $_.Switch.IsChecked })
-
-        if (-not $activeScripts -or $activeScripts.Count -eq 0) {
-            [System.Windows.MessageBox]::Show(
-                "No scripts are toggled ON.`nPlease switch ON at least one script before clicking Apply.",
-                "Nothing Switched ON",
-                [System.Windows.MessageBoxButton]::OK,
-                [System.Windows.MessageBoxImage]::Information
-            ) | Out-Null
-            return
-        }
-
-        $script:btnApplyScripts.IsEnabled = $false
-        $script:btnApplyScripts.Content = "Applying..."
-        $script:ProgressBar.Value = 0
-        $script:ProgressBar.Maximum = $activeScripts.Count
-
-        Write-Log ("=== Applying {0} active script(s) ===" -f $activeScripts.Count) -Level Info
-
-        # Share references into runspace
-        $rsData = @{
-            ActiveScripts = $activeScripts
-            ProgressBar   = $script:ProgressBar
-            StatusLabel   = $script:LblStatus
-            ApplyButton   = $script:btnApplyScripts
-            CLR_TEXT      = $brushText
-            CLR_YELLOW    = $brushYellow
-            CLR_GREEN     = $brushGreen
-            CLR_RED       = $brushRed
-        }
-
-        $rs = [System.Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
-        $rs.ApartmentState = "STA"
-        $rs.ThreadOptions = "ReuseThread"
-        $rs.Open()
-        foreach ($k in $rsData.Keys) { $rs.SessionStateProxy.SetVariable($k, $rsData[$k]) }
-
-        $ps = [System.Management.Automation.PowerShell]::Create()
-        $ps.Runspace = $rs
-
-        [void]$ps.AddScript({
-            function Ui-Log {
-                param([string]$Msg, $Clr)
-                $ts = (Get-Date).ToString("HH:mm:ss")
-                $StatusLabel.Dispatcher.Invoke([System.Action] {
-                    $StatusLabel.Foreground = $Clr
-                    $StatusLabel.Text = "[$ts] $Msg"
-                })
-            }
-
-            $total = $ActiveScripts.Count
-            $ok = 0
-            $fail = 0
-
-            for ($i = 0; $i -lt $total; $i++) {
-                $scriptItem = $ActiveScripts[$i]
-                $sName = $scriptItem.Name
-                $StatusLabel.Dispatcher.Invoke([System.Action] {
-                    $StatusLabel.Text = "Applying $($i+1) of $total : $sName"
-                })
-
-                Ui-Log -Msg "Applying: $sName ..." -Clr $CLR_YELLOW
-
-                if ($null -eq $scriptItem.On) {
-                    Ui-Log -Msg "Skipped:  $sName (No On action)" -Clr $CLR_YELLOW
-                    continue
-                }
-
-                try {
-                    & $scriptItem.On
-                    Ui-Log -Msg "Applied: $sName" -Clr $CLR_GREEN
-                    $ok++
-                }
-                catch {
-                    Ui-Log -Msg "FAILED:  $sName | $($_.Exception.Message)" -Clr $CLR_RED
-                    $fail++
-                }
-
-                $pVal = $i + 1
-                $ProgressBar.Dispatcher.Invoke([System.Action] {
-                    $ProgressBar.Value = [Math]::Min($pVal, $ProgressBar.Maximum)
-                })
-
-                Start-Sleep -Milliseconds 250
-            }
-
-            $sumMsg = "=== Applied: $ok Successful  |  $fail Failed ==="
-            $sumClr = if ($fail -gt 0) { $CLR_RED } else { $CLR_GREEN }
-            Ui-Log -Msg $sumMsg -Clr $sumClr
-
-            $ApplyButton.Dispatcher.Invoke([System.Action] {
-                $ApplyButton.IsEnabled = $true
-                $ApplyButton.Content = "Apply"
-            })
-            $StatusLabel.Dispatcher.Invoke([System.Action] {
-                $StatusLabel.Text = "Done   Applied: $ok   Failed: $fail"
-            })
-
-            $ApplyButton.Dispatcher.Invoke([System.Action] {
-                $icon = if ($fail -gt 0) {
-                    [System.Windows.MessageBoxImage]::Warning
-                }
-                else {
-                    [System.Windows.MessageBoxImage]::Information
-                }
-                [System.Windows.MessageBox]::Show(
-                    "Script application complete.`n`nApplied : $ok`nFailed  : $fail",
-                    "Apply Summary",
-                    [System.Windows.MessageBoxButton]::OK,
-                    $icon
-                ) | Out-Null
-            })
-        })
-
-        [void]$ps.BeginInvoke()
-    })
-
-    # ============================================================
     #  SECTION H: EVENT WIREUPS
     # ============================================================
 
@@ -1904,8 +1769,9 @@ pause
         $script:scriptsScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
         $script:chkSelectAll.Visibility = [System.Windows.Visibility]::Visible
         $script:panelAppsControls.Visibility = [System.Windows.Visibility]::Visible
-        $script:panelScriptsControls.Visibility = [System.Windows.Visibility]::Collapsed
-        $script:lblSubtitle.Text = "Check items for batch run   |   Click a button for immediate single execution"
+        if ($null -ne $script:lblSubtitle) {
+            $script:lblSubtitle.Text = "Check items for batch run   |   Click a button for immediate single execution"
+        }
     })
 
     $script:tabScripts.Add_Checked({
@@ -1913,8 +1779,9 @@ pause
         $script:scriptsScrollViewer.Visibility = [System.Windows.Visibility]::Visible
         $script:chkSelectAll.Visibility = [System.Windows.Visibility]::Collapsed
         $script:panelAppsControls.Visibility = [System.Windows.Visibility]::Collapsed
-        $script:panelScriptsControls.Visibility = [System.Windows.Visibility]::Visible
-        $script:lblSubtitle.Text = "Toggle switches ON/OFF and click Apply to execute system scripts and tweaks"
+        if ($null -ne $script:lblSubtitle) {
+            $script:lblSubtitle.Text = "Click Run to apply scripts or Revert to restore defaults"
+        }
     })
 
     # Select All / Unselect All
@@ -2101,15 +1968,13 @@ pause
         # Enter key executes all selected and unselects in Apps view
         if ($e.Key -eq [System.Windows.Input.Key]::Enter) {
             if ($focused -ne $script:txtSearch) {
-                $e.Handled = $true
                 if ($script:tabApps.IsChecked) {
+                    $e.Handled = $true
                     $script:BtnRun.RaiseEvent((New-Object System.Windows.RoutedEventArgs([System.Windows.Controls.Button]::ClickEvent)))
                     foreach ($t in $script:AllTasks) {
                         $t.CheckBox.IsChecked = $false
                     }
                     $script:chkSelectAll.IsChecked = $false
-                } else {
-                    $script:btnApplyScripts.RaiseEvent((New-Object System.Windows.RoutedEventArgs([System.Windows.Controls.Button]::ClickEvent)))
                 }
             }
         }
