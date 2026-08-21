@@ -786,6 +786,42 @@ Read-Host "Press Enter to close"
         }
     }
 
+    function Set-MenuShowDelay {
+        $psCode = @'
+Write-Host "Eliminating Right-Click Context Menu & Submenu Delay (0ms)..." -ForegroundColor Cyan
+try {
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Value "0" -Type String -Force
+    Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+    Start-Process explorer.exe
+    Write-Host "Menu delay eliminated! Context menus and flyouts will now open instantly (0ms)." -ForegroundColor Green
+} catch {
+    Write-Host ("Error: " + $_.Exception.Message) -ForegroundColor Red
+}
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\set_menu_delay.ps1"
+        $psCode | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    }
+
+    function Reset-MenuShowDelay {
+        $psCode = @'
+Write-Host "Restoring default Menu Show Delay (400ms)..." -ForegroundColor Cyan
+try {
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Value "400" -Type String -Force
+    Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+    Start-Process explorer.exe
+    Write-Host "Default menu show delay (400ms) restored." -ForegroundColor Green
+} catch {
+    Write-Host ("Error: " + $_.Exception.Message) -ForegroundColor Red
+}
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\reset_menu_delay.ps1"
+        $psCode | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    }
+
     # ============================================================
     #  AI in PC
     # ============================================================
@@ -2032,6 +2068,13 @@ Read-Host "Press Enter to close"
             Description = "Run: Disable Bing/web search in Windows Start Menu  |  Revert: Enable Bing search"
             On          = { Disable-StartBingSearch }
             Off         = { Enable-StartBingSearch }
+        },
+        @{
+            Name        = "Instant Menu Delay"
+            Category    = "System Tweaks"
+            Description = "Run: Remove right-click & flyout menu delay (0ms)  |  Revert: Restore Windows default (400ms)"
+            On          = { Set-MenuShowDelay }
+            Off         = { Reset-MenuShowDelay }
         },
         @{
             Name        = "Dark / Light Theme"
