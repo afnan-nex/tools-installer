@@ -458,6 +458,66 @@ public static extern IntPtr GetConsoleWindow();
         Start-Process "main.cpl"
     }
 
+    function Open-DateTimeSettings {
+        Start-Process "timedate.cpl"
+    }
+
+    function Sync-SystemTime {
+        $syncPs = @'
+Write-Host "=== Windows Date & Time Synchronization ===" -ForegroundColor Cyan
+$synced = $false
+$localTz = [System.TimeZoneInfo]::Local
+Write-Host ("Detected TimeZone: " + $localTz.DisplayName + " (" + $localTz.Id + ")") -ForegroundColor Yellow
+
+# 1. Try Windows Time Service with multiple NTP peers
+try {
+    Write-Host "Configuring Windows Time Service with reliable NTP peers..."
+    Start-Service w32time -ErrorAction SilentlyContinue
+    Set-Service w32time -StartupType Automatic -ErrorAction SilentlyContinue
+    w32tm /config /manualpeerlist:"time.google.com,0x9 pool.ntp.org,0x9 time.cloudflare.com,0x9 time.windows.com,0x9" /syncfromflags:manual /reliable:YES /update | Out-Null
+    $resyncOutput = w32tm /resync /force 2>&1
+    if ($LASTEXITCODE -eq 0 -and $resyncOutput -match 'command completed successfully') {
+        Write-Host "Windows Time Service (NTP) synchronized successfully!" -ForegroundColor Green
+        $synced = $true
+    }
+} catch {}
+
+# 2. Fallback: Authoritative HTTPS time sync (bypasses UDP port 123 blocking/timeout)
+if (-not $synced) {
+    Write-Host "NTP port unreachable. Using HTTPS authoritative time sync..." -ForegroundColor Cyan
+    $endpoints = @('https://www.google.com', 'https://www.cloudflare.com', 'https://www.microsoft.com')
+    foreach ($url in $endpoints) {
+        try {
+            $req = [System.Net.HttpWebRequest]::Create($url)
+            $req.Method = 'HEAD'
+            $req.Timeout = 4000
+            $req.UserAgent = 'ToolsInstallerTimeSync/1.0'
+            $res = $req.GetResponse()
+            $dateStr = $res.Headers['Date']
+            $res.Close()
+            if (-not [string]::IsNullOrEmpty($dateStr)) {
+                $utc = [DateTime]::ParseExact($dateStr, 'ddd, dd MMM yyyy HH:mm:ss GMT', [System.Globalization.CultureInfo]::InvariantCulture, [System.Globalization.DateTimeStyles]::AssumeUniversal).ToUniversalTime()
+                $targetLocal = [System.TimeZoneInfo]::ConvertTimeFromUtc($utc, $localTz)
+                Set-Date -Date $targetLocal | Out-Null
+                Write-Host ("Time successfully synchronized with " + $url) -ForegroundColor Green
+                $synced = $true
+                break
+            }
+        } catch {}
+    }
+}
+
+Write-Host ""
+Write-Host ("Current System Time: " + (Get-Date).ToString("dddd, dd MMMM yyyy HH:mm:ss")) -ForegroundColor Green
+Write-Host ("Active TimeZone: " + $localTz.DisplayName) -ForegroundColor Cyan
+Write-Host ""
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\sync_system_time.ps1"
+        $syncPs | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    }
+
     # ============================================================
     #  AI in PC
     # ============================================================
@@ -1469,7 +1529,7 @@ Read-Host "Press Enter to close"
         return $entry
     }
 
-    function New-ControlPanelRow {
+    function New-SettingsRow {
         param(
             [string]       $Name,
             [scriptblock]  $Func,
@@ -1507,7 +1567,7 @@ Read-Host "Press Enter to close"
 
         $entry = @{
             Name        = $Name
-            Category    = "Control Panel"
+            Category    = "Settings"
             Function    = $Func
             CardBorder  = $btn
             Button      = $btn
@@ -1725,15 +1785,17 @@ Read-Host "Press Enter to close"
         }
     }
 
-    function Build-ControlPanelSection {
+    function Build-SettingsSection {
         $gb = New-Object System.Windows.Controls.GroupBox
-        $gb.Header = "Control Panel"
+        $gb.Header = "Settings"
         $gb.Margin = New-Object System.Windows.Thickness(0, 0, 0, 14)
         
         $inner = New-Object System.Windows.Controls.StackPanel
         $gb.Content = $inner
         
-        $cpItems = @(
+        $settingsItems = @(
+            @{ Name = "Sync Time (Auto Fix)";     Func = { Sync-SystemTime } },
+            @{ Name = "Date & Time Settings";     Func = { Open-DateTimeSettings } },
             @{ Name = "Classic Control Panel";    Func = { Open-ControlPanel } },
             @{ Name = "Devices and Printers";     Func = { Open-DevicesAndPrinters } },
             @{ Name = "Mouse Properties";         Func = { Open-MouseProperties } },
@@ -1745,8 +1807,8 @@ Read-Host "Press Enter to close"
             @{ Name = "Power Options";            Func = { Open-PowerOptions } }
         )
 
-        foreach ($item in $cpItems) {
-            New-ControlPanelRow -Name $item.Name -Func $item.Func -ParentStackPanel $inner | Out-Null
+        foreach ($item in $settingsItems) {
+            New-SettingsRow -Name $item.Name -Func $item.Func -ParentStackPanel $inner | Out-Null
         }
 
         $script:tweaksRightContainer.Children.Add($gb) | Out-Null
@@ -1754,7 +1816,7 @@ Read-Host "Press Enter to close"
     }
 
     Build-ScriptsSection
-    Build-ControlPanelSection
+    Build-SettingsSection
 
     # ============================================================
     #  SECTION G: RUN SELECTED APPS (non-blocking via Runspace)
@@ -1912,7 +1974,7 @@ Read-Host "Press Enter to close"
         $script:chkSelectAll.Visibility = [System.Windows.Visibility]::Collapsed
         $script:panelAppsControls.Visibility = [System.Windows.Visibility]::Collapsed
         if ($null -ne $script:lblSubtitle) {
-            $script:lblSubtitle.Text = "Click Run to apply tweaks, Revert to restore defaults, or Open Control Panel tools"
+            $script:lblSubtitle.Text = "Click Run to apply tweaks, Revert to restore defaults, or open Settings tools"
         }
         Update-SearchFilter
     })
