@@ -454,6 +454,10 @@ public static extern IntPtr GetConsoleWindow();
         Start-Process "powercfg.cpl"
     }
 
+    function Open-MouseProperties {
+        Start-Process "main.cpl"
+    }
+
     # ============================================================
     #  AI in PC
     # ============================================================
@@ -892,6 +896,7 @@ Read-Host "Press Enter to close"
     # ============================================================
     $script:AllTasks = [System.Collections.Generic.List[hashtable]]::new()
     $script:AllScripts = [System.Collections.Generic.List[hashtable]]::new()
+    $script:AllControlPanelTasks = [System.Collections.Generic.List[hashtable]]::new()
     $script:ScriptGroupBoxes = [System.Collections.Generic.List[System.Windows.Controls.GroupBox]]::new()
 
     # ============================================================
@@ -1107,7 +1112,7 @@ Read-Host "Press Enter to close"
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <RadioButton Name="TabApps" Grid.Column="0" Content="Apps" IsChecked="True" GroupName="NavTabs" Style="{StaticResource NavTabStyle}"/>
-                            <RadioButton Name="TabScripts" Grid.Column="1" Content="Scripts" GroupName="NavTabs" Style="{StaticResource NavTabStyle}"/>
+                            <RadioButton Name="TabScripts" Grid.Column="1" Content="Tweaks" GroupName="NavTabs" Style="{StaticResource NavTabStyle}"/>
                         </Grid>
                     </Border>
                 </StackPanel>
@@ -1142,11 +1147,25 @@ Read-Host "Press Enter to close"
                 </Grid>
             </ScrollViewer>
 
-            <!-- Scripts View -->
-            <ScrollViewer Name="ScriptsScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Background="#12121C" Visibility="Collapsed">
-                <StackPanel Name="ScriptsContainer" Margin="24,16,24,16" MaxWidth="880" HorizontalAlignment="Left">
-                    <!-- Script categories populated dynamically -->
-                </StackPanel>
+            <!-- Tweaks View (Two-Section Layout: Left = System Tweaks, Right = Control Panel) -->
+            <ScrollViewer Name="ScriptsScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="#12121C" Visibility="Collapsed">
+                <Grid Margin="18,14,18,14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" MinWidth="440"/>
+                        <ColumnDefinition Width="18"/>
+                        <ColumnDefinition Width="340"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- Left Side: System & PowerShell Tweaks -->
+                    <StackPanel Grid.Column="0" Name="ScriptsContainer">
+                        <!-- Tweaks categories populated dynamically -->
+                    </StackPanel>
+                    
+                    <!-- Right Side: Control Panel Shortcuts -->
+                    <StackPanel Grid.Column="2" Name="TweaksRightContainer">
+                        <!-- Control Panel section populated dynamically -->
+                    </StackPanel>
+                </Grid>
             </ScrollViewer>
         </Grid>
         
@@ -1186,6 +1205,7 @@ Read-Host "Press Enter to close"
     $script:appsScrollViewer = $script:window.FindName("AppsScrollViewer")
     $script:scriptsScrollViewer = $script:window.FindName("ScriptsScrollViewer")
     $script:scriptsContainer = $script:window.FindName("ScriptsContainer")
+    $script:tweaksRightContainer = $script:window.FindName("TweaksRightContainer")
     $script:col0 = $script:window.FindName("Col0")
     $script:col1 = $script:window.FindName("Col1")
     $script:col2 = $script:window.FindName("Col2")
@@ -1326,9 +1346,12 @@ Read-Host "Press Enter to close"
         $cardBorder.Background = $script:brushGroup
         $cardBorder.BorderBrush = $script:brushSep
         $cardBorder.BorderThickness = New-Object System.Windows.Thickness(1)
-        $cardBorder.CornerRadius = New-Object System.Windows.CornerRadius(6)
-        $cardBorder.Margin = New-Object System.Windows.Thickness(0, 0, 0, 8)
-        $cardBorder.Padding = New-Object System.Windows.Thickness(14, 10, 14, 10)
+        $cardBorder.CornerRadius = New-Object System.Windows.CornerRadius(5)
+        $cardBorder.Margin = New-Object System.Windows.Thickness(0, 0, 0, 5)
+        $cardBorder.Padding = New-Object System.Windows.Thickness(12, 6, 12, 6)
+        if (-not [string]::IsNullOrEmpty($ScriptDef.Description)) {
+            $cardBorder.ToolTip = $ScriptDef.Description
+        }
 
         $rowGrid = New-Object System.Windows.Controls.Grid
         
@@ -1336,53 +1359,43 @@ Read-Host "Press Enter to close"
         $colInfo.Width = New-Object System.Windows.GridLength(1, [System.Windows.GridUnitType]::Star)
         
         $colBtns = New-Object System.Windows.Controls.ColumnDefinition
-        $colBtns.Width = New-Object System.Windows.GridLength(165)
+        $colBtns.Width = New-Object System.Windows.GridLength(145)
         
         $rowGrid.ColumnDefinitions.Add($colInfo)
         $rowGrid.ColumnDefinitions.Add($colBtns)
 
-        # Info container (Name + Description)
-        $infoPanel = New-Object System.Windows.Controls.StackPanel
-        $infoPanel.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
-        $infoPanel.Margin = New-Object System.Windows.Thickness(0, 0, 12, 0)
-
+        # Info container (Name only - Description shown on hover)
         $lblTitle = New-Object System.Windows.Controls.TextBlock
         $lblTitle.Text = $ScriptDef.Name
         $lblTitle.FontFamily = New-Object System.Windows.Media.FontFamily("Segoe UI")
-        $lblTitle.FontSize = 13
+        $lblTitle.FontSize = 12.5
         $lblTitle.FontWeight = [System.Windows.FontWeights]::SemiBold
         $lblTitle.Foreground = $script:brushText
-        $infoPanel.Children.Add($lblTitle) | Out-Null
-
+        $lblTitle.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
         if (-not [string]::IsNullOrEmpty($ScriptDef.Description)) {
-            $lblDesc = New-Object System.Windows.Controls.TextBlock
-            $lblDesc.Text = $ScriptDef.Description
-            $lblDesc.FontFamily = New-Object System.Windows.Media.FontFamily("Segoe UI")
-            $lblDesc.FontSize = 11
-            $lblDesc.Foreground = $script:brushMuted
-            $lblDesc.Margin = New-Object System.Windows.Thickness(0, 2, 0, 0)
-            $lblDesc.TextWrapping = [System.Windows.TextWrapping]::Wrap
-            $infoPanel.Children.Add($lblDesc) | Out-Null
+            $lblTitle.ToolTip = $ScriptDef.Description
         }
+        $rowGrid.Children.Add($lblTitle) | Out-Null
+        [System.Windows.Controls.Grid]::SetColumn($lblTitle, 0)
 
-        $rowGrid.Children.Add($infoPanel) | Out-Null
-        [System.Windows.Controls.Grid]::SetColumn($infoPanel, 0)
-
-        # Action Buttons container (Revert + Run)
+        # Action Buttons container (Revert + Run) - compact height
         $btnsPanel = New-Object System.Windows.Controls.StackPanel
         $btnsPanel.Orientation = [System.Windows.Controls.Orientation]::Horizontal
         $btnsPanel.HorizontalAlignment = [System.Windows.HorizontalAlignment]::Right
         $btnsPanel.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
 
-        # Revert Button
+        # Revert Button (compact height 22px)
         $btnRevert = New-Object System.Windows.Controls.Button
         $btnRevert.Content = "Revert"
-        $btnRevert.Width = 72
-        $btnRevert.Height = 26
-        $btnRevert.Margin = New-Object System.Windows.Thickness(0, 0, 8, 0)
+        $btnRevert.Width = 64
+        $btnRevert.Height = 22
+        $btnRevert.Padding = New-Object System.Windows.Thickness(6, 1, 6, 1)
+        $btnRevert.FontSize = 11
+        $btnRevert.Margin = New-Object System.Windows.Thickness(0, 0, 6, 0)
         $btnRevert.HorizontalContentAlignment = [System.Windows.HorizontalAlignment]::Center
         $btnRevert.Cursor = [System.Windows.Input.Cursors]::Hand
         $btnRevert.Tag = $ScriptDef
+        $btnRevert.ToolTip = "Revert: $($ScriptDef.Name)"
         
         $btnRevert.Add_Click({
             param($s, $e)
@@ -1405,20 +1418,23 @@ Read-Host "Press Enter to close"
         })
         $btnsPanel.Children.Add($btnRevert) | Out-Null
 
-        # Run Button
+        # Run Button (compact height 22px)
         $btnRun = New-Object System.Windows.Controls.Button
         $btnRun.Content = "Run"
-        $btnRun.Width = 72
-        $btnRun.Height = 26
+        $btnRun.Width = 64
+        $btnRun.Height = 22
+        $btnRun.Padding = New-Object System.Windows.Thickness(6, 1, 6, 1)
+        $btnRun.FontSize = 11
         $btnRun.HorizontalContentAlignment = [System.Windows.HorizontalAlignment]::Center
         $btnRun.Cursor = [System.Windows.Input.Cursors]::Hand
         $btnRun.Tag = $ScriptDef
+        $btnRun.ToolTip = "Run: $($ScriptDef.Name)"
         
         $btnRun.Add_Click({
             param($s, $e)
             $def = $s.Tag
             $name = $def.Name
-            Write-Log "Launching script: $name ..." -Level Running
+            Write-Log "Launching tweak: $name ..." -Level Running
             try {
                 if ($null -ne $def.On) {
                     & $def.On
@@ -1450,6 +1466,53 @@ Read-Host "Press Enter to close"
             RevertBtn   = $btnRevert
         }
         $script:AllScripts.Add($entry)
+        return $entry
+    }
+
+    function New-ControlPanelRow {
+        param(
+            [string]       $Name,
+            [scriptblock]  $Func,
+            $ParentStackPanel
+        )
+
+        $btn = New-Object System.Windows.Controls.Button
+        $btn.Content = $Name
+        $btn.HorizontalContentAlignment = "Left"
+        $btn.Padding = New-Object System.Windows.Thickness(12, 4, 12, 4)
+        $btn.Height = 26
+        $btn.Margin = New-Object System.Windows.Thickness(0, 0, 0, 4)
+        $btn.Cursor = [System.Windows.Input.Cursors]::Hand
+        $btn.Tag = $Func
+        $btn.FontFamily = New-Object System.Windows.Media.FontFamily("Segoe UI")
+        $btn.FontSize = 12
+
+        $btn.Add_Click({
+            param($s, $e)
+            $f = $s.Tag
+            $tName = $s.Content
+            Write-Log "Launching: $tName ..." -Level Running
+            try {
+                & $f
+                Write-Log "$tName - launched." -Level Success
+            } catch {
+                Write-Log "ERROR: $tName - $($_.Exception.Message)" -Level Error
+            }
+            [void]$script:window.Dispatcher.BeginInvoke([System.Action] {
+                $script:window.Activate() | Out-Null
+            })
+        })
+
+        $ParentStackPanel.Children.Add($btn) | Out-Null
+
+        $entry = @{
+            Name        = $Name
+            Category    = "Control Panel"
+            Function    = $Func
+            CardBorder  = $btn
+            Button      = $btn
+        }
+        $script:AllControlPanelTasks.Add($entry)
         return $entry
     }
 
@@ -1489,17 +1552,6 @@ Read-Host "Press Enter to close"
     Add-Category -ColIndex 0 -Title "Automation" -Items @(
         @{ Name = "n8n Workflow Automation"; Func = { Install-N8N } },
         @{ Name = "Google Workspace CLI (GWS)"; Func = { Install-GWS } }
-    )
-
-    Add-Category -ColIndex 0 -Title "Control Panel" -Items @(
-        @{ Name = "Classic Control Panel"; Func = { Open-ControlPanel } },
-        @{ Name = "Devices and Printers"; Func = { Open-DevicesAndPrinters } },
-        @{ Name = "Task Manager"; Func = { Open-TaskManager } },
-        @{ Name = "Device Manager"; Func = { Open-DeviceManager } },
-        @{ Name = "Disk Management"; Func = { Open-DiskManagement } },
-        @{ Name = "System Properties"; Func = { Open-SystemProperties } },
-        @{ Name = "System Config (MSConfig)"; Func = { Open-MSConfig } },
-        @{ Name = "Power Options"; Func = { Open-PowerOptions } }
     )
 
     # Column 1
@@ -1659,7 +1711,7 @@ Read-Host "Press Enter to close"
         foreach ($cat in $categories) {
             $gb = New-Object System.Windows.Controls.GroupBox
             $gb.Header = $cat.Name
-            $gb.Margin = New-Object System.Windows.Thickness(0, 0, 0, 16)
+            $gb.Margin = New-Object System.Windows.Thickness(0, 0, 0, 14)
             
             $inner = New-Object System.Windows.Controls.StackPanel
             $gb.Content = $inner
@@ -1673,7 +1725,35 @@ Read-Host "Press Enter to close"
         }
     }
 
+    function Build-ControlPanelSection {
+        $gb = New-Object System.Windows.Controls.GroupBox
+        $gb.Header = "Control Panel"
+        $gb.Margin = New-Object System.Windows.Thickness(0, 0, 0, 14)
+        
+        $inner = New-Object System.Windows.Controls.StackPanel
+        $gb.Content = $inner
+        
+        $cpItems = @(
+            @{ Name = "Classic Control Panel";    Func = { Open-ControlPanel } },
+            @{ Name = "Devices and Printers";     Func = { Open-DevicesAndPrinters } },
+            @{ Name = "Task Manager";             Func = { Open-TaskManager } },
+            @{ Name = "Device Manager";           Func = { Open-DeviceManager } },
+            @{ Name = "Disk Management";          Func = { Open-DiskManagement } },
+            @{ Name = "System Properties";        Func = { Open-SystemProperties } },
+            @{ Name = "System Config (MSConfig)"; Func = { Open-MSConfig } },
+            @{ Name = "Power Options";            Func = { Open-PowerOptions } }
+        )
+
+        foreach ($item in $cpItems) {
+            New-ControlPanelRow -Name $item.Name -Func $item.Func -ParentStackPanel $inner | Out-Null
+        }
+
+        $script:tweaksRightContainer.Children.Add($gb) | Out-Null
+        $script:ScriptGroupBoxes.Add($gb)
+    }
+
     Build-ScriptsSection
+    Build-ControlPanelSection
 
     # ============================================================
     #  SECTION G: RUN SELECTED APPS (non-blocking via Runspace)
@@ -1822,6 +1902,7 @@ Read-Host "Press Enter to close"
         if ($null -ne $script:lblSubtitle) {
             $script:lblSubtitle.Text = "Check items for batch run   |   Click a button for immediate single execution"
         }
+        Update-SearchFilter
     })
 
     $script:tabScripts.Add_Checked({
@@ -1830,8 +1911,9 @@ Read-Host "Press Enter to close"
         $script:chkSelectAll.Visibility = [System.Windows.Visibility]::Collapsed
         $script:panelAppsControls.Visibility = [System.Windows.Visibility]::Collapsed
         if ($null -ne $script:lblSubtitle) {
-            $script:lblSubtitle.Text = "Click Run to apply scripts or Revert to restore defaults"
+            $script:lblSubtitle.Text = "Click Run to apply tweaks, Revert to restore defaults, or Open Control Panel tools"
         }
+        Update-SearchFilter
     })
 
     # Select All / Unselect All
@@ -1853,31 +1935,13 @@ Read-Host "Press Enter to close"
     $script:btnUpgradeAll.Add_Click({ Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", "choco upgrade all -y --no-desktop-shortcut && echo. && echo Press any key to exit . . . && pause >nul && exit" })
     $script:btnWingetUpgradeAll.Add_Click({ Start-Process winget -WindowStyle Minimized -ArgumentList "upgrade", "--all", "--silent", "--accept-source-agreements", "--accept-package-agreements" })
 
-    # Search Functionality
-    $script:txtSearch.Add_GotFocus({
-        if ($script:txtSearch.Text -eq "Search...") {
-            $script:SkipSearchUpdate = $true
-            $script:txtSearch.Text = ""
-            $script:txtSearch.Foreground = [System.Windows.Media.Brushes]::White
-            $script:SkipSearchUpdate = $false
-        }
-    })
-
-    $script:txtSearch.Add_LostFocus({
-        if ([string]::IsNullOrWhiteSpace($script:txtSearch.Text)) {
-            $script:SkipSearchUpdate = $true
-            $script:txtSearch.Text = "Search..."
-            $script:txtSearch.Foreground = $brushMuted
-            $script:SkipSearchUpdate = $false
-        }
-    })
-
-    $script:txtSearch.Add_TextChanged({
+    # Search & Filter Engine
+    function Update-SearchFilter {
         if ($script:SkipSearchUpdate) { return }
         $query = $script:txtSearch.Text.Trim()
         $isQueryEmpty = ($query -eq "") -or ($query -eq "Search...")
 
-        # Set each Apps row's visibility
+        # 1. Filter Apps
         foreach ($t in $script:AllTasks) {
             $innerPanel = $t.RowGrid.Parent
             $gb = $innerPanel.Parent
@@ -1925,7 +1989,7 @@ Read-Host "Press Enter to close"
             }
         }
 
-        # Filter Scripts view cards
+        # 2. Filter Tweaks
         foreach ($s in $script:AllScripts) {
             if ($isQueryEmpty) {
                 $sMatch = $true
@@ -1933,11 +1997,31 @@ Read-Host "Press Enter to close"
                 $sMatch = ($s.Name -match "(?i)" + [regex]::Escape($query)) -or 
                           ($s.Category -match "(?i)" + [regex]::Escape($query)) -or 
                           ($s.Description -match "(?i)" + [regex]::Escape($query))
+                if (-not $sMatch -and $null -ne $s.On) {
+                    $sMatch = $s.On.ToString() -match "(?i)" + [regex]::Escape($query)
+                }
+                if (-not $sMatch -and $null -ne $s.Off) {
+                    $sMatch = $s.Off.ToString() -match "(?i)" + [regex]::Escape($query)
+                }
             }
             $s.CardBorder.Visibility = if ($sMatch) { [System.Windows.Visibility]::Visible } else { [System.Windows.Visibility]::Collapsed }
         }
 
-        # Hide script groupboxes if no children visible
+        # 3. Filter Control Panel Tasks in Tweaks View
+        foreach ($cp in $script:AllControlPanelTasks) {
+            if ($isQueryEmpty) {
+                $cpMatch = $true
+            } else {
+                $cpMatch = ($cp.Name -match "(?i)" + [regex]::Escape($query)) -or 
+                           ($cp.Category -match "(?i)" + [regex]::Escape($query))
+                if (-not $cpMatch -and $null -ne $cp.Function) {
+                    $cpMatch = $cp.Function.ToString() -match "(?i)" + [regex]::Escape($query)
+                }
+            }
+            $cp.CardBorder.Visibility = if ($cpMatch) { [System.Windows.Visibility]::Visible } else { [System.Windows.Visibility]::Collapsed }
+        }
+
+        # Hide tweaks groupboxes if no children visible
         if ($null -ne $script:ScriptGroupBoxes) {
             foreach ($sgb in $script:ScriptGroupBoxes) {
                 $inner = $sgb.Content
@@ -1951,6 +2035,28 @@ Read-Host "Press Enter to close"
                 $sgb.Visibility = if ($anyVis) { [System.Windows.Visibility]::Visible } else { [System.Windows.Visibility]::Collapsed }
             }
         }
+    }
+
+    $script:txtSearch.Add_GotFocus({
+        if ($script:txtSearch.Text -eq "Search...") {
+            $script:SkipSearchUpdate = $true
+            $script:txtSearch.Text = ""
+            $script:txtSearch.Foreground = [System.Windows.Media.Brushes]::White
+            $script:SkipSearchUpdate = $false
+        }
+    })
+
+    $script:txtSearch.Add_LostFocus({
+        if ([string]::IsNullOrWhiteSpace($script:txtSearch.Text)) {
+            $script:SkipSearchUpdate = $true
+            $script:txtSearch.Text = "Search..."
+            $script:txtSearch.Foreground = $brushMuted
+            $script:SkipSearchUpdate = $false
+        }
+    })
+
+    $script:txtSearch.Add_TextChanged({
+        Update-SearchFilter
     })
 
     $script:txtSearch.Add_KeyDown({
@@ -1981,24 +2087,34 @@ Read-Host "Press Enter to close"
                     }
                 }
             } else {
-                # If in Scripts view
-                $visibleScripts = @()
-                foreach ($s in $script:AllScripts) {
-                    if ($s.CardBorder.Visibility -eq [System.Windows.Visibility]::Visible) {
-                        $visibleScripts += $s
-                    }
-                }
-                if ($visibleScripts.Count -eq 1) {
-                    $sItem = $visibleScripts[0]
-                    $name = $sItem.Name
-                    Write-Log "Launching script: $name ..." -Level Running
-                    try {
-                        if ($null -ne $sItem.On) {
-                            & $sItem.On
-                            Write-Log "$name - executed." -Level Success
+                # If in Tweaks view
+                $visibleScripts = @($script:AllScripts | Where-Object { $_.CardBorder.Visibility -eq [System.Windows.Visibility]::Visible })
+                $visibleCP = @($script:AllControlPanelTasks | Where-Object { $_.CardBorder.Visibility -eq [System.Windows.Visibility]::Visible })
+                $totalVisible = $visibleScripts.Count + $visibleCP.Count
+                
+                if ($totalVisible -eq 1) {
+                    if ($visibleScripts.Count -eq 1) {
+                        $sItem = $visibleScripts[0]
+                        $name = $sItem.Name
+                        Write-Log "Launching tweak: $name ..." -Level Running
+                        try {
+                            if ($null -ne $sItem.On) {
+                                & $sItem.On
+                                Write-Log "$name - executed." -Level Success
+                            }
+                        } catch {
+                            Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error
                         }
-                    } catch {
-                        Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error
+                    } else {
+                        $cpItem = $visibleCP[0]
+                        $name = $cpItem.Name
+                        Write-Log "Launching: $name ..." -Level Running
+                        try {
+                            & $cpItem.Function
+                            Write-Log "$name - launched." -Level Success
+                        } catch {
+                            Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error
+                        }
                     }
                 }
             }
@@ -2038,29 +2154,36 @@ Read-Host "Press Enter to close"
                 }
             }
         }
-        # Down Arrow from search box focuses first visible task button
+        # Down Arrow from search box focuses first visible task or tweak button
         elseif ($e.Key -eq [System.Windows.Input.Key]::Down -and $focused -eq $script:txtSearch) {
             if ($script:tabApps.IsChecked) {
                 $firstTask = $script:AllTasks | Where-Object { $_.RowGrid.Visibility -eq [System.Windows.Visibility]::Visible } | Select-Object -First 1
-                if ($null -ne $firstTask) {
-                    $firstBtn = $firstTask.Button
-                    if ($null -ne $firstBtn) {
+                if ($null -ne $firstTask -and $null -ne $firstTask.Button) {
+                    $e.Handled = $true
+                    $firstTask.Button.Focus() | Out-Null
+                }
+            } else {
+                $firstScript = $script:AllScripts | Where-Object { $_.CardBorder.Visibility -eq [System.Windows.Visibility]::Visible } | Select-Object -First 1
+                if ($null -ne $firstScript -and $null -ne $firstScript.RunBtn) {
+                    $e.Handled = $true
+                    $firstScript.RunBtn.Focus() | Out-Null
+                } else {
+                    $firstCP = $script:AllControlPanelTasks | Where-Object { $_.CardBorder.Visibility -eq [System.Windows.Visibility]::Visible } | Select-Object -First 1
+                    if ($null -ne $firstCP -and $null -ne $firstCP.Button) {
                         $e.Handled = $true
-                        $firstBtn.Focus() | Out-Null
+                        $firstCP.Button.Focus() | Out-Null
                     }
                 }
             }
         }
-        # Arrow key navigation between task buttons
+        # Arrow key navigation between task buttons / tweak buttons / control panel buttons
         elseif ($focused -is [System.Windows.Controls.Button]) {
-            # Find matching task
+            # Check if focused button belongs to Apps tasks
             $currentTask = $script:AllTasks | Where-Object { $_.Button -eq $focused }
             if ($null -ne $currentTask) {
-                # Get visible tasks
                 $visibleTasks = @($script:AllTasks | Where-Object { $_.RowGrid.Visibility -eq [System.Windows.Visibility]::Visible })
                 
                 if ($e.Key -eq [System.Windows.Input.Key]::Down -or $e.Key -eq [System.Windows.Input.Key]::Up) {
-                    # Filter tasks in same column
                     $sameColTasks = @($visibleTasks | Where-Object { $_.ColIndex -eq $currentTask.ColIndex })
                     if ($sameColTasks.Count -gt 0) {
                         $currIdx = $sameColTasks.IndexOf($currentTask)
@@ -2071,7 +2194,6 @@ Read-Host "Press Enter to close"
                             $e.Handled = $true
                         }
                         elseif ($e.Key -eq [System.Windows.Input.Key]::Up) {
-                            # If first task in column, move back to search bar
                             if ($currIdx -eq 0) {
                                 $script:txtSearch.Focus() | Out-Null
                                 $e.Handled = $true
@@ -2087,7 +2209,6 @@ Read-Host "Press Enter to close"
                     $dir = if ($e.Key -eq [System.Windows.Input.Key]::Right) { 1 } else { -1 }
                     $targetCol = $currentTask.ColIndex
                     
-                    # Scan columns to find one with visible tasks
                     for ($step = 1; $step -lt 5; $step++) {
                         $targetCol = ($targetCol + $dir + 5) % 5
                         $targetColTasks = @($visibleTasks | Where-Object { $_.ColIndex -eq $targetCol })
@@ -2109,13 +2230,87 @@ Read-Host "Press Enter to close"
                                 if ($null -ne $closestTask) {
                                     $targetTask = $closestTask
                                 }
-                            } catch {
-                                # Fallback to first task if visual transformation fails
-                            }
+                            } catch {}
                             
                             $targetTask.Button.Focus() | Out-Null
                             $e.Handled = $true
                             break
+                        }
+                    }
+                }
+            } else {
+                # Check if focused button belongs to Tweaks section (RunBtn or RevertBtn)
+                $currentScript = $script:AllScripts | Where-Object { $_.RunBtn -eq $focused -or $_.RevertBtn -eq $focused }
+                if ($null -ne $currentScript) {
+                    $visibleScripts = @($script:AllScripts | Where-Object { $_.CardBorder.Visibility -eq [System.Windows.Visibility]::Visible })
+                    $sIdx = $visibleScripts.IndexOf($currentScript)
+                    
+                    if ($e.Key -eq [System.Windows.Input.Key]::Left) {
+                        $e.Handled = $true
+                        if ($focused -eq $currentScript.RunBtn) {
+                            $currentScript.RevertBtn.Focus() | Out-Null
+                        }
+                    }
+                    elseif ($e.Key -eq [System.Windows.Input.Key]::Right) {
+                        $e.Handled = $true
+                        if ($focused -eq $currentScript.RevertBtn) {
+                            $currentScript.RunBtn.Focus() | Out-Null
+                        } else {
+                            # Move across to the Control Panel list on the right
+                            $visibleCP = @($script:AllControlPanelTasks | Where-Object { $_.CardBorder.Visibility -eq [System.Windows.Visibility]::Visible })
+                            if ($visibleCP.Count -gt 0) {
+                                $cpTarget = if ($sIdx -lt $visibleCP.Count) { $visibleCP[$sIdx] } else { $visibleCP[0] }
+                                $cpTarget.Button.Focus() | Out-Null
+                            }
+                        }
+                    }
+                    elseif ($e.Key -eq [System.Windows.Input.Key]::Down) {
+                        if ($visibleScripts.Count -gt 0) {
+                            $e.Handled = $true
+                            $nextSIdx = ($sIdx + 1) % $visibleScripts.Count
+                            $visibleScripts[$nextSIdx].RunBtn.Focus() | Out-Null
+                        }
+                    }
+                    elseif ($e.Key -eq [System.Windows.Input.Key]::Up) {
+                        $e.Handled = $true
+                        if ($sIdx -eq 0) {
+                            $script:txtSearch.Focus() | Out-Null
+                        } else {
+                            $prevSIdx = ($sIdx - 1 + $visibleScripts.Count) % $visibleScripts.Count
+                            $visibleScripts[$prevSIdx].RunBtn.Focus() | Out-Null
+                        }
+                    }
+                } else {
+                    # Check if focused button belongs to Control Panel section
+                    $currentCP = $script:AllControlPanelTasks | Where-Object { $_.Button -eq $focused }
+                    if ($null -ne $currentCP) {
+                        $visibleCP = @($script:AllControlPanelTasks | Where-Object { $_.CardBorder.Visibility -eq [System.Windows.Visibility]::Visible })
+                        $cpIdx = $visibleCP.IndexOf($currentCP)
+                        
+                        if ($e.Key -eq [System.Windows.Input.Key]::Left) {
+                            # Move back across to Tweaks list on the left
+                            $visibleScripts = @($script:AllScripts | Where-Object { $_.CardBorder.Visibility -eq [System.Windows.Visibility]::Visible })
+                            if ($visibleScripts.Count -gt 0) {
+                                $e.Handled = $true
+                                $sTarget = if ($cpIdx -lt $visibleScripts.Count) { $visibleScripts[$cpIdx] } else { $visibleScripts[0] }
+                                $sTarget.RunBtn.Focus() | Out-Null
+                            }
+                        }
+                        elseif ($e.Key -eq [System.Windows.Input.Key]::Down) {
+                            if ($visibleCP.Count -gt 0) {
+                                $e.Handled = $true
+                                $nextCPIdx = ($cpIdx + 1) % $visibleCP.Count
+                                $visibleCP[$nextCPIdx].Button.Focus() | Out-Null
+                            }
+                        }
+                        elseif ($e.Key -eq [System.Windows.Input.Key]::Up) {
+                            $e.Handled = $true
+                            if ($cpIdx -eq 0) {
+                                $script:txtSearch.Focus() | Out-Null
+                            } else {
+                                $prevCPIdx = ($cpIdx - 1 + $visibleCP.Count) % $visibleCP.Count
+                                $visibleCP[$prevCPIdx].Button.Focus() | Out-Null
+                            }
                         }
                     }
                 }
