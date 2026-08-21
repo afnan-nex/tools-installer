@@ -97,8 +97,36 @@ public static extern IntPtr GetConsoleWindow();
     # ============================================================
 
     function Refresh-Env {
-        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" +
-        [System.Environment]::GetEnvironmentVariable("Path", "User")
+        try {
+            $machinePath = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine)
+            $userPath = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
+            $combined = "$machinePath;$userPath"
+            
+            # Auto-detect common bin paths that may not be broadcast yet
+            $commonPaths = @(
+                "$env:ProgramData\chocolatey\bin",
+                "$env:USERPROFILE\scoop\shims",
+                "$env:APPDATA\npm",
+                "$env:ProgramFiles\nodejs",
+                "$env:LOCALAPPDATA\Programs\Python\Python313",
+                "$env:LOCALAPPDATA\Programs\Python\Python313\Scripts",
+                "$env:LOCALAPPDATA\Programs\Python\Python312",
+                "$env:LOCALAPPDATA\Programs\Python\Python312\Scripts",
+                "$env:LOCALAPPDATA\Programs\Python\Python311",
+                "$env:LOCALAPPDATA\Programs\Python\Python311\Scripts",
+                "$env:ProgramFiles\Git\cmd",
+                "$env:USERPROFILE\go\bin",
+                "$env:USERPROFILE\.cargo\bin",
+                "$env:LOCALAPPDATA\Microsoft\WindowsApps"
+            )
+            foreach ($p in $commonPaths) {
+                if ((Test-Path $p) -and ($combined -notlike "*$p*")) {
+                    $combined = "$p;$combined"
+                }
+            }
+            $env:Path = $combined
+            [System.Environment]::SetEnvironmentVariable("Path", $combined, [System.EnvironmentVariableTarget]::Process)
+        } catch {}
     }
     # ============================================================
     #  About AFNAN
@@ -516,6 +544,246 @@ Read-Host "Press Enter to close"
         $tmp = "$env:TEMP\sync_system_time.ps1"
         $syncPs | Out-File -FilePath $tmp -Encoding UTF8
         Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    }
+
+    function Open-EnvironmentVariables {
+        Start-Process "rundll32.exe" -ArgumentList "sysdm.cpl,EditEnvironmentVariables"
+    }
+
+    function Open-NetworkConnections {
+        Start-Process "ncpa.cpl"
+    }
+
+    function Open-SoundControlPanel {
+        Start-Process "mmsys.cpl"
+    }
+
+    function Open-Services {
+        Start-Process "services.msc"
+    }
+
+    function Open-ProgramsAndFeatures {
+        Start-Process "appwiz.cpl"
+    }
+
+    function Open-WindowsSecurity {
+        Start-Process "windowsdefender:"
+    }
+
+    function Set-UltimatePerformance {
+        $psCode = @'
+Write-Host "Activating Ultimate Performance Power Plan..." -ForegroundColor Cyan
+try {
+    $out = powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 2>&1
+    $guid = ($out | Select-String -Pattern '([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})').Matches[0].Value
+    if ($guid) {
+        powercfg -setactive $guid
+        Write-Host ("Ultimate Performance scheme activated: " + $guid) -ForegroundColor Green
+    } else {
+        powercfg -setactive e9a42b02-d5df-448d-aa00-03f14749eb61
+        Write-Host "Ultimate Performance scheme activated!" -ForegroundColor Green
+    }
+} catch {
+    Write-Host ("Note: " + $_.Exception.Message) -ForegroundColor Yellow
+}
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\set_ultimate_perf.ps1"
+        $psCode | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    }
+
+    function Reset-UltimatePerformance {
+        $psCode = @'
+Write-Host "Restoring Balanced Power Plan..." -ForegroundColor Cyan
+try {
+    powercfg -setactive 381b4222-f694-41f0-9685-ff5bb260df2e
+    Write-Host "Balanced Power scheme restored successfully." -ForegroundColor Green
+} catch {
+    Write-Host ("Error: " + $_.Exception.Message) -ForegroundColor Red
+}
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\reset_ultimate_perf.ps1"
+        $psCode | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    }
+
+    function Set-ShowExtensionsAndHidden {
+        $psCode = @'
+Write-Host "Showing file extensions and hidden files in File Explorer..." -ForegroundColor Cyan
+try {
+    $advKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+    Set-ItemProperty -Path $advKey -Name "HideFileExt" -Value 0 -Force
+    Set-ItemProperty -Path $advKey -Name "Hidden" -Value 1 -Force
+    Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+    Start-Process explorer.exe
+    Write-Host "File extensions and hidden files are now visible." -ForegroundColor Green
+} catch {
+    Write-Host ("Error: " + $_.Exception.Message) -ForegroundColor Red
+}
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\set_show_ext.ps1"
+        $psCode | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    }
+
+    function Reset-ShowExtensionsAndHidden {
+        $psCode = @'
+Write-Host "Restoring default File Explorer view (hiding extensions & hidden files)..." -ForegroundColor Cyan
+try {
+    $advKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+    Set-ItemProperty -Path $advKey -Name "HideFileExt" -Value 1 -Force
+    Set-ItemProperty -Path $advKey -Name "Hidden" -Value 2 -Force
+    Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+    Start-Process explorer.exe
+    Write-Host "Default Explorer file visibility restored." -ForegroundColor Green
+} catch {
+    Write-Host ("Error: " + $_.Exception.Message) -ForegroundColor Red
+}
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\reset_show_ext.ps1"
+        $psCode | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    }
+
+    function Disable-StartBingSearch {
+        $psCode = @'
+Write-Host "Disabling Bing Search and web results in Start Menu..." -ForegroundColor Cyan
+try {
+    $key = "HKCU:\Software\Policies\Microsoft\Windows\Explorer"
+    if (-not (Test-Path $key)) { New-Item -Path $key -Force | Out-Null }
+    Set-ItemProperty -Path $key -Name "DisableSearchBoxSuggestions" -Value 1 -Type DWord -Force
+    $searchKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search"
+    if (-not (Test-Path $searchKey)) { New-Item -Path $searchKey -Force | Out-Null }
+    Set-ItemProperty -Path $searchKey -Name "BingSearchEnabled" -Value 0 -Type DWord -Force
+    Set-ItemProperty -Path $searchKey -Name "CortanaConsent" -Value 0 -Type DWord -Force
+    Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+    Start-Process explorer.exe
+    Write-Host "Start Menu web/Bing search disabled successfully!" -ForegroundColor Green
+} catch {
+    Write-Host ("Error: " + $_.Exception.Message) -ForegroundColor Red
+}
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\disable_bing_search.ps1"
+        $psCode | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    }
+
+    function Enable-StartBingSearch {
+        $psCode = @'
+Write-Host "Restoring Bing Search in Start Menu..." -ForegroundColor Cyan
+try {
+    $key = "HKCU:\Software\Policies\Microsoft\Windows\Explorer"
+    Remove-ItemProperty -Path $key -Name "DisableSearchBoxSuggestions" -ErrorAction SilentlyContinue
+    $searchKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search"
+    Remove-ItemProperty -Path $searchKey -Name "BingSearchEnabled" -ErrorAction SilentlyContinue
+    Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+    Start-Process explorer.exe
+    Write-Host "Start Menu Bing search restored." -ForegroundColor Green
+} catch {
+    Write-Host ("Error: " + $_.Exception.Message) -ForegroundColor Red
+}
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\enable_bing_search.ps1"
+        $psCode | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    }
+
+    function Set-DarkTheme {
+        $psCode = @'
+Write-Host "Enabling Windows Dark Mode..." -ForegroundColor Cyan
+try {
+    $themeKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+    if (-not (Test-Path $themeKey)) { New-Item -Path $themeKey -Force | Out-Null }
+    Set-ItemProperty -Path $themeKey -Name "AppsUseLightTheme" -Value 0 -Type DWord -Force
+    Set-ItemProperty -Path $themeKey -Name "SystemUsesLightTheme" -Value 0 -Type DWord -Force
+    Write-Host "Dark Mode applied!" -ForegroundColor Green
+} catch {
+    Write-Host ("Error: " + $_.Exception.Message) -ForegroundColor Red
+}
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\set_dark_theme.ps1"
+        $psCode | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    }
+
+    function Set-LightTheme {
+        $psCode = @'
+Write-Host "Enabling Windows Light Mode..." -ForegroundColor Cyan
+try {
+    $themeKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+    if (-not (Test-Path $themeKey)) { New-Item -Path $themeKey -Force | Out-Null }
+    Set-ItemProperty -Path $themeKey -Name "AppsUseLightTheme" -Value 1 -Type DWord -Force
+    Set-ItemProperty -Path $themeKey -Name "SystemUsesLightTheme" -Value 1 -Type DWord -Force
+    Write-Host "Light Mode applied!" -ForegroundColor Green
+} catch {
+    Write-Host ("Error: " + $_.Exception.Message) -ForegroundColor Red
+}
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\set_light_theme.ps1"
+        $psCode | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    }
+
+    function Clear-TempJunk {
+        $psCode = @'
+Write-Host "Cleaning temporary files and cache..." -ForegroundColor Cyan
+$paths = @($env:TEMP, "$env:SystemRoot\Temp", "$env:SystemRoot\Prefetch")
+$cleaned = 0
+foreach ($p in $paths) {
+    if (Test-Path $p) {
+        Get-ChildItem -Path $p -Recurse -Force -ErrorAction SilentlyContinue | ForEach-Object {
+            try { Remove-Item $_.FullName -Recurse -Force -ErrorAction SilentlyContinue; $cleaned++ } catch {}
+        }
+    }
+}
+Write-Host ("Temporary files and cache cleanup completed ($cleaned item(s) processed).") -ForegroundColor Green
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\clear_temp_junk.ps1"
+        $psCode | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    }
+
+    function Flush-DnsCache {
+        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", "ipconfig /flushdns && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    }
+
+    function Create-GodModeFolder {
+        $desktop = [Environment]::GetFolderPath("Desktop")
+        $godPath = Join-Path $desktop "GodMode.{ED7BA470-8E54-465E-825C-99712043E01C}"
+        try {
+            if (-not (Test-Path $godPath)) {
+                New-Item -ItemType Directory -Path $godPath -Force | Out-Null
+                Write-Log "GodMode folder created on Desktop." -Level Success
+            } else {
+                Write-Log "GodMode folder already exists on Desktop." -Level Info
+            }
+        } catch {
+            Write-Log "ERROR creating GodMode: $($_.Exception.Message)" -Level Error
+        }
+    }
+
+    function Remove-GodModeFolder {
+        $desktop = [Environment]::GetFolderPath("Desktop")
+        $godPath = Join-Path $desktop "GodMode.{ED7BA470-8E54-465E-825C-99712043E01C}"
+        try {
+            if (Test-Path $godPath) {
+                Remove-Item -Path $godPath -Force -Recurse -ErrorAction SilentlyContinue
+                Write-Log "GodMode folder removed from Desktop." -Level Success
+            } else {
+                Write-Log "GodMode folder not found on Desktop." -Level Info
+            }
+        } catch {
+            Write-Log "ERROR removing GodMode: $($_.Exception.Message)" -Level Error
+        }
     }
 
     # ============================================================
@@ -1343,9 +1611,11 @@ Read-Host "Press Enter to close"
             param($s, $e)
             $f = $s.Tag
             $taskName = $s.Content
+            Refresh-Env
             Write-Log "Launching: $taskName ..." -Level Running
             try {
                 & $f
+                Refresh-Env
                 Write-Log "$taskName - launched." -Level Success
             }
             catch {
@@ -1461,10 +1731,12 @@ Read-Host "Press Enter to close"
             param($s, $e)
             $def = $s.Tag
             $name = $def.Name
+            Refresh-Env
             if ($null -ne $def.Off) {
                 Write-Log "Reverting: $name ..." -Level Running
                 try {
                     & $def.Off
+                    Refresh-Env
                     Write-Log "$name - reverted." -Level Success
                 } catch {
                     Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error
@@ -1494,10 +1766,12 @@ Read-Host "Press Enter to close"
             param($s, $e)
             $def = $s.Tag
             $name = $def.Name
+            Refresh-Env
             Write-Log "Launching tweak: $name ..." -Level Running
             try {
                 if ($null -ne $def.On) {
                     & $def.On
+                    Refresh-Env
                     Write-Log "$name - executed." -Level Success
                 }
             } catch {
@@ -1551,9 +1825,11 @@ Read-Host "Press Enter to close"
             param($s, $e)
             $f = $s.Tag
             $tName = $s.Content
+            Refresh-Env
             Write-Log "Launching: $tName ..." -Level Running
             try {
                 & $f
+                Refresh-Env
                 Write-Log "$tName - launched." -Level Success
             } catch {
                 Write-Log "ERROR: $tName - $($_.Exception.Message)" -Level Error
@@ -1737,6 +2013,69 @@ Read-Host "Press Enter to close"
             Off         = { Set-Win10ContextMenu }
         },
         @{
+            Name        = "Ultimate Performance"
+            Category    = "System Tweaks"
+            Description = "Run: Unlock & activate Ultimate Performance power plan  |  Revert: Restore Balanced plan"
+            On          = { Set-UltimatePerformance }
+            Off         = { Reset-UltimatePerformance }
+        },
+        @{
+            Name        = "Show Ext & Hidden Files"
+            Category    = "System Tweaks"
+            Description = "Run: Show known file extensions and hidden files in Explorer  |  Revert: Restore defaults"
+            On          = { Set-ShowExtensionsAndHidden }
+            Off         = { Reset-ShowExtensionsAndHidden }
+        },
+        @{
+            Name        = "Disable Start Bing Search"
+            Category    = "System Tweaks"
+            Description = "Run: Disable Bing/web search in Windows Start Menu  |  Revert: Enable Bing search"
+            On          = { Disable-StartBingSearch }
+            Off         = { Enable-StartBingSearch }
+        },
+        @{
+            Name        = "Dark / Light Theme"
+            Category    = "System Tweaks"
+            Description = "Run: Apply Windows Dark Theme  |  Revert: Apply Windows Light Theme"
+            On          = { Set-DarkTheme }
+            Off         = { Set-LightTheme }
+        },
+        @{
+            Name        = "God Mode Folder"
+            Category    = "System Tweaks"
+            Description = "Run: Create GodMode master control folder on Desktop  |  Revert: Remove GodMode folder"
+            On          = { Create-GodModeFolder }
+            Off         = { Remove-GodModeFolder }
+        },
+        @{
+            Name        = "CMD Color 0a"
+            Category    = "System Tweaks"
+            Description = "Run: Set Command Prompt color scheme to Matrix green (0a)  |  Revert: Reset default color"
+            On          = { Set-CMD0A }
+            Off         = { Reset-CMDColor }
+        },
+        @{
+            Name        = "Cursor / Elegant Theme"
+            Category    = "System Tweaks"
+            Description = "Run: Download and apply custom Elegant cursor scheme  |  Revert: Restore default cursor"
+            On          = { Install-Cursor }
+            Off         = { Reset-Cursor }
+        },
+        @{
+            Name        = "Clean Temp & Cache"
+            Category    = "Maintenance"
+            Description = "Run: Clean temporary files, Windows cache, and prefetch junk"
+            On          = { Clear-TempJunk }
+            Off         = $null
+        },
+        @{
+            Name        = "Flush DNS Cache"
+            Category    = "Maintenance"
+            Description = "Run: Flush and reset Windows DNS resolver cache (ipconfig /flushdns)"
+            On          = { Flush-DnsCache }
+            Off         = $null
+        },
+        @{
             Name        = "See Execution Policy"
             Category    = "PowerShell Tweaks"
             Description = "Inspect current PowerShell execution policy across all scopes"
@@ -1746,23 +2085,9 @@ Read-Host "Press Enter to close"
         @{
             Name        = "Unrestrict Policy"
             Category    = "PowerShell Tweaks"
-            Description = "Set PowerShell execution policy to Unrestricted for CurrentUser and LocalMachine"
+            Description = "Run: Set PowerShell policy to Unrestricted  |  Revert: Set policy to Restricted"
             On          = { Unrestrict-Policy }
             Off         = { Restrict-Policy }
-        },
-        @{
-            Name        = "CMD Color 0a"
-            Category    = "System Tweaks"
-            Description = "Set Command Prompt color scheme to Matrix green (0a)"
-            On          = { Set-CMD0A }
-            Off         = { Reset-CMDColor }
-        },
-        @{
-            Name        = "Cursor / Elegant Theme"
-            Category    = "System Tweaks"
-            Description = "Download and apply custom Elegant mouse cursor scheme"
-            On          = { Install-Cursor }
-            Off         = { Reset-Cursor }
         }
     )
 
@@ -1796,6 +2121,12 @@ Read-Host "Press Enter to close"
         $settingsItems = @(
             @{ Name = "Sync Time (Auto Fix)";     Func = { Sync-SystemTime } },
             @{ Name = "Date & Time Settings";     Func = { Open-DateTimeSettings } },
+            @{ Name = "Environment Variables";    Func = { Open-EnvironmentVariables } },
+            @{ Name = "Network Connections";      Func = { Open-NetworkConnections } },
+            @{ Name = "Sound Control Panel";      Func = { Open-SoundControlPanel } },
+            @{ Name = "Windows Services";         Func = { Open-Services } },
+            @{ Name = "Installed Programs";       Func = { Open-ProgramsAndFeatures } },
+            @{ Name = "Windows Security";         Func = { Open-WindowsSecurity } },
             @{ Name = "Classic Control Panel";    Func = { Open-ControlPanel } },
             @{ Name = "Devices and Printers";     Func = { Open-DevicesAndPrinters } },
             @{ Name = "Mouse Properties";         Func = { Open-MouseProperties } },
@@ -1874,6 +2205,37 @@ Read-Host "Press Enter to close"
                 })
             }
 
+            function Refresh-RunspaceEnv {
+                try {
+                    $m = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine)
+                    $u = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
+                    $comb = "$m;$u"
+                    $cp = @(
+                        "$env:ProgramData\chocolatey\bin",
+                        "$env:USERPROFILE\scoop\shims",
+                        "$env:APPDATA\npm",
+                        "$env:ProgramFiles\nodejs",
+                        "$env:LOCALAPPDATA\Programs\Python\Python313",
+                        "$env:LOCALAPPDATA\Programs\Python\Python313\Scripts",
+                        "$env:LOCALAPPDATA\Programs\Python\Python312",
+                        "$env:LOCALAPPDATA\Programs\Python\Python312\Scripts",
+                        "$env:LOCALAPPDATA\Programs\Python\Python311",
+                        "$env:LOCALAPPDATA\Programs\Python\Python311\Scripts",
+                        "$env:ProgramFiles\Git\cmd",
+                        "$env:USERPROFILE\go\bin",
+                        "$env:USERPROFILE\.cargo\bin",
+                        "$env:LOCALAPPDATA\Microsoft\WindowsApps"
+                    )
+                    foreach ($p in $cp) {
+                        if ((Test-Path $p) -and ($comb -notlike "*$p*")) {
+                            $comb = "$p;$comb"
+                        }
+                    }
+                    $env:Path = $comb
+                    [System.Environment]::SetEnvironmentVariable("Path", $comb, [System.EnvironmentVariableTarget]::Process)
+                } catch {}
+            }
+
             $total = $SelectedTasks.Count
             $ok = 0
             $fail = 0
@@ -1886,6 +2248,7 @@ Read-Host "Press Enter to close"
                     $StatusLabel.Text = "Task $($idx+1) of $total : $tName"
                 })
 
+                Refresh-RunspaceEnv
                 Ui-Log -Msg "Running: $($task.Name) ..." -Clr $CLR_YELLOW
 
                 if ($null -eq $task -or $null -eq $task.Function) {
@@ -1905,6 +2268,7 @@ Read-Host "Press Enter to close"
 
                 try {
                     & $task.Function
+                    Refresh-RunspaceEnv
                     Ui-Log -Msg "Done:    $($task.Name)" -Clr $CLR_GREEN
                     $ok++
                 }
