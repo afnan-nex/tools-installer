@@ -1736,6 +1736,7 @@ Read-Host "Press Enter to close"
         $cpItems = @(
             @{ Name = "Classic Control Panel";    Func = { Open-ControlPanel } },
             @{ Name = "Devices and Printers";     Func = { Open-DevicesAndPrinters } },
+            @{ Name = "Mouse Properties";         Func = { Open-MouseProperties } },
             @{ Name = "Task Manager";             Func = { Open-TaskManager } },
             @{ Name = "Device Manager";           Func = { Open-DeviceManager } },
             @{ Name = "Disk Management";          Func = { Open-DiskManagement } },
