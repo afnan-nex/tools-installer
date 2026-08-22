@@ -1271,7 +1271,7 @@ Read-Host "Press Enter to close"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Tool Installer  -  by AFNAN"
-        Width="1300" Height="600" MinWidth="820" MinHeight="620"
+        Width="1200" Height="600" MinWidth="820" MinHeight="620"
         WindowStartupLocation="CenterScreen" ResizeMode="CanResize"
         Background="#12121C" Foreground="#DADAE8"
         KeyboardNavigation.DirectionalNavigation="Continue">
