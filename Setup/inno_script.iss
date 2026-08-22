@@ -4,7 +4,7 @@
 
 #define MyAppName "Tools Installer"
 #define MyAppVersion "1.5"
-#define MyAppPublisher "Afnan nex"
+#define MyAppPublisher "AFNAN"
 #define MyAppURL "https://github.com/afnan-nex/tools-installer"
 #define MyAppIconName "Tools-Installer.ico"
 
@@ -21,7 +21,7 @@ DisableProgramGroupPage=yes
 OutputBaseFilename=Tools-Installer
 SetupIconFile=C:\Users\Admin\Downloads\{#MyAppIconName}
 SolidCompression=yes
-WizardStyle=modern dynamic
+WizardStyle=modern
 ; FIX 1: Ensures the uninstaller runs with administrative privileges to modify Program Files
 PrivilegesRequired=admin
 
