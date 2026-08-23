@@ -1,22 +1,22 @@
-# **Tools Installer**
+# **Tooler**
 
-A modern Windows WPF GUI application wrapper for `tools-installer.ps1` to quickly install developer tools, productivity apps, system utilities, and run optimization/automation scripts. It simplifies the setup of essential environments and configurations on Windows systems.
+A modern Windows WPF GUI application wrapper for `tooler.ps1` to quickly install developer tools, productivity apps, system utilities, and run optimization/automation scripts. It simplifies the setup of essential environments and configurations on Windows systems.
 
 ## Run in CMD
 ```cmd
-curl -L -o "%TEMP%\tools-installer.ps1" https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\tools-installer.ps1"
+curl -L -o "%TEMP%\tooler.ps1" https://raw.githubusercontent.com/afnan-nex/tooler/main/tooler.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\tooler.ps1"
 
 ```
 
 <p align="center">
-  <a href="https://raw.githubusercontent.com/afnan-nex/tools-installer/refs/heads/main/Setup/Tools-Installer.exe">
+  <a href="https://raw.githubusercontent.com/afnan-nex/tooler/refs/heads/main/Setup/Tooler.exe">
     <img src="https://img.shields.io/badge/Download-Setup.exe-blue?style=for-the-badge&logo=windows" alt="Download Setup">
   </a>
 </p>
 
 ## Run in CMD (Beta)
 ```cmd
-curl -L -o "%TEMP%\tools-installer-beta.ps1" https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer-beta.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\tools-installer-beta.ps1"
+curl -L -o "%TEMP%\tooler-beta.ps1" https://raw.githubusercontent.com/afnan-nex/tooler/main/tooler-beta.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\tooler-beta.ps1"
 
 ```
 
@@ -26,25 +26,25 @@ curl -L -o "%TEMP%\tools-installer-beta.ps1" https://raw.githubusercontent.com/a
 ## **For Security Problem**
 Might I make it Permanent
 ```cmd
-curl -L -o "%TEMP%\tools-installer.ps1" https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\tools-installer.ps1"
+curl -L -o "%TEMP%\tooler.ps1" https://raw.githubusercontent.com/afnan-nex/tooler/main/tooler.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\tooler.ps1"
 
 ```
 
 ## **Curl Command**
 ```cmd
-curl -o tools-installer.cmd https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd && tools-installer.cmd
+curl -o tooler.cmd https://raw.githubusercontent.com/afnan-nex/tooler/main/Other/tooler.cmd && tooler.cmd
 
 ```
 ## **Run in PowerShell or CMD 🖥️**
 ```ps1
-powershell -NoProfile -ExecutionPolicy Bypass -Command "irm 'https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd?$(Get-Date -Format yyyyMMddHHmmss)' -OutFile tools-installer.cmd; Start-Process tools-installer.cmd"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "irm 'https://raw.githubusercontent.com/afnan-nex/tooler/main/Other/tooler.cmd?$(Get-Date -Format yyyyMMddHHmmss)' -OutFile tooler.cmd; Start-Process tooler.cmd"
 
 ```
 ## **To Run Strictly in Powershell**
 ```ps1
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
-Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/afnan-nex/tools-installer/main/tools-installer.cmd?$(Get-Date -Format yyyyMMddHHmmss)" -OutFile "$env:TEMP\tools-installer.cmd";
-Start-Process "$env:TEMP\tools-installer.cmd" -Verb RunAs
+Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/afnan-nex/tooler/main/Other/tooler.cmd?$(Get-Date -Format yyyyMMddHHmmss)" -OutFile "$env:TEMP\tooler.cmd";
+Start-Process "$env:TEMP\tooler.cmd" -Verb RunAs
 
 ```
 </details>
@@ -73,7 +73,7 @@ Start-Process "$env:TEMP\tools-installer.cmd" -Verb RunAs
 *   See execution policy, Unrestrict PowerShell execution policies.
 
 ### 3. **Run Scripts & Optimizations**
-*   Chris Titus Tool, Mass Grave (Windows Activation), Win11 Debloat, WinScript, Coporton, IDM Fixer, Sparkle, GHGrab, Tools Installer Setup, VPN, Tor Link, Tork, YTDLP Frontend, Yoinks.
+*   Chris Titus Tool, Mass Grave (Windows Activation), Win11 Debloat, WinScript, Coporton, IDM Fixer, Sparkle, GHGrab, Tooler Setup, VPN, Tor Link, Tork, YTDLP Frontend, Yoinks.
 
 ### 4. **AI Assistants & Tools**
 *   Agy, Opencode, Cursor IDE, Google Desktop App, LLM-Checker, LLMFit, Ollama, Claude Code, Claude Code Router, Codebuff, Omniroute.
@@ -107,7 +107,7 @@ Start-Process "$env:TEMP\tools-installer.cmd" -Verb RunAs
 
 ## **License**
 
-This project is licensed under the MIT License. See the [LICENSE](https://github.com/afnan-nex/tools-installer/blob/main/LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/afnan-nex/tooler/blob/main/LICENSE) file for details.
 
 ## **Author**
 
