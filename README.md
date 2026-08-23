@@ -47,6 +47,13 @@ Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/afnan-nex/
 Start-Process "$env:TEMP\tooler.cmd" -Verb RunAs
 
 ```
+
+## **Install CLI Binary to PATH (`tooler.exe`)**
+Run in PowerShell (Admin):
+```ps1
+powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/afnan-nex/tooler/main/install-tooler.ps1 | iex"
+```
+Or run the [Setup installer](file:///C:/Users/Admin/Desktop/tools-installer-main/Setup/Tooler.exe), which automatically installs `tooler.exe` and adds it to your system `PATH`.
 </details>
 
 ---
