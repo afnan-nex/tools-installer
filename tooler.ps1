@@ -1695,7 +1695,7 @@ Read-Host "Press Enter to close"
                     </Border>
 
                     <!-- System Specs & Health Overview HUD Pill -->
-                    <Border Name="BorderSystemHUD" Background="#12121C" BorderBrush="#30304E" BorderThickness="1" CornerRadius="14" Margin="14,0,0,0" Height="28" VerticalAlignment="Center" Padding="12,0" Cursor="Hand" ToolTip="Click to view detailed system hardware specs">
+                    <Border Name="BorderSystemHUD" Background="#12121C" BorderBrush="#30304E" BorderThickness="1" CornerRadius="14" Margin="14,0,0,0" Height="28" VerticalAlignment="Center" Padding="12,0">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <TextBlock Text="OS: " FontFamily="Segoe UI" FontSize="10" FontWeight="Bold" Foreground="#63B3ED" VerticalAlignment="Center"/>
                             <TextBlock Name="TxtHudOS" Text="Win 11" FontFamily="Segoe UI" FontSize="11" FontWeight="SemiBold" Foreground="#E2E8F0" VerticalAlignment="Center" Margin="0,0,8,0"/>
@@ -2757,10 +2757,6 @@ Read-Host "Press Enter to close"
     # GitHub Button
     $script:btnGithub.Add_Click({ Open-Github })
 
-    # System Specs HUD Click Event
-    $script:borderSystemHUD.Add_MouseLeftButtonUp({
-        Show-DetailedSystemInfo
-    })
 
     # Package Manager Engine Toggle
     $script:toggleChoco.Add_Checked({
