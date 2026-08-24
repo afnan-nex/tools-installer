@@ -204,14 +204,9 @@ public static extern IntPtr GetConsoleWindow();
             $freeRamGB = [Math]::Round($os.FreePhysicalMemory / 1MB, 1)
             $usedRamGB = [Math]::Round($totalRamGB - $freeRamGB, 1)
             $ramPercent = [Math]::Round(($usedRamGB / $totalRamGB) * 100)
-            $osName = ($os.Caption -replace 'Microsoft Windows ', 'Win ') -replace ' Pro', ''
-            $cpuCores = $env:NUMBER_OF_PROCESSORS
             
             return @{
-                OSName     = "$osName"
-                Build      = "$($os.BuildNumber)"
                 RAMText    = "${usedRamGB}/${totalRamGB} GB ($ramPercent%)"
-                CPUText    = "$cpuCores Threads"
                 TotalRAM   = "$totalRamGB GB"
                 UsedRAM    = "$usedRamGB GB"
                 FreeRAM    = "$freeRamGB GB"
@@ -219,9 +214,7 @@ public static extern IntPtr GetConsoleWindow();
             }
         } catch {
             return @{
-                OSName  = "Windows"
                 RAMText = "--"
-                CPUText = "$($env:NUMBER_OF_PROCESSORS) Threads"
             }
         }
     }
@@ -657,8 +650,36 @@ public static extern IntPtr GetConsoleWindow();
     }
 
     function Install-HermesGUI {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Hermes Desktop GUI... && powershell -NoProfile -ExecutionPolicy Bypass -Command `"[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; try { `$api = Invoke-RestMethod 'https://api.github.com/repos/NousResearch/hermes-agent/releases/latest'; `$asset = `$api.assets | Where-Object { `$_.name -match '\.exe$' } | Select-Object -First 1; if (`$asset) { `$tmp = `"`$env:TEMP\`$(`$asset.name)`"; Write-Host 'Downloading ' `$asset.browser_download_url; Invoke-WebRequest -Uri `$asset.browser_download_url -OutFile `$tmp; Start-Process `$tmp; } else { Start-Process 'https://hermes-agent.nousresearch.com/desktop' } } catch { Start-Process 'https://hermes-agent.nousresearch.com/desktop' }`" && echo. && echo Hermes GUI setup launched. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        $hermesPs = @'
+Write-Host "=== Installing Hermes Desktop GUI ===" -ForegroundColor Cyan
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+try {
+    Write-Host "Fetching latest release from GitHub..." -ForegroundColor Yellow
+    $api = Invoke-RestMethod 'https://api.github.com/repos/NousResearch/hermes-agent/releases/latest'
+    $asset = $api.assets | Where-Object { $_.name -match '\.exe$' } | Select-Object -First 1
+    if ($asset) {
+        $tmp = Join-Path $env:TEMP $asset.name
+        Write-Host ("Downloading " + $asset.browser_download_url + " ...") -ForegroundColor Green
+        Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $tmp
+        Write-Host "Launching installer..." -ForegroundColor Green
+        Start-Process $tmp
+    } else {
+        Write-Host "No direct exe release asset found. Opening desktop release page..." -ForegroundColor Yellow
+        Start-Process 'https://hermes-agent.nousresearch.com/desktop'
+    }
+} catch {
+    Write-Host ("Failed to fetch release automatically: " + $_.Exception.Message) -ForegroundColor Red
+    Write-Host "Opening download page..." -ForegroundColor Yellow
+    Start-Process 'https://hermes-agent.nousresearch.com/desktop'
+}
+Write-Host ""
+Write-Host "Hermes Desktop GUI setup initiated." -ForegroundColor Green
+Write-Host ""
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\install_hermes_gui.ps1"
+        $hermesPs | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
     }
 
     function Install-HermesCLI {
@@ -1697,14 +1718,8 @@ Read-Host "Press Enter to close"
                     <!-- System Specs & Health Overview HUD Pill -->
                     <Border Name="BorderSystemHUD" Background="#12121C" BorderBrush="#30304E" BorderThickness="1" CornerRadius="14" Margin="14,0,0,0" Height="28" VerticalAlignment="Center" Padding="12,0">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="OS: " FontFamily="Segoe UI" FontSize="10" FontWeight="Bold" Foreground="#63B3ED" VerticalAlignment="Center"/>
-                            <TextBlock Name="TxtHudOS" Text="Win 11" FontFamily="Segoe UI" FontSize="11" FontWeight="SemiBold" Foreground="#E2E8F0" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="|" Foreground="#30304E" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="RAM: " FontFamily="Segoe UI" FontSize="10" FontWeight="Bold" Foreground="#81E6D9" VerticalAlignment="Center"/>
-                            <TextBlock Name="TxtHudRAM" Text="--" FontFamily="Segoe UI" FontSize="11" Foreground="#E2E8F0" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="|" Foreground="#30304E" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="CPU: " FontFamily="Segoe UI" FontSize="10" FontWeight="Bold" Foreground="#48C78E" VerticalAlignment="Center"/>
-                            <TextBlock Name="TxtHudCPU" Text="-- Threads" FontFamily="Segoe UI" FontSize="11" Foreground="#E2E8F0" VerticalAlignment="Center"/>
+                            <TextBlock Text="RAM: " FontFamily="Segoe UI" FontSize="10" FontWeight="Bold" Foreground="#63B3ED" VerticalAlignment="Center"/>
+                            <TextBlock Name="TxtHudRAM" Text="--" FontFamily="Segoe UI" FontSize="11" FontWeight="SemiBold" Foreground="#E2E8F0" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>
@@ -1824,9 +1839,7 @@ Read-Host "Press Enter to close"
     $script:tabDev = $script:window.FindName("TabDev")
     $script:tabScripts = $script:window.FindName("TabScripts")
     $script:borderSystemHUD = $script:window.FindName("BorderSystemHUD")
-    $script:txtHudOS = $script:window.FindName("TxtHudOS")
     $script:txtHudRAM = $script:window.FindName("TxtHudRAM")
-    $script:txtHudCPU = $script:window.FindName("TxtHudCPU")
     $script:chkSelectAll = $script:window.FindName("ChkSelectAll")
     $script:btnGithub = $script:window.FindName("BtnGithub")
     $script:txtSearch = $script:window.FindName("TxtSearch")
@@ -1856,14 +1869,8 @@ Read-Host "Press Enter to close"
     # Populate System Specs HUD immediately
     try {
         $specs = Get-SystemSpecsSummary
-        if ($null -ne $script:txtHudOS -and $null -ne $specs.OSName) {
-            $script:txtHudOS.Text = $specs.OSName
-        }
         if ($null -ne $script:txtHudRAM -and $null -ne $specs.RAMText) {
             $script:txtHudRAM.Text = $specs.RAMText
-        }
-        if ($null -ne $script:txtHudCPU -and $null -ne $specs.CPUText) {
-            $script:txtHudCPU.Text = $specs.CPUText
         }
     } catch {}
 
@@ -3227,14 +3234,8 @@ Read-Host "Press Enter to close"
         # Populate System Specs HUD
         try {
             $specs = Get-SystemSpecsSummary
-            if ($null -ne $script:txtHudOS -and $null -ne $specs.OSName) {
-                $script:txtHudOS.Text = $specs.OSName
-            }
             if ($null -ne $script:txtHudRAM -and $null -ne $specs.RAMText) {
                 $script:txtHudRAM.Text = $specs.RAMText
-            }
-            if ($null -ne $script:txtHudCPU -and $null -ne $specs.CPUText) {
-                $script:txtHudCPU.Text = $specs.CPUText
             }
         } catch {}
 
