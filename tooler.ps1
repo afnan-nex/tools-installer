@@ -41,12 +41,12 @@ public static extern IntPtr GetConsoleWindow();
         )
         Write-Progress -Activity "Tooler - Starting Up" -Status "$Status ($Percent%)" -PercentComplete $Percent
         try {
-            $width = 24
+            $width = 28
             $filled = [int][Math]::Floor(($Percent / 100.0) * $width)
             $empty = [Math]::Max(0, $width - $filled)
             $bar = ("#" * $filled) + ("-" * $empty)
             $msg = "`r  [$bar] $($Percent.ToString().PadLeft(3))% : $Status"
-            $msg = $msg.PadRight(76)
+            $msg = $msg.PadRight(84)
             Write-Host -NoNewline $msg -ForegroundColor Cyan
         } catch {}
     }
@@ -55,14 +55,14 @@ public static extern IntPtr GetConsoleWindow();
         [Console]::CursorVisible = $false
     } catch {}
 
-    Write-Host ""
+    Write-Host "`n`n`n`n`n`n"
     Write-Host " ========================================================== " -ForegroundColor DarkCyan
     Write-Host "                     TOOLER  -  BY AFNAN                    " -ForegroundColor Cyan
     Write-Host " ========================================================== " -ForegroundColor DarkCyan
     Write-Host ""
-    Update-InitProgress -Percent 10 -Status "Initializing environment..."
+    Update-InitProgress -Percent 8 -Status "[1/12] Initializing environment & PATH shims..."
 
-    Update-InitProgress -Percent 20 -Status "Configuring Windows DWM & App ID..."
+    Update-InitProgress -Percent 16 -Status "[2/12] Configuring Windows DWM & App ID..."
     try {
         [void][Native.DWM]
     } catch {
@@ -86,7 +86,7 @@ public static extern IntPtr GetConsoleWindow();
     } catch {}
 
     # -- 4. LOAD WPF ASSEMBLIES ----------------------------------------------------
-    Update-InitProgress -Percent 35 -Status "Loading WPF Presentation Framework..."
+    Update-InitProgress -Percent 25 -Status "[3/12] Loading WPF Presentation Framework..."
     Add-Type -AssemblyName System.Xaml
     Add-Type -AssemblyName PresentationFramework
     Add-Type -AssemblyName PresentationCore
@@ -166,6 +166,215 @@ public static extern IntPtr GetConsoleWindow();
     }
 
     # ============================================================
+    #  PACKAGE MANAGER ENGINE & SYSTEM SPECS HELPERS
+    # ============================================================
+
+    $script:PreferredPkgEngine = "Choco"
+
+    function Install-AppPackage {
+        param(
+            [string]$Name,
+            [string]$ChocoPkg,
+            [string]$WingetId,
+            [string]$CustomCmd = $null
+        )
+        if (-not [string]::IsNullOrEmpty($CustomCmd)) {
+            Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $CustomCmd
+            return
+        }
+        
+        $engine = if ($null -ne $script:PreferredPkgEngine) { $script:PreferredPkgEngine } else { "Choco" }
+        
+        if ($engine -eq "Winget" -and -not [string]::IsNullOrWhiteSpace($WingetId)) {
+            $cmd = "echo Installing $Name via Winget ($WingetId)... && winget install --id $WingetId --exact --silent --accept-source-agreements --accept-package-agreements && echo. && echo $Name installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+            Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $cmd
+        } elseif (-not [string]::IsNullOrWhiteSpace($ChocoPkg)) {
+            $cmd = "echo Installing $Name via Chocolatey ($ChocoPkg)... && choco upgrade $ChocoPkg -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo $Name installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+            Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $cmd
+        } elseif (-not [string]::IsNullOrWhiteSpace($WingetId)) {
+            $cmd = "echo Installing $Name via Winget ($WingetId)... && winget install --id $WingetId --exact --silent --accept-source-agreements --accept-package-agreements && echo. && echo $Name installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+            Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $cmd
+        }
+    }
+
+    function Get-SystemSpecsSummary {
+        try {
+            $os = Get-CimInstance Win32_OperatingSystem -ErrorAction SilentlyContinue
+            $totalRamGB = [Math]::Round($os.TotalVisibleMemorySize / 1MB, 1)
+            $freeRamGB = [Math]::Round($os.FreePhysicalMemory / 1MB, 1)
+            $usedRamGB = [Math]::Round($totalRamGB - $freeRamGB, 1)
+            $ramPercent = [Math]::Round(($usedRamGB / $totalRamGB) * 100)
+            $osName = ($os.Caption -replace 'Microsoft Windows ', 'Win ') -replace ' Pro', ''
+            $cpuCores = $env:NUMBER_OF_PROCESSORS
+            
+            return @{
+                OSName     = "$osName"
+                Build      = "$($os.BuildNumber)"
+                RAMText    = "${usedRamGB}/${totalRamGB} GB ($ramPercent%)"
+                CPUText    = "$cpuCores Threads"
+                TotalRAM   = "$totalRamGB GB"
+                UsedRAM    = "$usedRamGB GB"
+                FreeRAM    = "$freeRamGB GB"
+                RAMPercent = "$ramPercent%"
+            }
+        } catch {
+            return @{
+                OSName  = "Windows"
+                RAMText = "--"
+                CPUText = "$($env:NUMBER_OF_PROCESSORS) Threads"
+            }
+        }
+    }
+
+    function Show-DetailedSystemInfo {
+        try {
+            $os = Get-CimInstance Win32_OperatingSystem
+            $cpu = (Get-CimInstance Win32_Processor | Select-Object -First 1).Name -replace '\s+', ' '
+            $totalRamGB = [Math]::Round($os.TotalVisibleMemorySize / 1MB, 1)
+            $freeRamGB = [Math]::Round($os.FreePhysicalMemory / 1MB, 1)
+            $usedRamGB = [Math]::Round($totalRamGB - $freeRamGB, 1)
+            $ramPercent = [Math]::Round(($usedRamGB / $totalRamGB) * 100)
+            $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+            $adminStr = if ($isAdmin) { "Yes (Elevated Administrator)" } else { "No (Standard User)" }
+            $driveC = Get-PSDrive C -ErrorAction SilentlyContinue
+            $driveCFree = if ($driveC) { [Math]::Round($driveC.Free / 1GB, 1) } else { "--" }
+            $driveCTotal = if ($driveC) { [Math]::Round(($driveC.Used + $driveC.Free) / 1GB, 1) } else { "--" }
+            $uptime = (Get-Date) - $os.LastBootUpTime
+            $uptimeStr = "{0}d {1}h {2}m" -f $uptime.Days, $uptime.Hours, $uptime.Minutes
+            $osArch = if ($os.OSArchitecture) { $os.OSArchitecture } else { [IntPtr]::Size * 8 + "-bit" }
+
+            $specXaml = @"
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Tooler - System Hardware &amp; OS Specs"
+        Width="640" Height="500"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#181826"
+        WindowStyle="None"
+        AllowsTransparency="True">
+    <Border Background="#181826" BorderBrush="#30304E" BorderThickness="1" CornerRadius="8">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,16">
+                <TextBlock Text="System Hardware &amp; OS Overview" FontFamily="Segoe UI" FontSize="18" FontWeight="Bold" Foreground="#63B3ED"/>
+                <TextBlock Text="Real-time hardware diagnostic metrics and environment snapshot" FontFamily="Segoe UI" FontSize="11" Foreground="#78789B" Margin="0,2,0,0"/>
+            </StackPanel>
+
+            <!-- Specs Grid Container -->
+            <Border Grid.Row="1" Background="#12121C" BorderBrush="#30304E" BorderThickness="1" CornerRadius="6" Padding="16">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="170"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="32"/>
+                            <RowDefinition Height="32"/>
+                            <RowDefinition Height="32"/>
+                            <RowDefinition Height="32"/>
+                            <RowDefinition Height="32"/>
+                            <RowDefinition Height="32"/>
+                            <RowDefinition Height="32"/>
+                            <RowDefinition Height="32"/>
+                            <RowDefinition Height="32"/>
+                            <RowDefinition Height="32"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- OS -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Operating System" Foreground="#78789B" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="$($os.Caption) (Build $($os.BuildNumber))" Foreground="#FFFFFF" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+
+                        <!-- Architecture -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Architecture" Foreground="#78789B" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="$osArch" Foreground="#FFFFFF" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+
+                        <!-- CPU Model -->
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Processor (CPU)" Foreground="#78789B" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="$cpu" Foreground="#63B3ED" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+
+                        <!-- CPU Threads -->
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="CPU Threads" Foreground="#78789B" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="$($env:NUMBER_OF_PROCESSORS) Logical Cores / Threads" Foreground="#FFFFFF" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+
+                        <!-- RAM -->
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Memory (RAM)" Foreground="#78789B" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+                        <TextBlock Grid.Row="4" Grid.Column="1" Text="$usedRamGB / $totalRamGB GB ($ramPercent% used, $freeRamGB GB free)" Foreground="#48C78E" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+
+                        <!-- Drive C -->
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="System Drive (C:)" Foreground="#78789B" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+                        <TextBlock Grid.Row="5" Grid.Column="1" Text="$driveCFree GB free of $driveCTotal GB" Foreground="#FFFFFF" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+
+                        <!-- Computer / User -->
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Computer &amp; User" Foreground="#78789B" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+                        <TextBlock Grid.Row="6" Grid.Column="1" Text="$($env:COMPUTERNAME) \ $($env:USERNAME)" Foreground="#FFFFFF" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+
+                        <!-- Admin Status -->
+                        <TextBlock Grid.Row="7" Grid.Column="0" Text="Administrator Role" Foreground="#78789B" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+                        <TextBlock Grid.Row="7" Grid.Column="1" Text="$adminStr" Foreground="#FFD166" FontWeight="SemiBold" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+
+                        <!-- Uptime -->
+                        <TextBlock Grid.Row="8" Grid.Column="0" Text="System Uptime" Foreground="#78789B" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+                        <TextBlock Grid.Row="8" Grid.Column="1" Text="$uptimeStr" Foreground="#FFFFFF" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+
+                        <!-- PowerShell -->
+                        <TextBlock Grid.Row="9" Grid.Column="0" Text="PowerShell Version" Foreground="#78789B" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+                        <TextBlock Grid.Row="9" Grid.Column="1" Text="$($PSVersionTable.PSVersion.ToString())" Foreground="#FFFFFF" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="12"/>
+                    </Grid>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Footer Buttons -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+                <Button Name="BtnCloseSpec" Content="Close" Width="100" Height="28" Cursor="Hand" Background="#252538" Foreground="#FFFFFF" BorderBrush="#30304E" BorderThickness="1" FontFamily="Segoe UI" FontSize="12"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
+"@
+            $specWin = [Windows.Markup.XamlReader]::Parse($specXaml)
+            if ($null -ne $script:window) {
+                $specWin.Owner = $script:window
+            }
+            
+            # Apply DWM Dark Mode to the modal
+            try {
+                $specHelper = New-Object System.Windows.Interop.WindowInteropHelper($specWin)
+                $specHwnd = $specHelper.Handle
+                $darkMode = 1
+                try { [Native.DWM]::DwmSetWindowAttribute($specHwnd, 20, [ref]$darkMode, 4) }
+                catch { try { [Native.DWM]::DWMSetWindowAttribute($specHwnd, 19, [ref]$darkMode, 4) } catch {} }
+            } catch {}
+
+            $btnClose = $specWin.FindName("BtnCloseSpec")
+            if ($null -ne $btnClose) {
+                $btnClose.Add_Click({
+                    $specWin.Close()
+                })
+            }
+
+            # Allow dragging window from border
+            $specWin.Add_MouseLeftButtonDown({
+                param($s, $e)
+                if ($e.ButtonState -eq [System.Windows.Input.MouseButtonState]::Pressed) {
+                    $specWin.DragMove()
+                }
+            })
+
+            $specWin.ShowDialog() | Out-Null
+        } catch {
+            Write-Log "Unable to load detailed system info: $($_.Exception.Message)" -Level Error
+        }
+    }
+
+    # ============================================================
     #  Essential
     # ============================================================
 
@@ -179,8 +388,7 @@ public static extern IntPtr GetConsoleWindow();
     }
 
     function Install-NodeLTS {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Node.js LTS via Chocolatey... && choco upgrade nodejs-lts -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Node.js installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "Node.js LTS" -ChocoPkg "nodejs-lts" -WingetId "OpenJS.NodeJS.LTS"
     }
 
     function Install-Scoop {
@@ -189,8 +397,7 @@ public static extern IntPtr GetConsoleWindow();
     }
 
     function Install-Pnpm {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing pnpm via Chocolatey... && choco upgrade pnpm -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo pnpm installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "pnpm" -ChocoPkg "pnpm" -WingetId "pnpm.pnpm"
     }
 
     function Install-Yarn {
@@ -199,18 +406,27 @@ public static extern IntPtr GetConsoleWindow();
     }
 
     function Install-Bun {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Bun via Chocolatey... && choco upgrade bun -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Bun installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "Bun" -ChocoPkg "bun" -WingetId "Oven-sh.Bun"
     }
 
     function Install-Go {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Go via Chocolatey... && choco upgrade golang -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Go installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "Go" -ChocoPkg "golang" -WingetId "GoLang.Go"
     }
 
     function Install-Deno {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Deno via Chocolatey... && choco upgrade deno -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Deno installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "Deno" -ChocoPkg "deno" -WingetId "DenoLand.Deno"
+    }
+
+    function Install-MinGW {
+        Install-AppPackage -Name "MinGW (C/C++ GCC)" -ChocoPkg "mingw" -WingetId "MSYS2.MSYS2"
+    }
+
+    function Install-Rust {
+        Install-AppPackage -Name "Rust (Rustup)" -ChocoPkg "rustup.install" -WingetId "Rustlang.Rustup"
+    }
+
+    function Install-Java {
+        Install-AppPackage -Name "OpenJDK Java" -ChocoPkg "openjdk" -WingetId "EclipseAdoptium.Temurin.21.JDK"
     }
 
     # ============================================================
@@ -299,50 +515,41 @@ public static extern IntPtr GetConsoleWindow();
     # ============================================================
 
     function Install-Git {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Git via Chocolatey... && choco upgrade git -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Git installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "Git" -ChocoPkg "git" -WingetId "Git.Git"
     }
 
     function Install-Python {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Python via Chocolatey... && choco upgrade python -y --install-if-not-installed --no-desktop-shortcut && echo. && echo Python installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "Python" -ChocoPkg "python" -WingetId "Python.Python.3.12"
     }
 
     function Install-Dotnet {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing .NET via Chocolatey... && choco upgrade dotnet -y --install-if-not-installed --no-desktop-shortcut && echo. && echo .NET installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name ".NET Desktop Runtime" -ChocoPkg "dotnet" -WingetId "Microsoft.DotNet.DesktopRuntime.8"
     }
 
     function Install-FFmpeg {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing FFmpeg via Chocolatey... && choco upgrade ffmpeg -y --install-if-not-installed --no-desktop-shortcut && echo. && echo FFmpeg installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "FFmpeg" -ChocoPkg "ffmpeg" -WingetId "Gyan.FFmpeg"
     }
 
     function Install-7Zip {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing 7-Zip via Chocolatey... && choco upgrade 7zip -y --install-if-not-installed --no-desktop-shortcut && echo. && echo 7-Zip installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "7-Zip" -ChocoPkg "7zip" -WingetId "7zip.7zip"
     }
 
     # Ensure unique function name
     function Install-PeaZip {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing PeaZip via Chocolatey... && choco upgrade peazip -y --install-if-not-installed --no-desktop-shortcut && echo. && echo PeaZip installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "PeaZip" -ChocoPkg "peazip" -WingetId "GiorgioTani.PeaZip"
     }
 
     function Install-WinDirStat {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing WinDirStat via Chocolatey... && choco upgrade windirstat -y --install-if-not-installed --no-desktop-shortcut && echo. && echo WinDirStat installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "WinDirStat" -ChocoPkg "windirstat" -WingetId "WinDirStat.WinDirStat"
     }
 
     function Install-YTDLP {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing yt-dlp via Chocolatey... && choco upgrade yt-dlp -y --install-if-not-installed --no-desktop-shortcut && echo. && echo yt-dlp installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "yt-dlp" -ChocoPkg "yt-dlp" -WingetId "yt-dlp.yt-dlp"
     }
 
     # Ensure unique function name
     function Install-Ngrok {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing ngrok via Chocolatey... && choco upgrade ngrok -y --install-if-not-installed --no-desktop-shortcut && echo. && echo ngrok installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "ngrok" -ChocoPkg "ngrok" -WingetId "Ngrok.Ngrok"
     }
 
     function Install-Localtunnel {
@@ -351,77 +558,79 @@ public static extern IntPtr GetConsoleWindow();
     }
 
     function Install-Miniserve {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Miniserve via Winget... use miniserve --qrcode to run && winget upgrade svenstaro.miniserve --silent || winget install svenstaro.miniserve --accept-package-agreements --accept-source-agreements --silent && echo. && echo Miniserve installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "Miniserve" -ChocoPkg "miniserve" -WingetId "svenstaro.miniserve"
     }
 
     function Install-WebView2 {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Microsoft Edge WebView2 Runtime via Winget... && winget install Microsoft.EdgeWebView2Runtime --accept-package-agreements --accept-source-agreements --silent --verbose && echo. && echo Edge WebView2 Runtime installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "Edge WebView2 Runtime" -ChocoPkg "webview2-runtime" -WingetId "Microsoft.EdgeWebView2Runtime"
     }
 
     # ============================================================
-    #  Other Apps
+    #  Other Apps & Development
     # ============================================================
 
     function Install-FastStone {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing FastStone Image Viewer via Chocolatey... && choco upgrade faststone-image-viewer -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo FastStone Image Viewer installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "FastStone Image Viewer" -ChocoPkg "faststone-image-viewer" -WingetId "FastStone.Viewer"
     }
 
     function Install-VLC {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing VLC Media Player via Chocolatey... && choco upgrade vlc.install -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo VLC Media Player installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "VLC Media Player" -ChocoPkg "vlc.install" -WingetId "VideoLAN.VLC"
     }
 
     function Install-MPC-HC {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing MPC-HC via Chocolatey... && choco upgrade mpc-hc-clsid2 -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo MPC-HC installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "MPC-HC" -ChocoPkg "mpc-hc-clsid2" -WingetId "clsid2.mpc-hc"
     }
 
     function Install-OnlyOffice {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Only Office via Chocolatey... && choco upgrade onlyoffice-desktopeditors -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Only Office installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "OnlyOffice" -ChocoPkg "onlyoffice-desktopeditors" -WingetId "ONLYOFFICE.DesktopEditors"
     }
 
     function Install-Kdenlive {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Kdenlive via Chocolatey... && choco upgrade kdenlive -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Kdenlive installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "Kdenlive" -ChocoPkg "kdenlive" -WingetId "KDE.Kdenlive"
     }
 
     function Install-HandBrake {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing HandBrake via Chocolatey... && choco upgrade handbrake -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo HandBrake installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "HandBrake" -ChocoPkg "handbrake" -WingetId "HandBrake.HandBrake"
     }
 
     function Install-AntiGravity-ide {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing AntiGravity IDE via Chocolatey... && choco upgrade antigravity-ide -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo AntiGravity IDE installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "AntiGravity IDE" -ChocoPkg "antigravity-ide" -WingetId "Google.Antigravity"
     }
 
     function Install-VSCode {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Visual Studio Code via Chocolatey... && choco upgrade vscode -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Visual Studio Code installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "Visual Studio Code" -ChocoPkg "vscode" -WingetId "Microsoft.VisualStudioCode"
     }
 
     function Install-Zed {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Zed Editor via Chocolatey... && choco upgrade zed-editor -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Zed Editor installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "Zed Editor" -ChocoPkg "zed-editor" -WingetId "ZedIndustries.Zed"
+    }
+
+    function Install-AndroidStudio {
+        Install-AppPackage -Name "Android Studio" -ChocoPkg "androidstudio" -WingetId "Google.AndroidStudio"
+    }
+
+    function Install-Flutter {
+        Install-AppPackage -Name "Flutter" -ChocoPkg "flutter" -WingetId "Flutter.Flutter"
+    }
+
+    function Install-AndroidSDK {
+        Install-AppPackage -Name "Android SDK" -ChocoPkg "android-sdk" -WingetId "Google.AndroidStudio"
+    }
+
+    function Install-AndroidNDK {
+        Install-AppPackage -Name "Android NDK" -ChocoPkg "android-ndk" -WingetId "Google.AndroidStudio"
     }
 
     function Install-IDM {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Internet Download Manager via Chocolatey... && choco upgrade internet-download-manager -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Internet Download Manager installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "Internet Download Manager" -ChocoPkg "internet-download-manager" -WingetId "Tonec.InternetDownloadManager"
     }
 
     function Install-GhostDownloader {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Ghost Downloader via Winget... && winget upgrade -e --id XiaoYouChR.GhostDownloader --silent || winget install -e --id XiaoYouChR.GhostDownloader --silent --accept-source-agreements --accept-package-agreements && echo. && echo Ghost Downloader installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "Ghost Downloader" -ChocoPkg "ghostdownloader" -WingetId "XiaoYouChR.GhostDownloader"
     }
 
     function Install-VirtualBox {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing VirtualBox via Chocolatey... && choco upgrade virtualbox -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo VirtualBox installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "VirtualBox" -ChocoPkg "virtualbox" -WingetId "Oracle.VirtualBox"
     }
     # ============================================================
     #  Automation
@@ -445,6 +654,21 @@ public static extern IntPtr GetConsoleWindow();
     function Install-GWS {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
         "echo Installing Google Workspace CLI... && npm install -g @googleworkspace/cli && echo. && echo Installation completed. Press any key to close this window. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    }
+
+    function Install-HermesGUI {
+        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+        "echo Installing Hermes Desktop GUI... && powershell -NoProfile -ExecutionPolicy Bypass -Command `"[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; try { `$api = Invoke-RestMethod 'https://api.github.com/repos/NousResearch/hermes-agent/releases/latest'; `$asset = `$api.assets | Where-Object { `$_.name -match '\.exe$' } | Select-Object -First 1; if (`$asset) { `$tmp = `"`$env:TEMP\`$(`$asset.name)`"; Write-Host 'Downloading ' `$asset.browser_download_url; Invoke-WebRequest -Uri `$asset.browser_download_url -OutFile `$tmp; Start-Process `$tmp; } else { Start-Process 'https://hermes-agent.nousresearch.com/desktop' } } catch { Start-Process 'https://hermes-agent.nousresearch.com/desktop' }`" && echo. && echo Hermes GUI setup launched. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    }
+
+    function Install-HermesCLI {
+        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+        "echo Installing Hermes CLI via official installer... && powershell -NoProfile -ExecutionPolicy Bypass -Command `"irm 'https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.ps1' | iex`" && echo. && echo Hermes CLI installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    }
+
+    function Install-OpenClaw {
+        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
+        "echo Installing OpenClaw via npm / PowerShell installer... && npm install -g openclaw@latest --allow-scripts=openclaw || powershell -NoProfile -ExecutionPolicy Bypass -Command `"iwr -useb 'https://openclaw.ai/install.ps1' | iex`" && echo. && echo OpenClaw installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
     }
 
     # ============================================================
@@ -1105,18 +1329,15 @@ Read-Host "Press Enter to close"
     }
 
     function Install-Chrome {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Google Chrome via Chocolatey... && choco upgrade googlechrome -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Chrome installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "Google Chrome" -ChocoPkg "googlechrome" -WingetId "Google.Chrome"
     }
 
     function Install-Zen {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Zen Browser via Chocolatey... && choco upgrade zen-browser --prerelease -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Zen Browser installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "Zen Browser" -ChocoPkg "zen-browser" -WingetId "Zen-Team.Zen-Browser"
     }
 
     function Install-OBS {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing OBS Studio via Chocolatey... && choco upgrade obs-studio -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo OBS Studio installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "OBS Studio" -ChocoPkg "obs-studio" -WingetId "OBSProject.OBSStudio"
     }
 
 
@@ -1131,18 +1352,15 @@ Read-Host "Press Enter to close"
     }
 
     function Install-NotepadPP {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Notepad++ via Chocolatey... && choco upgrade notepadplusplus -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Notepad++ installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "Notepad++" -ChocoPkg "notepadplusplus" -WingetId "Notepad++.Notepad++"
     }
 
     function Install-ShareX {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing ShareX via Chocolatey... && choco upgrade sharex -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo ShareX installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "ShareX" -ChocoPkg "sharex" -WingetId "ShareX.ShareX"
     }
 
     function Install-QBit {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing qBittorrent via Chocolatey... && choco upgrade qbittorrent -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo qBittorrent installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "qBittorrent" -ChocoPkg "qbittorrent" -WingetId "qBittorrent.qBittorrent"
     }
 
     # ============================================================
@@ -1165,29 +1383,24 @@ Read-Host "Press Enter to close"
     }
 
     function Install-CPUZ {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing CPU-Z (portable) via Chocolatey... run cpuz in cmd to run && choco upgrade cpuz -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo CPU-Z installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "CPU-Z" -ChocoPkg "cpuz" -WingetId "CPUID.CPU-Z"
     }
 
     function Install-HWiNFO {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing HWiNFO via Chocolatey... && choco upgrade hwinfo -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo HWiNFO installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "HWiNFO" -ChocoPkg "hwinfo" -WingetId "REALiX.HWiNFO"
     }
 
     # Ensure unique function name
     function Install-GPUZ {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing GPU-Z (portable) via Chocolatey... && choco upgrade gpu-z -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo GPU-Z installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "GPU-Z" -ChocoPkg "gpu-z" -WingetId "TechPowerUp.GPU-Z"
     }
 
     function Install-CrystalDiskInfo {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing CrystalDiskInfo via Chocolatey... && choco upgrade crystaldiskinfo -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo CrystalDiskInfo installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "CrystalDiskInfo" -ChocoPkg "crystaldiskinfo" -WingetId "CrystalDewWorld.CrystalDiskInfo"
     }
 
     function Install-CrystalDiskMark {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing CrystalDiskMark via Chocolatey... && choco upgrade crystaldiskmark -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo CrystalDiskMark installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "CrystalDiskMark" -ChocoPkg "crystaldiskmark" -WingetId "CrystalDewWorld.CrystalDiskMark"
     }
 
     function Install-DriverStoreExplorer {
@@ -1196,19 +1409,16 @@ Read-Host "Press Enter to close"
     }
 
     function Install-Ventoy {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Ventoy via Chocolatey... && choco upgrade ventoy -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Ventoy installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "Ventoy" -ChocoPkg "ventoy" -WingetId "Ventoy.Ventoy"
     }
 
     # Ensure unique function name
     function Install-Rufus {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing Rufus via Chocolatey... && choco upgrade rufus -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Rufus installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "Rufus" -ChocoPkg "rufus" -WingetId "Rufus.Rufus"
     }
 
     function Install-AnyBurn {
-        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
-        "echo Installing AnyBurn via Winget... && winget upgrade PowerSoftware.AnyBurn --silent || winget install PowerSoftware.AnyBurn --accept-package-agreements --accept-source-agreements --silent && echo. && echo AnyBurn installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        Install-AppPackage -Name "AnyBurn" -ChocoPkg "anyburn" -WingetId "PowerSoftware.AnyBurn"
     }
 
     function Run-GitCloner {
@@ -1425,13 +1635,15 @@ Read-Host "Press Enter to close"
         <Style x:Key="NavTabStyle" TargetType="RadioButton">
             <Setter Property="Foreground" Value="#78789B"/>
             <Setter Property="FontFamily" Value="Segoe UI"/>
-            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontSize" Value="11"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="RadioButton">
-                        <Border x:Name="TabBorder" Background="Transparent" CornerRadius="12" Padding="14,3">
+                        <Border x:Name="TabBorder" Background="Transparent" CornerRadius="11" Padding="4,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -1468,16 +1680,32 @@ Read-Host "Press Enter to close"
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="Tooler" FontFamily="Segoe UI" FontSize="18" FontWeight="Bold" Foreground="#63B3ED" VerticalAlignment="Center"/>
 
-                    <!-- Slider Segmented Switch (Apps / Scripts) anchored right beside Tooler text -->
-                    <Border Background="#12121C" BorderBrush="#30304E" BorderThickness="1" CornerRadius="14" Margin="16,0,0,0" Height="28" VerticalAlignment="Center" Padding="2">
-                        <Grid Width="156">
+                    <!-- Slider Segmented Switch (Apps / Dev / Tweaks) anchored right beside Tooler text -->
+                    <Border Background="#12121C" BorderBrush="#30304E" BorderThickness="1" CornerRadius="14" Margin="14,0,0,0" Height="28" VerticalAlignment="Center" Padding="2">
+                        <Grid Width="216">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <RadioButton Name="TabApps" Grid.Column="0" Content="Apps" IsChecked="True" GroupName="NavTabs" Style="{StaticResource NavTabStyle}"/>
-                            <RadioButton Name="TabScripts" Grid.Column="1" Content="Tweaks" GroupName="NavTabs" Style="{StaticResource NavTabStyle}"/>
+                            <RadioButton Name="TabDev" Grid.Column="1" Content="Dev" GroupName="NavTabs" Style="{StaticResource NavTabStyle}"/>
+                            <RadioButton Name="TabScripts" Grid.Column="2" Content="Tweaks" GroupName="NavTabs" Style="{StaticResource NavTabStyle}"/>
                         </Grid>
+                    </Border>
+
+                    <!-- System Specs & Health Overview HUD Pill -->
+                    <Border Name="BorderSystemHUD" Background="#12121C" BorderBrush="#30304E" BorderThickness="1" CornerRadius="14" Margin="14,0,0,0" Height="28" VerticalAlignment="Center" Padding="12,0" Cursor="Hand" ToolTip="Click to view detailed system hardware specs">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="OS: " FontFamily="Segoe UI" FontSize="10" FontWeight="Bold" Foreground="#63B3ED" VerticalAlignment="Center"/>
+                            <TextBlock Name="TxtHudOS" Text="Win 11" FontFamily="Segoe UI" FontSize="11" FontWeight="SemiBold" Foreground="#E2E8F0" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="|" Foreground="#30304E" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="RAM: " FontFamily="Segoe UI" FontSize="10" FontWeight="Bold" Foreground="#81E6D9" VerticalAlignment="Center"/>
+                            <TextBlock Name="TxtHudRAM" Text="--" FontFamily="Segoe UI" FontSize="11" Foreground="#E2E8F0" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="|" Foreground="#30304E" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="CPU: " FontFamily="Segoe UI" FontSize="10" FontWeight="Bold" Foreground="#48C78E" VerticalAlignment="Center"/>
+                            <TextBlock Name="TxtHudCPU" Text="-- Threads" FontFamily="Segoe UI" FontSize="11" Foreground="#E2E8F0" VerticalAlignment="Center"/>
+                        </StackPanel>
                     </Border>
                 </StackPanel>
                 
@@ -1508,6 +1736,24 @@ Read-Host "Press Enter to close"
                     <StackPanel Grid.Column="2" Name="Col2" Margin="7,12,7,12"/>
                     <StackPanel Grid.Column="3" Name="Col3" Margin="7,12,7,12"/>
                     <StackPanel Grid.Column="4" Name="Col4" Margin="7,12,14,12"/>
+                </Grid>
+            </ScrollViewer>
+
+            <!-- Development View -->
+            <ScrollViewer Name="DevScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="#12121C" Visibility="Collapsed">
+                <Grid Name="DevGrid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Name="DevCol0" Margin="14,12,7,12"/>
+                    <StackPanel Grid.Column="1" Name="DevCol1" Margin="7,12,7,12"/>
+                    <StackPanel Grid.Column="2" Name="DevCol2" Margin="7,12,7,12"/>
+                    <StackPanel Grid.Column="3" Name="DevCol3" Margin="7,12,7,12"/>
+                    <StackPanel Grid.Column="4" Name="DevCol4" Margin="7,12,14,12"/>
                 </Grid>
             </ScrollViewer>
 
@@ -1542,9 +1788,20 @@ Read-Host "Press Enter to close"
                 
                 <!-- Apps Bottom Controls -->
                 <StackPanel Name="PanelAppsControls" Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
-                    <Button Name="BtnUpgradeAll" Content="choco update" Width="100" Height="26" Margin="0,0,10,0" Cursor="Hand"/>
-                    <Button Name="BtnWingetUpgradeAll" Content="winget update" Width="100" Height="26" Margin="0,0,10,0" Cursor="Hand"/>
-                    <Button Name="BtnRun" Content="Run selected" Width="100" Height="26" Cursor="Hand"/>
+                    <!-- Package Manager Engine Switcher Pill -->
+                    <Border Background="#12121C" BorderBrush="#30304E" BorderThickness="1" CornerRadius="14" Height="28" VerticalAlignment="Center" Padding="2" Margin="0,0,10,0" ToolTip="Select preferred backend package manager engine">
+                        <Grid Width="144">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <RadioButton Name="ToggleChoco" Grid.Column="0" Content="Choco" IsChecked="True" GroupName="PkgEngine" Style="{StaticResource NavTabStyle}"/>
+                            <RadioButton Name="ToggleWinget" Grid.Column="1" Content="Winget" GroupName="PkgEngine" Style="{StaticResource NavTabStyle}"/>
+                        </Grid>
+                    </Border>
+
+                    <Button Name="BtnUpgradeAll" Content="choco update" Width="105" Height="28" Margin="0,0,8,0" Cursor="Hand" ToolTip="Update all installed packages using the selected package manager"/>
+                    <Button Name="BtnRun" Content="Run selected" Width="105" Height="28" Cursor="Hand"/>
                 </StackPanel>
             </DockPanel>
             
@@ -1554,19 +1811,27 @@ Read-Host "Press Enter to close"
 </Window>
 "@
 
-    Update-InitProgress -Percent 55 -Status "Compiling XAML UI layout & styles..."
+    Update-InitProgress -Percent 34 -Status "[4/12] Compiling XAML layout & responsive styling..."
 
     # Parse raw XAML directly via System.Xaml parser
     $script:window = [Windows.Markup.XamlReader]::Parse($xaml)
 
+    Update-InitProgress -Percent 42 -Status "[5/12] Binding WPF visual elements & UI controls..."
+
     # Extract named controls in script scope
     $script:lblSubtitle = $script:window.FindName("LblSubtitle")
     $script:tabApps = $script:window.FindName("TabApps")
+    $script:tabDev = $script:window.FindName("TabDev")
     $script:tabScripts = $script:window.FindName("TabScripts")
+    $script:borderSystemHUD = $script:window.FindName("BorderSystemHUD")
+    $script:txtHudOS = $script:window.FindName("TxtHudOS")
+    $script:txtHudRAM = $script:window.FindName("TxtHudRAM")
+    $script:txtHudCPU = $script:window.FindName("TxtHudCPU")
     $script:chkSelectAll = $script:window.FindName("ChkSelectAll")
     $script:btnGithub = $script:window.FindName("BtnGithub")
     $script:txtSearch = $script:window.FindName("TxtSearch")
     $script:appsScrollViewer = $script:window.FindName("AppsScrollViewer")
+    $script:devScrollViewer = $script:window.FindName("DevScrollViewer")
     $script:scriptsScrollViewer = $script:window.FindName("ScriptsScrollViewer")
     $script:scriptsContainer = $script:window.FindName("ScriptsContainer")
     $script:tweaksRightContainer = $script:window.FindName("TweaksRightContainer")
@@ -1575,12 +1840,32 @@ Read-Host "Press Enter to close"
     $script:col2 = $script:window.FindName("Col2")
     $script:col3 = $script:window.FindName("Col3")
     $script:col4 = $script:window.FindName("Col4")
+    $script:devCol0 = $script:window.FindName("DevCol0")
+    $script:devCol1 = $script:window.FindName("DevCol1")
+    $script:devCol2 = $script:window.FindName("DevCol2")
+    $script:devCol3 = $script:window.FindName("DevCol3")
+    $script:devCol4 = $script:window.FindName("DevCol4")
     $script:LblStatus = $script:window.FindName("LblStatus")
     $script:panelAppsControls = $script:window.FindName("PanelAppsControls")
+    $script:toggleChoco = $script:window.FindName("ToggleChoco")
+    $script:toggleWinget = $script:window.FindName("ToggleWinget")
     $script:btnUpgradeAll = $script:window.FindName("BtnUpgradeAll")
-    $script:btnWingetUpgradeAll = $script:window.FindName("BtnWingetUpgradeAll")
     $script:BtnRun = $script:window.FindName("BtnRun")
     $script:ProgressBar = $script:window.FindName("ProgressBar")
+
+    # Populate System Specs HUD immediately
+    try {
+        $specs = Get-SystemSpecsSummary
+        if ($null -ne $script:txtHudOS -and $null -ne $specs.OSName) {
+            $script:txtHudOS.Text = $specs.OSName
+        }
+        if ($null -ne $script:txtHudRAM -and $null -ne $specs.RAMText) {
+            $script:txtHudRAM.Text = $specs.RAMText
+        }
+        if ($null -ne $script:txtHudCPU -and $null -ne $specs.CPUText) {
+            $script:txtHudCPU.Text = $specs.CPUText
+        }
+    } catch {}
 
     # ============================================================
     #  SECTION E: HELPER FUNCTIONS FOR BUILDING GUI ROWS
@@ -1607,7 +1892,8 @@ Read-Host "Press Enter to close"
             [string]       $Name,
             [scriptblock]  $Func,
             $ParentStackPanel,
-            [int]          $ColIndex
+            [int]          $ColIndex,
+            [string]       $Tab = "Apps"
         )
 
         $rowGrid = New-Object System.Windows.Controls.Grid
@@ -1671,6 +1957,7 @@ Read-Host "Press Enter to close"
             Button = $btn
             RowGrid = $rowGrid
             ColIndex = $ColIndex
+            Tab = $Tab
         }
         $script:AllTasks.Add($entry)
         return $entry
@@ -1681,7 +1968,8 @@ Read-Host "Press Enter to close"
             [string]  $Title,
             [array]   $Items,
             $ParentStackPanel,
-            [int]     $ColIndex
+            [int]     $ColIndex,
+            [string]  $Tab = "Apps"
         )
         
         $gb = New-Object System.Windows.Controls.GroupBox
@@ -1691,7 +1979,7 @@ Read-Host "Press Enter to close"
         $gb.Content = $inner
         
         foreach ($item in $Items) {
-            New-TaskRow -Name $item.Name -Func $item.Func -ParentStackPanel $inner -ColIndex $ColIndex | Out-Null
+            New-TaskRow -Name $item.Name -Func $item.Func -ParentStackPanel $inner -ColIndex $ColIndex -Tab $Tab | Out-Null
         }
         
         $ParentStackPanel.Children.Add($gb) | Out-Null
@@ -1901,11 +2189,24 @@ Read-Host "Press Enter to close"
             3 { $script:col3 }
             4 { $script:col4 }
         }
-        New-CategoryGroup -Title $Title -Items $Items -ParentStackPanel $parentPanel -ColIndex $ColIndex | Out-Null
+        New-CategoryGroup -Title $Title -Items $Items -ParentStackPanel $parentPanel -ColIndex $ColIndex -Tab "Apps" | Out-Null
+    }
+
+    function Add-DevCategory {
+        param([int]$ColIndex, [string]$Title, [array]$Items)
+        $parentPanel = switch ($ColIndex) {
+            0 { $script:devCol0 }
+            1 { $script:devCol1 }
+            2 { $script:devCol2 }
+            3 { $script:devCol3 }
+            4 { $script:devCol4 }
+        }
+        New-CategoryGroup -Title $Title -Items $Items -ParentStackPanel $parentPanel -ColIndex $ColIndex -Tab "Dev" | Out-Null
     }
 
     # Column 0
-    Update-InitProgress -Percent 65 -Status "Building Category (1/5): Essential & System..."
+    # Column 0
+    Update-InitProgress -Percent 50 -Status "[6/12] Building Apps: Essential & System tools..."
     Add-Category -ColIndex 0 -Title "About AFNAN" -Items @(
         @{ Name = "Open Portfolio"; Func = { Open-Portfolio } }
     )
@@ -1921,13 +2222,7 @@ Read-Host "Press Enter to close"
         @{ Name = "Deno"; Func = { Install-Deno } }
     )
 
-    Add-Category -ColIndex 0 -Title "Automation" -Items @(
-        @{ Name = "n8n Workflow Automation"; Func = { Install-N8N } },
-        @{ Name = "Google Workspace CLI (GWS)"; Func = { Install-GWS } }
-    )
-
     # Column 1
-    Update-InitProgress -Percent 72 -Status "Building Category (2/5): Recommended Tools & Apps..."
     Add-Category -ColIndex 1 -Title "Recommended Tools" -Items @(
         @{ Name = "Git"; Func = { Install-Git } },
         @{ Name = "Python"; Func = { Install-Python } },
@@ -1950,16 +2245,13 @@ Read-Host "Press Enter to close"
         @{ Name = "Only Office"; Func = { Install-OnlyOffice } },
         @{ Name = "Kdenlive"; Func = { Install-Kdenlive } },
         @{ Name = "HandBrake"; Func = { Install-HandBrake } },
-        @{ Name = "AntiGravity IDE"; Func = { Install-AntiGravity-ide } },
-        @{ Name = "VS Code"; Func = { Install-VSCode } },
-        @{ Name = "Zed Editor"; Func = { Install-Zed } },
         @{ Name = "IDM"; Func = { Install-IDM } },
         @{ Name = "Ghost Downloader"; Func = { Install-GhostDownloader } },
         @{ Name = "Virtual Box"; Func = { Install-VirtualBox } }
     )
 
     # Column 2
-    Update-InitProgress -Percent 80 -Status "Building Category (3/5): Run Scripts & AI Tools..."
+    Update-InitProgress -Percent 58 -Status "[7/12] Building Apps: Media, Scripts & Utilities..."
     Add-Category -ColIndex 2 -Title "Run Scripts" -Items @(
         @{ Name = "Chris Titus Tool"; Func = { Run-Titus } },
         @{ Name = "Mass Grave"; Func = { Run-MassGrave } },
@@ -1978,21 +2270,13 @@ Read-Host "Press Enter to close"
     )
 
     Add-Category -ColIndex 2 -Title "AI in PC" -Items @(
-        @{ Name = "Agy"; Func = { Install-Agy } },
-        @{ Name = "Opencode"; Func = { Install-Opencode } },
-        @{ Name = "Cursor IDE"; Func = { Install-Cursoride } },
         @{ Name = "Google Desktop App"; Func = { Open-GoogleDesktopApp } },
         @{ Name = "LLM-Checker"; Func = { Run-LLMChecker } },
         @{ Name = "LLMFit"; Func = { Install-LLMFit } },
-        @{ Name = "Ollama"; Func = { Install-Ollama } },
-        @{ Name = "Claude Code"; Func = { Install-ClaudeCode } },
-        @{ Name = "Claude Code Router"; Func = { Install-ClaudeCodeRouter } },
-        @{ Name = "Codebuff"; Func = { Install-Codebuff } },
-        @{ Name = "Omniroute"; Func = { Install-Omniroute } }
+        @{ Name = "Ollama"; Func = { Install-Ollama } }
     )
 
     # Column 3
-    Update-InitProgress -Percent 88 -Status "Building Category (4/5): System & Productivity..."
     Add-Category -ColIndex 3 -Title "System Tools" -Items @(
         @{ Name = "WSL (Ubuntu)"; Func = { Install-WSL } },
         @{ Name = "Winget"; Func = { Install-Winget } },
@@ -2018,7 +2302,6 @@ Read-Host "Press Enter to close"
     )
 
     # Column 4
-    Update-InitProgress -Percent 94 -Status "Building Category (5/5): Win Tools & Utilities..."
     Add-Category -ColIndex 4 -Title "Win Tools" -Items @(
         @{ Name = "TestDisk"; Func = { Install-TestDisk } },
         @{ Name = "FreeRecover"; Func = { Install-FreeRecover } },
@@ -2038,7 +2321,57 @@ Read-Host "Press Enter to close"
     )
 
     # ============================================================
-    #  SECTION F-2: POPULATE SCRIPTS SECTION (On/Off Architecture)
+    #  SECTION F-2: POPULATE DEVELOPMENT CATEGORIES
+    # ============================================================
+
+    Update-InitProgress -Percent 66 -Status "[8/12] Building Dev: IDEs, CLI Agents & Automation..."
+
+    # Column 0: IDE
+    Add-DevCategory -ColIndex 0 -Title "IDE" -Items @(
+        @{ Name = "AntiGravity IDE"; Func = { Install-AntiGravity-ide } },
+        @{ Name = "VS Code"; Func = { Install-VSCode } },
+        @{ Name = "Zed Editor"; Func = { Install-Zed } },
+        @{ Name = "Cursor IDE"; Func = { Install-Cursoride } },
+        @{ Name = "Android Studio"; Func = { Install-AndroidStudio } }
+    )
+
+    # Column 1: CLI Agents
+    Add-DevCategory -ColIndex 1 -Title "CLI Agents" -Items @(
+        @{ Name = "Agy"; Func = { Install-Agy } },
+        @{ Name = "Opencode"; Func = { Install-Opencode } },
+        @{ Name = "Claude Code"; Func = { Install-ClaudeCode } },
+        @{ Name = "Claude Code Router"; Func = { Install-ClaudeCodeRouter } },
+        @{ Name = "Codebuff"; Func = { Install-Codebuff } },
+        @{ Name = "Omniroute"; Func = { Install-Omniroute } }
+    )
+
+    # Column 2: Automation
+    Add-DevCategory -ColIndex 2 -Title "Automation" -Items @(
+        @{ Name = "n8n Workflow Automation"; Func = { Install-N8N } },
+        @{ Name = "Google Workspace CLI (GWS)"; Func = { Install-GWS } },
+        @{ Name = "Hermes GUI"; Func = { Install-HermesGUI } },
+        @{ Name = "Hermes CLI"; Func = { Install-HermesCLI } },
+        @{ Name = "OpenClaw"; Func = { Install-OpenClaw } }
+    )
+
+    Update-InitProgress -Percent 75 -Status "[9/12] Building Dev: Languages & Other Dev tools..."
+
+    # Column 3: Languages
+    Add-DevCategory -ColIndex 3 -Title "Languages" -Items @(
+        @{ Name = "MinGW (C/C++)"; Func = { Install-MinGW } },
+        @{ Name = "Rust"; Func = { Install-Rust } },
+        @{ Name = "Java"; Func = { Install-Java } }
+    )
+
+    # Column 4: Other Dev
+    Add-DevCategory -ColIndex 4 -Title "Other Dev" -Items @(
+        @{ Name = "Flutter"; Func = { Install-Flutter } },
+        @{ Name = "Android SDK Binary"; Func = { Install-AndroidSDK } },
+        @{ Name = "Android NDK"; Func = { Install-AndroidNDK } }
+    )
+
+    # ============================================================
+    #  SECTION F-3: POPULATE SCRIPTS SECTION (On/Off Architecture)
     # ============================================================
     $script:ScriptDefinitions = @(
         @{
@@ -2189,7 +2522,10 @@ Read-Host "Press Enter to close"
         $script:ScriptGroupBoxes.Add($gb)
     }
 
+    Update-InitProgress -Percent 83 -Status "[10/12] Building System Tweaks & Maintenance cards..."
     Build-ScriptsSection
+
+    Update-InitProgress -Percent 91 -Status "[11/12] Building Windows Settings & Control Panel..."
     Build-SettingsSection
 
     # ============================================================
@@ -2366,6 +2702,19 @@ Read-Host "Press Enter to close"
     # Navigation Slidebar Tabs Switching
     $script:tabApps.Add_Checked({
         $script:appsScrollViewer.Visibility = [System.Windows.Visibility]::Visible
+        $script:devScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
+        $script:scriptsScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
+        $script:chkSelectAll.Visibility = [System.Windows.Visibility]::Visible
+        $script:panelAppsControls.Visibility = [System.Windows.Visibility]::Visible
+        if ($null -ne $script:lblSubtitle) {
+            $script:lblSubtitle.Text = "Check items for batch run   |   Click a button for immediate single execution"
+        }
+        Update-SearchFilter
+    })
+
+    $script:tabDev.Add_Checked({
+        $script:appsScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
+        $script:devScrollViewer.Visibility = [System.Windows.Visibility]::Visible
         $script:scriptsScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
         $script:chkSelectAll.Visibility = [System.Windows.Visibility]::Visible
         $script:panelAppsControls.Visibility = [System.Windows.Visibility]::Visible
@@ -2377,6 +2726,7 @@ Read-Host "Press Enter to close"
 
     $script:tabScripts.Add_Checked({
         $script:appsScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
+        $script:devScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
         $script:scriptsScrollViewer.Visibility = [System.Windows.Visibility]::Visible
         $script:chkSelectAll.Visibility = [System.Windows.Visibility]::Collapsed
         $script:panelAppsControls.Visibility = [System.Windows.Visibility]::Collapsed
@@ -2388,30 +2738,64 @@ Read-Host "Press Enter to close"
 
     # Select All / Unselect All
     $script:chkSelectAll.Add_Checked({
+        $activeTab = if ($script:tabDev.IsChecked) { "Dev" } else { "Apps" }
         foreach ($t in $script:AllTasks) {
-            $t.CheckBox.IsChecked = $true
+            if ($t.Tab -eq $activeTab) {
+                $t.CheckBox.IsChecked = $true
+            }
         }
     })
     $script:chkSelectAll.Add_Unchecked({
+        $activeTab = if ($script:tabDev.IsChecked) { "Dev" } else { "Apps" }
         foreach ($t in $script:AllTasks) {
-            $t.CheckBox.IsChecked = $false
+            if ($t.Tab -eq $activeTab) {
+                $t.CheckBox.IsChecked = $false
+            }
         }
     })
 
     # GitHub Button
     $script:btnGithub.Add_Click({ Open-Github })
 
-    # Bottom Panel Buttons
-    $script:btnUpgradeAll.Add_Click({ Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", "choco upgrade all -y --no-desktop-shortcut && echo. && echo Press any key to exit . . . && pause >nul && exit" })
-    $script:btnWingetUpgradeAll.Add_Click({ Start-Process winget -WindowStyle Minimized -ArgumentList "upgrade", "--all", "--silent", "--accept-source-agreements", "--accept-package-agreements" })
+    # System Specs HUD Click Event
+    $script:borderSystemHUD.Add_MouseLeftButtonUp({
+        Show-DetailedSystemInfo
+    })
 
-    # Search & Filter Engine
+    # Package Manager Engine Toggle
+    $script:toggleChoco.Add_Checked({
+        $script:PreferredPkgEngine = "Choco"
+        if ($null -ne $script:btnUpgradeAll) {
+            $script:btnUpgradeAll.Content = "choco update"
+        }
+        Write-Log "Package Manager Engine set to: Chocolatey (Default)" -Level Info
+    })
+    $script:toggleWinget.Add_Checked({
+        $script:PreferredPkgEngine = "Winget"
+        if ($null -ne $script:btnUpgradeAll) {
+            $script:btnUpgradeAll.Content = "winget update"
+        }
+        Write-Log "Package Manager Engine set to: Winget (Windows Package Manager)" -Level Info
+    })
+
+    # Bottom Panel Update Button (adapts to selected package manager)
+    $script:btnUpgradeAll.Add_Click({
+        if ($script:PreferredPkgEngine -eq "Winget") {
+            Write-Log "Running Winget package updates..." -Level Running
+            Start-Process winget -WindowStyle Minimized -ArgumentList "upgrade", "--all", "--silent", "--accept-source-agreements", "--accept-package-agreements"
+        } else {
+            Write-Log "Running Chocolatey package updates..." -Level Running
+            Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", "choco upgrade all -y --no-desktop-shortcut && echo. && echo Press any key to exit . . . && pause >nul && exit"
+        }
+    })
+
+    # Search & Filter Engine across ALL tabs
     function Update-SearchFilter {
         if ($script:SkipSearchUpdate) { return }
         $query = $script:txtSearch.Text.Trim()
         $isQueryEmpty = ($query -eq "") -or ($query -eq "Search...")
 
-        # 1. Filter Apps
+        # 1. Filter Apps & Dev tasks
         foreach ($t in $script:AllTasks) {
             $innerPanel = $t.RowGrid.Parent
             $gb = $innerPanel.Parent
@@ -2433,7 +2817,7 @@ Read-Host "Press Enter to close"
             }
         }
         
-        # Hide Apps groupboxes with no visible tasks
+        # Hide Apps and Dev groupboxes with no visible tasks
         $gbs = @()
         foreach ($t in $script:AllTasks) {
             $innerPanel = $t.RowGrid.Parent
@@ -2505,6 +2889,41 @@ Read-Host "Press Enter to close"
                 $sgb.Visibility = if ($anyVis) { [System.Windows.Visibility]::Visible } else { [System.Windows.Visibility]::Collapsed }
             }
         }
+
+        # 4. Auto-switch to the tab that contains matches if the current tab has 0 matches
+        if (-not $isQueryEmpty -and -not $script:InAutoSwitch) {
+            $appsCount = @($script:AllTasks | Where-Object { $_.Tab -eq "Apps" -and $_.RowGrid.Visibility -eq [System.Windows.Visibility]::Visible }).Count
+            $devCount = @($script:AllTasks | Where-Object { $_.Tab -eq "Dev" -and $_.RowGrid.Visibility -eq [System.Windows.Visibility]::Visible }).Count
+            $tweaksCount = @($script:AllScripts | Where-Object { $_.CardBorder.Visibility -eq [System.Windows.Visibility]::Visible }).Count + 
+                           @($script:AllControlPanelTasks | Where-Object { $_.CardBorder.Visibility -eq [System.Windows.Visibility]::Visible }).Count
+
+            $script:InAutoSwitch = $true
+            try {
+                if ($script:tabApps.IsChecked -and $appsCount -eq 0) {
+                    if ($devCount -gt 0) {
+                        $script:tabDev.IsChecked = $true
+                    } elseif ($tweaksCount -gt 0) {
+                        $script:tabScripts.IsChecked = $true
+                    }
+                }
+                elseif ($script:tabDev.IsChecked -and $devCount -eq 0) {
+                    if ($appsCount -gt 0) {
+                        $script:tabApps.IsChecked = $true
+                    } elseif ($tweaksCount -gt 0) {
+                        $script:tabScripts.IsChecked = $true
+                    }
+                }
+                elseif ($script:tabScripts.IsChecked -and $tweaksCount -eq 0) {
+                    if ($appsCount -gt 0) {
+                        $script:tabApps.IsChecked = $true
+                    } elseif ($devCount -gt 0) {
+                        $script:tabDev.IsChecked = $true
+                    }
+                }
+            } finally {
+                $script:InAutoSwitch = $false
+            }
+        }
     }
 
     $script:txtSearch.Add_GotFocus({
@@ -2534,57 +2953,57 @@ Read-Host "Press Enter to close"
         if ($e.Key -eq [System.Windows.Input.Key]::Enter) {
             $e.Handled = $true
             
-            # If in Apps view
-            if ($script:tabApps.IsChecked) {
-                $visibleTasks = @()
-                foreach ($t in $script:AllTasks) {
-                    if ($t.RowGrid.Visibility -eq [System.Windows.Visibility]::Visible) {
-                        $visibleTasks += $t
-                    }
-                }
-                
-                if ($visibleTasks.Count -eq 1) {
-                    $task = $visibleTasks[0]
+            $visibleApps = @($script:AllTasks | Where-Object { $_.Tab -eq "Apps" -and $_.RowGrid.Visibility -eq [System.Windows.Visibility]::Visible })
+            $visibleDev = @($script:AllTasks | Where-Object { $_.Tab -eq "Dev" -and $_.RowGrid.Visibility -eq [System.Windows.Visibility]::Visible })
+            $visibleScripts = @($script:AllScripts | Where-Object { $_.CardBorder.Visibility -eq [System.Windows.Visibility]::Visible })
+            $visibleCP = @($script:AllControlPanelTasks | Where-Object { $_.CardBorder.Visibility -eq [System.Windows.Visibility]::Visible })
+            
+            $totalMatches = $visibleApps.Count + $visibleDev.Count + $visibleScripts.Count + $visibleCP.Count
+            
+            if ($totalMatches -eq 1) {
+                if ($visibleApps.Count -eq 1) {
+                    $task = $visibleApps[0]
                     $name = $task.Name
                     $f = $task.Function
                     Write-Log "Launching: $name ..." -Level Running
-                    try {
-                        & $f
-                        Write-Log "$name - launched." -Level Success
-                    }
-                    catch {
-                        Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error
-                    }
+                    try { & $f; Write-Log "$name - launched." -Level Success } catch { Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error }
                 }
-            } else {
-                # If in Tweaks view
-                $visibleScripts = @($script:AllScripts | Where-Object { $_.CardBorder.Visibility -eq [System.Windows.Visibility]::Visible })
-                $visibleCP = @($script:AllControlPanelTasks | Where-Object { $_.CardBorder.Visibility -eq [System.Windows.Visibility]::Visible })
-                $totalVisible = $visibleScripts.Count + $visibleCP.Count
+                elseif ($visibleDev.Count -eq 1) {
+                    $task = $visibleDev[0]
+                    $name = $task.Name
+                    $f = $task.Function
+                    Write-Log "Launching: $name ..." -Level Running
+                    try { & $f; Write-Log "$name - launched." -Level Success } catch { Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error }
+                }
+                elseif ($visibleScripts.Count -eq 1) {
+                    $sItem = $visibleScripts[0]
+                    $name = $sItem.Name
+                    Write-Log "Launching tweak: $name ..." -Level Running
+                    try { if ($null -ne $sItem.On) { & $sItem.On }; Write-Log "$name - executed." -Level Success } catch { Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error }
+                }
+                elseif ($visibleCP.Count -eq 1) {
+                    $cpItem = $visibleCP[0]
+                    $name = $cpItem.Name
+                    Write-Log "Launching: $name ..." -Level Running
+                    try { & $cpItem.Function; Write-Log "$name - launched." -Level Success } catch { Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error }
+                }
+            }
+            elseif ($totalMatches -gt 1) {
+                $currentTabMatches = @()
+                if ($script:tabApps.IsChecked) { $currentTabMatches = $visibleApps }
+                elseif ($script:tabDev.IsChecked) { $currentTabMatches = $visibleDev }
+                elseif ($script:tabScripts.IsChecked) { $currentTabMatches = $visibleScripts + $visibleCP }
                 
-                if ($totalVisible -eq 1) {
-                    if ($visibleScripts.Count -eq 1) {
-                        $sItem = $visibleScripts[0]
-                        $name = $sItem.Name
-                        Write-Log "Launching tweak: $name ..." -Level Running
-                        try {
-                            if ($null -ne $sItem.On) {
-                                & $sItem.On
-                                Write-Log "$name - executed." -Level Success
-                            }
-                        } catch {
-                            Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error
-                        }
-                    } else {
-                        $cpItem = $visibleCP[0]
-                        $name = $cpItem.Name
-                        Write-Log "Launching: $name ..." -Level Running
-                        try {
-                            & $cpItem.Function
-                            Write-Log "$name - launched." -Level Success
-                        } catch {
-                            Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error
-                        }
+                if ($currentTabMatches.Count -eq 1) {
+                    $item = $currentTabMatches[0]
+                    $name = $item.Name
+                    Write-Log "Launching: $name ..." -Level Running
+                    try {
+                        if ($null -ne $item.Function) { & $item.Function }
+                        elseif ($null -ne $item.On) { & $item.On }
+                        Write-Log "$name - launched." -Level Success
+                    } catch {
+                        Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error
                     }
                 }
             }
@@ -2601,14 +3020,17 @@ Read-Host "Press Enter to close"
         
         $focused = [System.Windows.Input.Keyboard]::FocusedElement
         
-        # Enter key executes all selected and unselects in Apps view
+        # Enter key executes all selected and unselects in Apps / Dev view
         if ($e.Key -eq [System.Windows.Input.Key]::Enter) {
             if ($focused -ne $script:txtSearch) {
-                if ($script:tabApps.IsChecked) {
+                if ($script:tabApps.IsChecked -or $script:tabDev.IsChecked) {
                     $e.Handled = $true
                     $script:BtnRun.RaiseEvent((New-Object System.Windows.RoutedEventArgs([System.Windows.Controls.Button]::ClickEvent)))
+                    $activeTab = if ($script:tabDev.IsChecked) { "Dev" } else { "Apps" }
                     foreach ($t in $script:AllTasks) {
-                        $t.CheckBox.IsChecked = $false
+                        if ($t.Tab -eq $activeTab) {
+                            $t.CheckBox.IsChecked = $false
+                        }
                     }
                     $script:chkSelectAll.IsChecked = $false
                 }
@@ -2627,7 +3049,14 @@ Read-Host "Press Enter to close"
         # Down Arrow from search box focuses first visible task or tweak button
         elseif ($e.Key -eq [System.Windows.Input.Key]::Down -and $focused -eq $script:txtSearch) {
             if ($script:tabApps.IsChecked) {
-                $firstTask = $script:AllTasks | Where-Object { $_.RowGrid.Visibility -eq [System.Windows.Visibility]::Visible } | Select-Object -First 1
+                $firstTask = $script:AllTasks | Where-Object { $_.Tab -eq "Apps" -and $_.RowGrid.Visibility -eq [System.Windows.Visibility]::Visible } | Select-Object -First 1
+                if ($null -ne $firstTask -and $null -ne $firstTask.Button) {
+                    $e.Handled = $true
+                    $firstTask.Button.Focus() | Out-Null
+                }
+            }
+            elseif ($script:tabDev.IsChecked) {
+                $firstTask = $script:AllTasks | Where-Object { $_.Tab -eq "Dev" -and $_.RowGrid.Visibility -eq [System.Windows.Visibility]::Visible } | Select-Object -First 1
                 if ($null -ne $firstTask -and $null -ne $firstTask.Button) {
                     $e.Handled = $true
                     $firstTask.Button.Focus() | Out-Null
@@ -2648,10 +3077,11 @@ Read-Host "Press Enter to close"
         }
         # Arrow key navigation between task buttons / tweak buttons / control panel buttons
         elseif ($focused -is [System.Windows.Controls.Button]) {
-            # Check if focused button belongs to Apps tasks
+            # Check if focused button belongs to Apps or Dev tasks
             $currentTask = $script:AllTasks | Where-Object { $_.Button -eq $focused }
             if ($null -ne $currentTask) {
-                $visibleTasks = @($script:AllTasks | Where-Object { $_.RowGrid.Visibility -eq [System.Windows.Visibility]::Visible })
+                $activeTab = $currentTask.Tab
+                $visibleTasks = @($script:AllTasks | Where-Object { $_.Tab -eq $activeTab -and $_.RowGrid.Visibility -eq [System.Windows.Visibility]::Visible })
                 
                 if ($e.Key -eq [System.Windows.Input.Key]::Down -or $e.Key -eq [System.Windows.Input.Key]::Up) {
                     $sameColTasks = @($visibleTasks | Where-Object { $_.ColIndex -eq $currentTask.ColIndex })
@@ -2798,6 +3228,20 @@ Read-Host "Press Enter to close"
         Write-Log "Tip: Check boxes next to items and press [Run Selected] for batch install." -Level Info
         Write-Log "Tip: Click any tool button to launch it immediately without queuing." -Level Info
 
+        # Populate System Specs HUD
+        try {
+            $specs = Get-SystemSpecsSummary
+            if ($null -ne $script:txtHudOS -and $null -ne $specs.OSName) {
+                $script:txtHudOS.Text = $specs.OSName
+            }
+            if ($null -ne $script:txtHudRAM -and $null -ne $specs.RAMText) {
+                $script:txtHudRAM.Text = $specs.RAMText
+            }
+            if ($null -ne $script:txtHudCPU -and $null -ne $specs.CPUText) {
+                $script:txtHudCPU.Text = $specs.CPUText
+            }
+        } catch {}
+
         try {
             $darkMode = 1
             $osVersion = [Environment]::OSVersion.Version
@@ -2810,7 +3254,7 @@ Read-Host "Press Enter to close"
         } catch {}
     })
 
-    Update-InitProgress -Percent 98 -Status "Preparing window icon and theme..."
+    Update-InitProgress -Percent 96 -Status "[12/12] Preparing window icon, theme & launching GUI..."
 
     # Load window Icon dynamically
     $iconPath = "$env:TEMP\Tooler.ico"
@@ -2825,7 +3269,7 @@ Read-Host "Press Enter to close"
     }
     catch {}
 
-    Update-InitProgress -Percent 100 -Status "Ready! Launching application..."
+    Update-InitProgress -Percent 100 -Status "[12/12] Ready! Launching application..."
     Start-Sleep -Milliseconds 150
     Write-Progress -Activity "Tooler - Starting Up" -Completed
     Write-Host "`n`n  [OK] Initialization complete. Launching GUI...`n" -ForegroundColor Green
