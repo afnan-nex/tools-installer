@@ -422,6 +422,10 @@ public static extern IntPtr GetConsoleWindow();
         Install-AppPackage -Name "OpenJDK Java" -ChocoPkg "openjdk" -WingetId "EclipseAdoptium.Temurin.21.JDK"
     }
 
+    function Install-TemurinJDK {
+        Install-AppPackage -Name "Eclipse Temurin JDK with Hotspot" -ChocoPkg "temurin21" -WingetId "EclipseAdoptium.Temurin.21.JDK"
+    }
+
     # ============================================================
     #  Run Scripts
     # ============================================================
@@ -1291,6 +1295,10 @@ Read-Host "Press Enter to close"
     function Install-Alacritty {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
         "echo Installing Alacritty via Chocolatey... && choco upgrade alacritty -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Alacritty installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    }
+
+    function Install-UniGetUI {
+        Install-AppPackage -Name "UniGetUI" -ChocoPkg "unigetui" -WingetId "Devolutions.UniGetUI"
     }
 
     function Install-Scrcpy {
@@ -2359,6 +2367,7 @@ Read-Host "Press Enter to close"
         @{ Name = "HiBit Uninstaller"; Func = { Install-HiBit } },
         @{ Name = "Superfile"; Func = { Install-Superfile } },
         @{ Name = "Alacritty"; Func = { Install-Alacritty } },
+        @{ Name = "UniGetUI"; Func = { Install-UniGetUI } },
         @{ Name = "Scrcpy GUI"; Func = { Install-Scrcpy } },
         @{ Name = "VC++ Runtimes"; Func = { Install-VCC-Runtimes } },
         @{ Name = "DirectX Runtime"; Func = { Install-DirectX } }
@@ -2434,7 +2443,8 @@ Read-Host "Press Enter to close"
     Add-DevCategory -ColIndex 3 -Title "Languages" -Items @(
         @{ Name = "MinGW (C/C++)"; Func = { Install-MinGW } },
         @{ Name = "Rust"; Func = { Install-Rust } },
-        @{ Name = "Java"; Func = { Install-Java } }
+        @{ Name = "Java"; Func = { Install-Java } },
+        @{ Name = "Eclipse Temurin JDK (Hotspot)"; Func = { Install-TemurinJDK } }
     )
 
     # Column 4: Other Dev
@@ -2781,7 +2791,19 @@ Read-Host "Press Enter to close"
     # ============================================================
 
     # Navigation Slidebar Tabs Switching
+    $script:clearSearchForTabSwitch = {
+        if ($null -ne $script:txtSearch -and $script:txtSearch.Text -ne "" -and $script:txtSearch.Text -ne "Search...") {
+            $script:txtSearch.Text = ""
+        }
+    }
+    $script:tabApps.Add_PreviewMouseDown($script:clearSearchForTabSwitch)
+    $script:tabDev.Add_PreviewMouseDown($script:clearSearchForTabSwitch)
+    $script:tabScripts.Add_PreviewMouseDown($script:clearSearchForTabSwitch)
+
     $script:tabApps.Add_Checked({
+        if (-not $script:InAutoSwitch -and $null -ne $script:txtSearch -and $script:txtSearch.Text -ne "" -and $script:txtSearch.Text -ne "Search...") {
+            $script:txtSearch.Text = ""
+        }
         $script:appsScrollViewer.Visibility = [System.Windows.Visibility]::Visible
         $script:devScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
         $script:scriptsScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
@@ -2800,6 +2822,9 @@ Read-Host "Press Enter to close"
     })
 
     $script:tabDev.Add_Checked({
+        if (-not $script:InAutoSwitch -and $null -ne $script:txtSearch -and $script:txtSearch.Text -ne "" -and $script:txtSearch.Text -ne "Search...") {
+            $script:txtSearch.Text = ""
+        }
         $script:appsScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
         $script:devScrollViewer.Visibility = [System.Windows.Visibility]::Visible
         $script:scriptsScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
@@ -2818,6 +2843,9 @@ Read-Host "Press Enter to close"
     })
 
     $script:tabScripts.Add_Checked({
+        if (-not $script:InAutoSwitch -and $null -ne $script:txtSearch -and $script:txtSearch.Text -ne "" -and $script:txtSearch.Text -ne "Search...") {
+            $script:txtSearch.Text = ""
+        }
         $script:appsScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
         $script:devScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
         $script:scriptsScrollViewer.Visibility = [System.Windows.Visibility]::Visible

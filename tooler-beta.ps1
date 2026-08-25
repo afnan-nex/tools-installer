@@ -422,6 +422,10 @@ public static extern IntPtr GetConsoleWindow();
         Install-AppPackage -Name "OpenJDK Java" -ChocoPkg "openjdk" -WingetId "EclipseAdoptium.Temurin.21.JDK"
     }
 
+    function Install-TemurinJDK {
+        Install-AppPackage -Name "Eclipse Temurin JDK with Hotspot" -ChocoPkg "temurin21" -WingetId "EclipseAdoptium.Temurin.21.JDK"
+    }
+
     # ============================================================
     #  Run Scripts
     # ============================================================
@@ -977,6 +981,59 @@ Read-Host "Press Enter to close"
         Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
     }
 
+    function Enable-LongPaths {
+        $psCode = @'
+Write-Host "Enabling Win32 Long Paths (removing 260-character MAX_PATH limit)..." -ForegroundColor Cyan
+try {
+    # 1. System FileSystem Registry Key
+    $fsKey = "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem"
+    if (-not (Test-Path $fsKey)) { New-Item -Path $fsKey -Force | Out-Null }
+    Set-ItemProperty -Path $fsKey -Name "LongPathsEnabled" -Value 1 -Type DWord -Force
+
+    # 2. Group Policy Registry Key
+    $policyKey = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System"
+    if (-not (Test-Path $policyKey)) { New-Item -Path $policyKey -Force | Out-Null }
+    Set-ItemProperty -Path $policyKey -Name "EnableLongPaths" -Value 1 -Type DWord -Force
+
+    Write-Host "Win32 Long Paths successfully enabled (LongPathsEnabled = 1)!" -ForegroundColor Green
+    Write-Host "Applications and PowerShell can now access paths exceeding 260 characters." -ForegroundColor Green
+} catch {
+    Write-Host ("Error: " + $_.Exception.Message) -ForegroundColor Red
+}
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\enable_long_paths.ps1"
+        $psCode | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    }
+
+    function Disable-LongPaths {
+        $psCode = @'
+Write-Host "Restoring default Windows path length limit (260 characters)..." -ForegroundColor Cyan
+try {
+    # 1. System FileSystem Registry Key
+    $fsKey = "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem"
+    if (Test-Path $fsKey) {
+        Set-ItemProperty -Path $fsKey -Name "LongPathsEnabled" -Value 0 -Type DWord -Force
+    }
+
+    # 2. Group Policy Registry Key
+    $policyKey = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System"
+    if (Test-Path $policyKey) {
+        Remove-ItemProperty -Path $policyKey -Name "EnableLongPaths" -ErrorAction SilentlyContinue
+    }
+
+    Write-Host "Default 260-character MAX_PATH limit restored (LongPathsEnabled = 0)." -ForegroundColor Green
+} catch {
+    Write-Host ("Error: " + $_.Exception.Message) -ForegroundColor Red
+}
+Read-Host "Press Enter to close"
+'@
+        $tmp = "$env:TEMP\disable_long_paths.ps1"
+        $psCode | Out-File -FilePath $tmp -Encoding UTF8
+        Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tmp`""
+    }
+
     function Clear-TempJunk {
         $psCode = @'
 Write-Host "Cleaning temporary files and cache..." -ForegroundColor Cyan
@@ -1238,6 +1295,10 @@ Read-Host "Press Enter to close"
     function Install-Alacritty {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
         "echo Installing Alacritty via Chocolatey... && choco upgrade alacritty -y --force --install-if-not-installed --no-desktop-shortcut && echo. && echo Alacritty installation completed. && echo. && echo Press any key to exit . . . && pause >nul && exit"
+    }
+
+    function Install-UniGetUI {
+        Install-AppPackage -Name "UniGetUI" -ChocoPkg "unigetui" -WingetId "Devolutions.UniGetUI"
     }
 
     function Install-Scrcpy {
@@ -1950,8 +2011,12 @@ Read-Host "Press Enter to close"
             catch {
                 Write-Log "ERROR: $taskName - $($_.Exception.Message)" -Level Error
             }
-            [void]$script:window.Dispatcher.BeginInvoke([System.Action] {
+            [void]$script:window.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [System.Action] {
                 $script:window.Activate() | Out-Null
+                if ($null -ne $script:txtSearch) {
+                    $script:txtSearch.Focus() | Out-Null
+                    $script:txtSearch.SelectAll()
+                }
             })
         })
 
@@ -2056,7 +2121,6 @@ Read-Host "Press Enter to close"
         $btnRevert.HorizontalContentAlignment = [System.Windows.HorizontalAlignment]::Center
         $btnRevert.Cursor = [System.Windows.Input.Cursors]::Hand
         $btnRevert.Tag = $ScriptDef
-        $btnRevert.ToolTip = "Revert: $($ScriptDef.Name)"
         
         $btnRevert.Add_Click({
             param($s, $e)
@@ -2075,8 +2139,12 @@ Read-Host "Press Enter to close"
             } else {
                 Write-Log "Info: No revert action needed for $name." -Level Info
             }
-            [void]$script:window.Dispatcher.BeginInvoke([System.Action] {
+            [void]$script:window.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [System.Action] {
                 $script:window.Activate() | Out-Null
+                if ($null -ne $script:txtSearch) {
+                    $script:txtSearch.Focus() | Out-Null
+                    $script:txtSearch.SelectAll()
+                }
             })
         })
         $btnsPanel.Children.Add($btnRevert) | Out-Null
@@ -2091,7 +2159,6 @@ Read-Host "Press Enter to close"
         $btnRun.HorizontalContentAlignment = [System.Windows.HorizontalAlignment]::Center
         $btnRun.Cursor = [System.Windows.Input.Cursors]::Hand
         $btnRun.Tag = $ScriptDef
-        $btnRun.ToolTip = "Run: $($ScriptDef.Name)"
         
         $btnRun.Add_Click({
             param($s, $e)
@@ -2108,8 +2175,12 @@ Read-Host "Press Enter to close"
             } catch {
                 Write-Log "ERROR: $name - $($_.Exception.Message)" -Level Error
             }
-            [void]$script:window.Dispatcher.BeginInvoke([System.Action] {
+            [void]$script:window.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [System.Action] {
                 $script:window.Activate() | Out-Null
+                if ($null -ne $script:txtSearch) {
+                    $script:txtSearch.Focus() | Out-Null
+                    $script:txtSearch.SelectAll()
+                }
             })
         })
         $btnsPanel.Children.Add($btnRun) | Out-Null
@@ -2165,8 +2236,12 @@ Read-Host "Press Enter to close"
             } catch {
                 Write-Log "ERROR: $tName - $($_.Exception.Message)" -Level Error
             }
-            [void]$script:window.Dispatcher.BeginInvoke([System.Action] {
+            [void]$script:window.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [System.Action] {
                 $script:window.Activate() | Out-Null
+                if ($null -ne $script:txtSearch) {
+                    $script:txtSearch.Focus() | Out-Null
+                    $script:txtSearch.SelectAll()
+                }
             })
         })
 
@@ -2292,6 +2367,7 @@ Read-Host "Press Enter to close"
         @{ Name = "HiBit Uninstaller"; Func = { Install-HiBit } },
         @{ Name = "Superfile"; Func = { Install-Superfile } },
         @{ Name = "Alacritty"; Func = { Install-Alacritty } },
+        @{ Name = "UniGetUI"; Func = { Install-UniGetUI } },
         @{ Name = "Scrcpy GUI"; Func = { Install-Scrcpy } },
         @{ Name = "VC++ Runtimes"; Func = { Install-VCC-Runtimes } },
         @{ Name = "DirectX Runtime"; Func = { Install-DirectX } }
@@ -2367,7 +2443,8 @@ Read-Host "Press Enter to close"
     Add-DevCategory -ColIndex 3 -Title "Languages" -Items @(
         @{ Name = "MinGW (C/C++)"; Func = { Install-MinGW } },
         @{ Name = "Rust"; Func = { Install-Rust } },
-        @{ Name = "Java"; Func = { Install-Java } }
+        @{ Name = "Java"; Func = { Install-Java } },
+        @{ Name = "Eclipse Temurin JDK (Hotspot)"; Func = { Install-TemurinJDK } }
     )
 
     # Column 4: Other Dev
@@ -2401,6 +2478,13 @@ Read-Host "Press Enter to close"
             Description = "Run: Show known file extensions and hidden files in Explorer  |  Revert: Restore defaults"
             On          = { Set-ShowExtensionsAndHidden }
             Off         = { Reset-ShowExtensionsAndHidden }
+        },
+        @{
+            Name        = "Enable Long Paths"
+            Category    = "System Tweaks"
+            Description = "Run: Remove Windows 260-character MAX_PATH file path limit  |  Revert: Restore default 260-char limit"
+            On          = { Enable-LongPaths }
+            Off         = { Disable-LongPaths }
         },
         @{
             Name        = "Disable Start Bing Search"
@@ -2707,7 +2791,19 @@ Read-Host "Press Enter to close"
     # ============================================================
 
     # Navigation Slidebar Tabs Switching
+    $script:clearSearchForTabSwitch = {
+        if ($null -ne $script:txtSearch -and $script:txtSearch.Text -ne "" -and $script:txtSearch.Text -ne "Search...") {
+            $script:txtSearch.Text = ""
+        }
+    }
+    $script:tabApps.Add_PreviewMouseDown($script:clearSearchForTabSwitch)
+    $script:tabDev.Add_PreviewMouseDown($script:clearSearchForTabSwitch)
+    $script:tabScripts.Add_PreviewMouseDown($script:clearSearchForTabSwitch)
+
     $script:tabApps.Add_Checked({
+        if (-not $script:InAutoSwitch -and $null -ne $script:txtSearch -and $script:txtSearch.Text -ne "" -and $script:txtSearch.Text -ne "Search...") {
+            $script:txtSearch.Text = ""
+        }
         $script:appsScrollViewer.Visibility = [System.Windows.Visibility]::Visible
         $script:devScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
         $script:scriptsScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
@@ -2717,9 +2813,18 @@ Read-Host "Press Enter to close"
             $script:lblSubtitle.Text = "Check items for batch run   |   Click a button for immediate single execution"
         }
         Update-SearchFilter
+        [void]$script:txtSearch.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [System.Action] {
+            if ($null -ne $script:txtSearch) {
+                $script:txtSearch.Focus() | Out-Null
+                $script:txtSearch.SelectAll()
+            }
+        })
     })
 
     $script:tabDev.Add_Checked({
+        if (-not $script:InAutoSwitch -and $null -ne $script:txtSearch -and $script:txtSearch.Text -ne "" -and $script:txtSearch.Text -ne "Search...") {
+            $script:txtSearch.Text = ""
+        }
         $script:appsScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
         $script:devScrollViewer.Visibility = [System.Windows.Visibility]::Visible
         $script:scriptsScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
@@ -2729,9 +2834,18 @@ Read-Host "Press Enter to close"
             $script:lblSubtitle.Text = "Check items for batch run   |   Click a button for immediate single execution"
         }
         Update-SearchFilter
+        [void]$script:txtSearch.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [System.Action] {
+            if ($null -ne $script:txtSearch) {
+                $script:txtSearch.Focus() | Out-Null
+                $script:txtSearch.SelectAll()
+            }
+        })
     })
 
     $script:tabScripts.Add_Checked({
+        if (-not $script:InAutoSwitch -and $null -ne $script:txtSearch -and $script:txtSearch.Text -ne "" -and $script:txtSearch.Text -ne "Search...") {
+            $script:txtSearch.Text = ""
+        }
         $script:appsScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
         $script:devScrollViewer.Visibility = [System.Windows.Visibility]::Collapsed
         $script:scriptsScrollViewer.Visibility = [System.Windows.Visibility]::Visible
@@ -2741,6 +2855,12 @@ Read-Host "Press Enter to close"
             $script:lblSubtitle.Text = "Click Run to apply tweaks, Revert to restore defaults, or open Settings tools"
         }
         Update-SearchFilter
+        [void]$script:txtSearch.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [System.Action] {
+            if ($null -ne $script:txtSearch) {
+                $script:txtSearch.Focus() | Out-Null
+                $script:txtSearch.SelectAll()
+            }
+        })
     })
 
     # Select All / Unselect All
@@ -3011,9 +3131,12 @@ Read-Host "Press Enter to close"
                 }
             }
 
-            [void]$script:txtSearch.Dispatcher.BeginInvoke([System.Action] {
-                $script:txtSearch.Focus() | Out-Null
-                $script:txtSearch.SelectAll()
+            [void]$script:window.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Background, [System.Action] {
+                $script:window.Activate() | Out-Null
+                if ($null -ne $script:txtSearch) {
+                    $script:txtSearch.Focus() | Out-Null
+                    $script:txtSearch.SelectAll()
+                }
             })
         }
     })
@@ -3023,8 +3146,14 @@ Read-Host "Press Enter to close"
         
         $focused = [System.Windows.Input.Keyboard]::FocusedElement
         
+        # Escape key clears search and refocuses search box
+        if ($e.Key -eq [System.Windows.Input.Key]::Escape) {
+            $e.Handled = $true
+            $script:txtSearch.Text = ""
+            $script:txtSearch.Focus() | Out-Null
+        }
         # Enter key executes all selected and unselects in Apps / Dev view
-        if ($e.Key -eq [System.Windows.Input.Key]::Enter) {
+        elseif ($e.Key -eq [System.Windows.Input.Key]::Enter) {
             if ($focused -ne $script:txtSearch) {
                 if ($script:tabApps.IsChecked -or $script:tabDev.IsChecked) {
                     $e.Handled = $true
@@ -3219,6 +3348,26 @@ Read-Host "Press Enter to close"
                 }
             }
         }
+        # If user starts typing printable characters while not focused on search box, redirect to search box
+        elseif ($focused -ne $script:txtSearch -and -not [System.Windows.Input.Keyboard]::Modifiers) {
+            if (($e.Key -ge [System.Windows.Input.Key]::A -and $e.Key -le [System.Windows.Input.Key]::Z) -or
+                ($e.Key -ge [System.Windows.Input.Key]::D0 -and $e.Key -le [System.Windows.Input.Key]::D9) -or
+                ($e.Key -ge [System.Windows.Input.Key]::NumPad0 -and $e.Key -le [System.Windows.Input.Key]::NumPad9) -or
+                $e.Key -eq [System.Windows.Input.Key]::Back) {
+                $script:txtSearch.Focus() | Out-Null
+                $script:txtSearch.SelectAll()
+            }
+        }
+    })
+
+    # Auto-refocus and select search box when window becomes active
+    $script:window.Add_Activated({
+        [void]$script:txtSearch.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Input, [System.Action] {
+            if ($null -ne $script:txtSearch) {
+                $script:txtSearch.Focus() | Out-Null
+                $script:txtSearch.SelectAll()
+            }
+        })
     })
 
     # ============================================================
