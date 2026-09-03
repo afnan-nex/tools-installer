@@ -618,6 +618,22 @@ public static extern IntPtr GetConsoleWindow();
         Install-AppPackage -Name "Android NDK" -ChocoPkg "android-ndk" -WingetId "Google.AndroidStudio"
     }
 
+    # ============================================================
+    #  TUI Tools
+    # ============================================================
+
+    function Install-GhCli {
+        Install-AppPackage -Name "GitHub CLI (gh)" -ChocoPkg "gh" -WingetId "GitHub.cli"
+    }
+
+    function Install-LazyGit {
+        Install-AppPackage -Name "lazygit" -ChocoPkg "lazygit" -WingetId "JesseDuffield.lazygit"
+    }
+
+    function Install-LazyDocker {
+        Install-AppPackage -Name "lazydocker" -ChocoPkg "lazydocker" -WingetId "JesseDuffield.Lazydocker"
+    }
+
     function Install-IDM {
         Install-AppPackage -Name "Internet Download Manager" -ChocoPkg "internet-download-manager" -WingetId "Tonec.InternetDownloadManager"
     }
@@ -2437,7 +2453,7 @@ Read-Host "Press Enter to close"
         @{ Name = "OpenClaw"; Func = { Install-OpenClaw } }
     )
 
-    Update-InitProgress -Percent 75 -Status "[9/12] Building Dev: Languages & Other Dev tools..."
+    Update-InitProgress -Percent 75 -Status "[9/12] Building Dev: Languages, TUI & Other Dev tools..."
 
     # Column 3: Languages
     Add-DevCategory -ColIndex 3 -Title "Languages" -Items @(
@@ -2447,7 +2463,13 @@ Read-Host "Press Enter to close"
         @{ Name = "Eclipse Temurin JDK (Hotspot)"; Func = { Install-TemurinJDK } }
     )
 
-    # Column 4: Other Dev
+    # Column 4: TUI & Other Dev
+    Add-DevCategory -ColIndex 4 -Title "TUI" -Items @(
+        @{ Name = "gh cli"; Func = { Install-GhCli } },
+        @{ Name = "lazy git"; Func = { Install-LazyGit } },
+        @{ Name = "lazy docker"; Func = { Install-LazyDocker } }
+    )
+
     Add-DevCategory -ColIndex 4 -Title "Other Dev" -Items @(
         @{ Name = "Flutter"; Func = { Install-Flutter } },
         @{ Name = "Android SDK Binary"; Func = { Install-AndroidSDK } },
