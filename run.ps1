@@ -1,4 +1,4 @@
-﻿# ============================================================
+# ============================================================
 #  Tooler - One-Liner Launcher
 #  by AFNAN (https://github.com/afnan-nex/tooler)
 #  Usage: irm https://raw.githubusercontent.com/afnan-nex/tooler/main/run.ps1 | iex
@@ -32,8 +32,13 @@ if (-not $downloaded -or -not (Test-Path $tempFile)) {
 
 # Auto-elevate to Administrator with STA mode (WPF requires STA)
 $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-$verb = if (-not $isAdmin) { "RunAs" } else { $null }
 
 Write-Host ">>> Launching Tooler GUI..." -ForegroundColor Green
-$argList = "-NoProfile -ExecutionPolicy Bypass -STA -File `"$tempFile`""
-Start-Process powershell -ArgumentList $argList -Verb $verb
+$procParams = @{
+    FilePath     = "powershell.exe"
+    ArgumentList = "-NoProfile -ExecutionPolicy Bypass -STA -File `"$tempFile`""
+}
+if (-not $isAdmin) {
+    $procParams["Verb"] = "RunAs"
+}
+Start-Process @procParams

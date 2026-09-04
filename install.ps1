@@ -1,4 +1,4 @@
-﻿# ============================================================
+# ============================================================
 #  Tooler - One-Liner Installer & PATH Setup
 #  by AFNAN (https://github.com/afnan-nex/tooler)
 #  Usage: irm https://raw.githubusercontent.com/afnan-nex/tooler/main/install.ps1 | iex
@@ -13,7 +13,7 @@ if (-not $isAdmin) {
     } else {
         "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://raw.githubusercontent.com/afnan-nex/tooler/main/install.ps1 | iex`""
     }
-    Start-Process powershell -Verb RunAs -ArgumentList $relaunchCmd
+    Start-Process powershell.exe -Verb RunAs -ArgumentList $relaunchCmd
     exit
 }
 
