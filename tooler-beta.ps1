@@ -1151,6 +1151,13 @@ Read-Host "Press Enter to close"
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $agyCmd
     }
 
+    function Install-AntigravityManager {
+        $antigravityMgrCmd = ('echo Installing Antigravity Manager... && ' +
+            'powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/lbjlaq/Antigravity-Manager/main/install.ps1 | iex" && echo. && ' +
+            'echo Installation completed. Press any key to close this window. && echo. && echo Press any key to exit . . . && pause >nul && exit')
+        Start-Process cmd -WindowStyle Minimized -ArgumentList "/k", $antigravityMgrCmd
+    }
+
     function Install-Opencode {
         Start-Process cmd -WindowStyle Minimized -ArgumentList "/k",
         "echo Installing Opencode... && npm i -g opencode-ai --verbose && echo. && echo Installation completed. Press any key to close this window. && echo. && echo Press any key to exit . . . && pause >nul && exit"
@@ -2437,6 +2444,7 @@ Read-Host "Press Enter to close"
     # Column 1: CLI Agents
     Add-DevCategory -ColIndex 1 -Title "CLI Agents" -Items @(
         @{ Name = "Agy"; Func = { Install-Agy } },
+        @{ Name = "Antigravity Manager"; Func = { Install-AntigravityManager } },
         @{ Name = "Opencode"; Func = { Install-Opencode } },
         @{ Name = "Claude Code"; Func = { Install-ClaudeCode } },
         @{ Name = "Claude Code Router"; Func = { Install-ClaudeCodeRouter } },

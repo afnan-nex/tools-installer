@@ -1,9 +1,9 @@
-﻿#include <windows.h>
+#include <windows.h>
 #include <iostream>
 #include <string>
 #include <cstdlib>
 
-#define TOOLER_VERSION "2.0"
+#define TOOLER_VERSION "2.1"
 
 int main(int argc, char* argv[]) {
     // Handle command line flags

@@ -3,7 +3,7 @@
 ; Non-commercial use only
 
 #define MyAppName "Tooler"
-#define MyAppVersion "2.0"
+#define MyAppVersion "2.1"
 #define MyAppPublisher "AFNAN"
 #define MyAppURL "https://github.com/afnan-nex/tooler"
 #define MyAppIconName "Tooler.ico"

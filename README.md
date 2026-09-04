@@ -2,59 +2,68 @@
 
 A modern Windows WPF GUI application wrapper for `tooler.ps1` to quickly install developer tools, productivity apps, system utilities, and run optimization/automation scripts. It simplifies the setup of essential environments and configurations on Windows systems.
 
-## Run in CMD
-```cmd
-curl -L -o "%TEMP%\tooler.ps1" https://raw.githubusercontent.com/afnan-nex/tooler/main/tooler.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\tooler.ps1"
+## Quick Start
 
+### Run (PowerShell)
+```powershell
+irm https://raw.githubusercontent.com/afnan-nex/tooler/main/run.ps1 | iex
+```
+
+### Install CLI to PATH & Create Shortcuts (PowerShell)
+```powershell
+irm https://raw.githubusercontent.com/afnan-nex/tooler/main/install.ps1 | iex
 ```
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2.0-blue.svg?style=for-the-badge" alt="Version 2.0">
+  <img src="https://img.shields.io/badge/version-2.1-blue.svg?style=for-the-badge" alt="Version 2.1">
   <a href="https://raw.githubusercontent.com/afnan-nex/tooler/refs/heads/main/Setup/Tooler.exe">
     <img src="https://img.shields.io/badge/Download-Setup.exe-blue?style=for-the-badge&logo=windows" alt="Download Setup">
   </a>
 </p>
 
-## Run in CMD (Beta)
-```cmd
-curl -L -o "%TEMP%\tooler-beta.ps1" https://raw.githubusercontent.com/afnan-nex/tooler/main/tooler-beta.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\tooler-beta.ps1"
-
-```
-
 <details>
   <summary>Other commands</summary>
+
+## **Run in CMD**
+```cmd
+curl -L -o "%TEMP%\tooler.ps1" https://raw.githubusercontent.com/afnan-nex/tooler/main/tooler.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\tooler.ps1"
+```
+
+## **Run in CMD (Beta)**
+```cmd
+curl -L -o "%TEMP%\tooler-beta.ps1" https://raw.githubusercontent.com/afnan-nex/tooler/main/tooler-beta.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\tooler-beta.ps1"
+```
+
+## **Run Beta in PowerShell**
+```powershell
+$Beta = $true; irm https://raw.githubusercontent.com/afnan-nex/tooler/main/run.ps1 | iex
+```
 
 ## **For Security Problem**
 Might I make it Permanent
 ```cmd
 curl -L -o "%TEMP%\tooler.ps1" https://raw.githubusercontent.com/afnan-nex/tooler/main/tooler.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\tooler.ps1"
-
 ```
 
 ## **Curl Command**
 ```cmd
 curl -o tooler.cmd https://raw.githubusercontent.com/afnan-nex/tooler/main/Other/tooler.cmd && tooler.cmd
-
 ```
+
 ## **Run in PowerShell or CMD 🖥️**
 ```ps1
 powershell -NoProfile -ExecutionPolicy Bypass -Command "irm 'https://raw.githubusercontent.com/afnan-nex/tooler/main/Other/tooler.cmd?$(Get-Date -Format yyyyMMddHHmmss)' -OutFile tooler.cmd; Start-Process tooler.cmd"
-
 ```
+
 ## **To Run Strictly in Powershell**
 ```ps1
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
 Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/afnan-nex/tooler/main/Other/tooler.cmd?$(Get-Date -Format yyyyMMddHHmmss)" -OutFile "$env:TEMP\tooler.cmd";
 Start-Process "$env:TEMP\tooler.cmd" -Verb RunAs
-
 ```
 
-## **Install CLI Binary to PATH (`tooler.exe`)**
-Run in PowerShell (Admin):
-```ps1
-powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/afnan-nex/tooler/main/install-tooler.ps1 | iex"
-```
-Or run the [Setup installer](file:///C:/Users/Admin/Desktop/tools-installer-main/Setup/Tooler.exe), which automatically installs `tooler.exe` and adds it to your system `PATH`.
+## **Install via Setup Installer**
+Run the [Setup installer](https://raw.githubusercontent.com/afnan-nex/tooler/refs/heads/main/Setup/Tooler.exe), which automatically installs `tooler.exe` and adds it to your system `PATH`.
 </details>
 
 ---
@@ -84,7 +93,7 @@ Or run the [Setup installer](file:///C:/Users/Admin/Desktop/tools-installer-main
 *   Chris Titus Tool, Mass Grave (Windows Activation), Win11 Debloat, WinScript, Coporton, IDM Fixer, Sparkle, GHGrab, Tooler Setup, VPN, Tor Link, Tork, YTDLP Frontend, Yoinks.
 
 ### 4. **AI Assistants & Tools**
-*   Agy, Opencode, Cursor IDE, Google Desktop App, LLM-Checker, LLMFit, Ollama, Claude Code, Claude Code Router, Codebuff, Omniroute.
+*   Agy, Antigravity Manager, Opencode, Cursor IDE, Google Desktop App, LLM-Checker, LLMFit, Ollama, Claude Code, Claude Code Router, Codebuff, Omniroute.
 
 ### 5. **System Tools & Runtimes**
 *   Winget, Everything Search, CMD Color 0a, RustDesk, HiBit Uninstaller, Superfile, Alacritty, Scrcpy GUI, Cursor / Elegant repository, VC++ Runtimes, DirectX Runtime.
